@@ -34,7 +34,7 @@ This application has no central database, unlike other applications of this type
 License
 --------
 
-    Copyright 2013 Square, Inc.
+    Copyright 2015 Tomas Valenta - YetAnotherView.cz
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
