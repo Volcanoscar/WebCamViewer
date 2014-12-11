@@ -28,12 +28,6 @@
                 android:id="@+id/titleTextView"
                 tools:text="Title"/>
 
-            <TextView
-                style="@style/CardTitle"
-                android:layout_alignBottom="@+id/imageView"
-                android:id="@+id/urlTextView"
-                tools:text="Url"/>
-
         </RelativeLayout>
 
     </android.support.v7.widget.CardView>
