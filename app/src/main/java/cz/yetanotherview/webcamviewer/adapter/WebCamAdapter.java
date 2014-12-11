@@ -4,7 +4,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -32,9 +35,14 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
     public void onBindViewHolder(WebCamViewHolder webcamViewHolder, int i) {
         Webcam webcam = webcamItems.get(i);
         webcamViewHolder.vName.setText(webcam.getName());
-        //webcamViewHolder.vSurname.setText(webcam.surname);
-        //webcamViewHolder.vEmail.setText(webcam.email);
-        //webcamViewHolder.vTitle.setText(webcam.name + " " + ci.surname);
+
+        Picasso.with(webcamViewHolder.itemView.getContext())
+                .load(webcam.getUrl())
+                //.resize(deviceWidth, deviceWidth)
+                //.fit()
+                .placeholder(R.drawable.animation)
+                .error(R.drawable.placeholder_error)
+                .into(webcamViewHolder.vImage);
     }
 
     // Create new views (invoked by the layout manager)
@@ -49,10 +57,12 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
     public static class WebCamViewHolder extends RecyclerView.ViewHolder {
 
         protected TextView vName;
+        protected ImageView vImage;
 
         public WebCamViewHolder(View itemLayoutView) {
             super(itemLayoutView);
             vName = (TextView) itemLayoutView.findViewById(R.id.titleTextView);
+            vImage = (ImageView) itemLayoutView.findViewById(R.id.imageView);
         }
     }
 }

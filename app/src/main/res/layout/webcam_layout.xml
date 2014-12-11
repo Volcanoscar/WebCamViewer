@@ -20,7 +20,6 @@
                 android:adjustViewBounds="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
-                android:background="@drawable/ic_launcher"
                 android:id="@+id/imageView"/>
 
             <TextView
@@ -28,6 +27,12 @@
                 android:layout_alignBottom="@+id/imageView"
                 android:id="@+id/titleTextView"
                 tools:text="Title"/>
+
+            <TextView
+                style="@style/CardTitle"
+                android:layout_alignBottom="@+id/imageView"
+                android:id="@+id/urlTextView"
+                tools:text="Url"/>
 
         </RelativeLayout>
 

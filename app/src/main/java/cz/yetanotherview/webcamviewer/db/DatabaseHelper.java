@@ -39,6 +39,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // WEBCAM Table - column nmaes
     private static final String KEY_WEBCAM = "webcam_name";
     private static final String KEY_WEBCAM_URL = "webcam_url";
+    private static final String KEY_POSITION = "position";
     private static final String KEY_STATUS = "status";
 
     // CATEGORYS Table - column names
@@ -52,7 +53,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Webcam table create statement
     private static final String CREATE_TABLE_WEBCAM = "CREATE TABLE IF NOT EXISTS "
             + TABLE_WEBCAM + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_WEBCAM
-            + " TEXT," + KEY_WEBCAM_URL + " TEXT," + KEY_STATUS + " INTEGER," + KEY_CREATED_AT
+            + " TEXT," + KEY_WEBCAM_URL + " TEXT," + KEY_POSITION + " INTEGER," + KEY_STATUS + " INTEGER," + KEY_CREATED_AT
             + " DATETIME" + ")";
 
     // Category table create statement
@@ -126,6 +127,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(KEY_WEBCAM, webcam.getName());
+        values.put(KEY_WEBCAM_URL, webcam.getUrl());
+        values.put(KEY_POSITION, webcam.getPosition());
         values.put(KEY_STATUS, webcam.getStatus());
         values.put(KEY_CREATED_AT, getDateTime());
 
@@ -159,6 +162,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Webcam wc = new Webcam();
         wc.setId(c.getInt(c.getColumnIndex(KEY_ID)));
         wc.setName((c.getString(c.getColumnIndex(KEY_WEBCAM))));
+        wc.setUrl((c.getString(c.getColumnIndex(KEY_WEBCAM_URL))));
+        wc.setPosition((c.getInt(c.getColumnIndex(KEY_POSITION))));
         wc.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
         return wc;
@@ -182,6 +187,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Webcam wc = new Webcam();
                 wc.setId(c.getInt((c.getColumnIndex(KEY_ID))));
                 wc.setName((c.getString(c.getColumnIndex(KEY_WEBCAM))));
+                wc.setUrl((c.getString(c.getColumnIndex(KEY_WEBCAM_URL))));
+                wc.setPosition((c.getInt(c.getColumnIndex(KEY_POSITION))));
                 wc.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
                 // adding to webcam list
@@ -215,6 +222,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 Webcam wc = new Webcam();
                 wc.setId(c.getInt((c.getColumnIndex(KEY_ID))));
                 wc.setName((c.getString(c.getColumnIndex(KEY_WEBCAM))));
+                wc.setUrl((c.getString(c.getColumnIndex(KEY_WEBCAM_URL))));
+                wc.setPosition((c.getInt(c.getColumnIndex(KEY_POSITION))));
                 wc.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
                 // adding to webcam list
@@ -248,6 +257,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         ContentValues values = new ContentValues();
         values.put(KEY_WEBCAM, webcam.getName());
+        values.put(KEY_WEBCAM_URL, webcam.getUrl());
+        values.put(KEY_POSITION, webcam.getPosition());
         values.put(KEY_STATUS, webcam.getStatus());
 
         // updating row

@@ -8,6 +8,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.Random;
+
 import cz.yetanotherview.webcamviewer.MainActivity;
 import cz.yetanotherview.webcamviewer.R;
 import cz.yetanotherview.webcamviewer.db.DatabaseHelper;
@@ -44,11 +46,16 @@ public class AddWebcam extends Activity implements OnClickListener {
         switch (v.getId()) {
             case R.id.add_record:
 
-                final String name = subjectEditText.getText().toString();
-                final String desc = descEditText.getText().toString();
+                String name = subjectEditText.getText().toString();
+                String url = descEditText.getText().toString();
+
+                //ToDo: nenechat takto, i když pozicování ještě nebude hotové
+                Random r = new Random();
+                int pos = r.nextInt(10000);
+
 
                 //db.insert(name, desc);
-                db.createWebCam(new Webcam(name, 0), new long[]{db.createCategory(new Category("Shopping"))});
+                db.createWebCam(new Webcam(name, url, pos, 0), new long[]{db.createCategory(new Category("Test"))});
                 db.closeDB();
 
                 Intent main = new Intent(AddWebcam.this, MainActivity.class)

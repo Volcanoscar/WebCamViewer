@@ -4,6 +4,8 @@ public class Webcam {
 
     int id;
     String name;
+    String url;
+    int position;
     int status;
     String created_at;
 
@@ -11,14 +13,18 @@ public class Webcam {
     public Webcam() {
     }
 
-    public Webcam(String name, int status) {
+    public Webcam(String name, String url, int position, int status) {
         this.name = name;
+        this.url = url;
+        this.position = position;
         this.status = status;
     }
 
-    public Webcam(int id, String name, int status) {
+    public Webcam(int id, String name, String url, int position, int status) {
         this.id = id;
         this.name = name;
+        this.url = url;
+        this.position = position;
         this.status = status;
     }
 
@@ -29,6 +35,14 @@ public class Webcam {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public void setStatus(int status) {
@@ -46,6 +60,14 @@ public class Webcam {
 
     public String getName() {
         return this.name;
+    }
+
+    public String getUrl() {
+        return this.url;
+    }
+
+    public int getPosition() {
+        return this.position;
     }
 
     public int getStatus() {

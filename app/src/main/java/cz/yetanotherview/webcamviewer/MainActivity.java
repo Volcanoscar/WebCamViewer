@@ -75,28 +75,6 @@ public class MainActivity extends ActionBarActivity {
                 })
         );
 
-        // OnCLickListiner For List Items
-//        listView.setOnItemClickListener(new OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long viewId) {
-//
-//            }
-//        });
-//
-//        // OnLongCLickListiner For List Items
-//        listView.setOnItemLongClickListener(new OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long viewId) {
-//
-//                Webcam webcam = (Webcam) adapter.getItem(position);
-//                long id = webcam.getId();
-//
-//                Intent modify_intent = new Intent(getApplicationContext(), ModifyWebcam.class);
-//                modify_intent.putExtra("id", id);
-//                startActivity(modify_intent);
-//                return false;
-//            }
-//        });
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -110,10 +88,10 @@ public class MainActivity extends ActionBarActivity {
             Intent add_mem = new Intent(this, AddWebcam.class);
             startActivity(add_mem);
         }
-        else if (id == R.id.export_records) {
+//        else if (id == R.id.export_records) {
 //            Cursor cursor = dbManager.fetch();
 //            exportToExcel(cursor);
-        }
+//        }
         return super.onOptionsItemSelected(item);
     }
 

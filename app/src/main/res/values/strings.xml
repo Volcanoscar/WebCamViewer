@@ -11,7 +11,7 @@
     <string name="btn_update">Update</string>
     <string name="btn_delete">Delete</string>
     <string name="empty_list_text">No records found</string>
-    <string name="enter_desc">AAA</string>
+    <string name="enter_desc">Url</string>
     <string name="enter_title">Title</string>
 
 </resources>

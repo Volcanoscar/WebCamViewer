@@ -46,7 +46,7 @@ public class ModifyWebcam extends Activity implements OnClickListener {
         webcam = db.getWebcam(_id);
 
         String name = webcam.getName();
-        String desc = intent.getStringExtra("desc");
+        String desc = webcam.getUrl();
 
         titleText.setText(name);
         descText.setText(desc);
@@ -60,9 +60,10 @@ public class ModifyWebcam extends Activity implements OnClickListener {
         switch (v.getId()) {
             case R.id.btn_update:
                 String title = titleText.getText().toString();
-                String desc = descText.getText().toString();
+                String url = descText.getText().toString();
 
                 webcam.setName(title);
+                webcam.setUrl(url);
                 db.updateWebCam(webcam);
                 db.closeDB();
 
