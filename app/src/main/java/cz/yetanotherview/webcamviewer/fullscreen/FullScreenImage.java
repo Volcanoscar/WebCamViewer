@@ -40,7 +40,7 @@ public class FullScreenImage extends Activity {
         imageView.setMaxZoom(2f);
         imageView.setBackgroundColor(getResources().getColor(R.color.white));
 
-        Picasso.with(FullScreenImage.getAppContext()).setIndicatorsEnabled(true);
+        //Picasso.with(FullScreenImage.getAppContext()).setIndicatorsEnabled(true);
         Picasso.with(FullScreenImage.getAppContext())
                 .load(url)
                 .fit()

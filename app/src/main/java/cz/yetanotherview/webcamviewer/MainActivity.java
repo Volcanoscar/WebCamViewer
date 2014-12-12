@@ -27,6 +27,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+
+import com.melnykov.fab.FloatingActionButton;
 
 import java.util.List;
 
@@ -53,6 +56,18 @@ public class MainActivity extends ActionBarActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.cardList);
         mRecyclerView.setHasFixedSize(true);
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.attachToRecyclerView(mRecyclerView);
+
+        ImageButton addButton = (ImageButton) findViewById(R.id.fab);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent add_mem = new Intent(getApplicationContext(), AddWebcam.class);
+                startActivity(add_mem);
+            }
+        });
 
         mEmptyView = findViewById(R.id.empty);
 
@@ -105,11 +120,11 @@ public class MainActivity extends ActionBarActivity {
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.add_record) {
-            Intent add_mem = new Intent(this, AddWebcam.class);
-            startActivity(add_mem);
-        }
+//        int id = item.getItemId();
+//        if (id == R.id.add_record) {
+//            Intent add_mem = new Intent(this, AddWebcam.class);
+//            startActivity(add_mem);
+//        }
 //        else if (id == R.id.export_records) {
 //            Cursor cursor = dbManager.fetch();
 //            exportToExcel(cursor);

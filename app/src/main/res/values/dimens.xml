@@ -9,11 +9,8 @@
     <dimen name="margin_top">4dp</dimen>
     <dimen name="margin_bottom">4dp</dimen>
 
-
-    <dimen name="title">17dp</dimen>
-    <dimen name="rating">15dip</dimen>
-    <dimen name="genre">13dip</dimen>
-    <dimen name="year">12dip</dimen>
+    <dimen name="text_size_medium">16sp</dimen>
+    <dimen name="empty_textview_padding">20dp</dimen>
 
     <dimen name="card_corner_radius">2dp</dimen>
     <dimen name="bigger_title_size">28sp</dimen>

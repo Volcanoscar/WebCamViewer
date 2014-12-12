@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="white">#ffffff</color>
+    <!-- Material design -->
+    <color name="primary">#558b2f</color>
+    <color name="primary_dark">#33691e</color>
+    <color name="accent">#558b2f</color>
+    <color name="hyperlink">#689f38</color>
+    <color name="ripple">@color/accent</color>
+
+    <color name="white">#ffffffff</color>
+    <color name="yellow">#ffeb3b</color>
 
 </resources>
