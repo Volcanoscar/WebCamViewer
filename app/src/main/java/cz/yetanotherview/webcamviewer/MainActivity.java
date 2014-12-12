@@ -21,6 +21,7 @@ package cz.yetanotherview.webcamviewer;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -31,6 +32,7 @@ import java.util.List;
 
 import cz.yetanotherview.webcamviewer.actions.AddWebcam;
 import cz.yetanotherview.webcamviewer.actions.ModifyWebcam;
+import cz.yetanotherview.webcamviewer.fullscreen.FullScreenImage;
 import cz.yetanotherview.webcamviewer.helper.RecyclerItemClickListener;
 import cz.yetanotherview.webcamviewer.adapter.WebCamAdapter;
 import cz.yetanotherview.webcamviewer.db.DatabaseHelper;
@@ -55,8 +57,8 @@ public class MainActivity extends ActionBarActivity {
         mEmptyView = findViewById(R.id.empty);
 
         mLayoutManager = new LinearLayoutManager(this);
-        //layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         db = new DatabaseHelper(getApplicationContext());
         List<Webcam> allWebCams = db.getAllWebCams();
@@ -75,19 +77,21 @@ public class MainActivity extends ActionBarActivity {
         mRecyclerView.setAdapter(mAdapter);
         checkAdapterIsEmpty();
 
-        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(), mRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(),
+                        mRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
                     @Override
                     public void onItemClick(View view, int position) {
-                        // do whatever
+                        Webcam webcam = (Webcam) mAdapter.getItem(position);
+                        Intent fullScreenIntent = new Intent(getApplicationContext(), FullScreenImage.class);
+                        fullScreenIntent.putExtra("url", webcam.getUrl());
+                        startActivity(fullScreenIntent);
                     }
                     @Override
                     public void onItemLongClick(View view, int position)
                     {
                         Webcam webcam = (Webcam) mAdapter.getItem(position);
-                        long id = webcam.getId();
-
                         Intent modify_intent = new Intent(getApplicationContext(), ModifyWebcam.class);
-                        modify_intent.putExtra("id", id);
+                        modify_intent.putExtra("id", webcam.getId());
                         startActivity(modify_intent);
                     }
                 })
