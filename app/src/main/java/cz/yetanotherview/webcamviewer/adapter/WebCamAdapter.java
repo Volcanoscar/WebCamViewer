@@ -89,9 +89,14 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
         return null;
     }
 
-    public void addItem(int position, String name, String url, int pos, int status) {
-        webcamItems.add(position, new Webcam(name,url,pos,status));
+    public void addItem(int position, Webcam webcam) {
+        webcamItems.add(position, webcam);
         notifyItemInserted(position);
+    }
+
+    public void modifyItem(int position, Webcam webcam) {
+        webcamItems.set(position, webcam);
+        notifyItemChanged(position);
     }
 
     public void removeItem(Webcam item) {

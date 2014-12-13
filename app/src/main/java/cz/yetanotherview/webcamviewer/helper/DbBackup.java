@@ -28,8 +28,7 @@ import android.os.ParcelFileDescriptor;
 import java.io.File;
 import java.io.IOException;
 
-import cz.yetanotherview.webcamviewer.actions.AddDialog;
-import cz.yetanotherview.webcamviewer.actions.EditDialog;
+import cz.yetanotherview.webcamviewer.MainActivity;
 import cz.yetanotherview.webcamviewer.db.DatabaseHelper;
 
 public class DbBackup extends BackupAgentHelper {
@@ -58,12 +57,10 @@ public class DbBackup extends BackupAgentHelper {
     public void onBackup(ParcelFileDescriptor oldState, BackupDataOutput data,
                          ParcelFileDescriptor newState) throws IOException {
         // Hold the lock while the FileBackupHelper performs backup
-        synchronized (AddDialog.sDataLock) {
+        synchronized (MainActivity.sDataLock) {
             super.onBackup(oldState, data, newState);
         }
-        synchronized (EditDialog.sDataLock) {
-            super.onBackup(oldState, data, newState);
-        }
+
 //        synchronized (CardsFragment.sDataLock) {
 //            super.onBackup(oldState, data, newState);
 //        }
@@ -73,12 +70,10 @@ public class DbBackup extends BackupAgentHelper {
     public void onRestore(BackupDataInput data, int appVersionCode,
                           ParcelFileDescriptor newState) throws IOException {
         // Hold the lock while the FileBackupHelper restores the file
-        synchronized (AddDialog.sDataLock) {
+        synchronized (MainActivity.sDataLock) {
             super.onRestore(data, appVersionCode, newState);
         }
-        synchronized (EditDialog.sDataLock) {
-            super.onRestore(data, appVersionCode, newState);
-        }
+
 //        synchronized (CardsFragment.sDataLock) {
 //            super.onRestore(data, appVersionCode, newState);
 //        }

@@ -20,7 +20,6 @@ package cz.yetanotherview.webcamviewer.actions;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.backup.BackupManager;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -33,17 +32,12 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import cz.yetanotherview.webcamviewer.R;
-import cz.yetanotherview.webcamviewer.db.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.helper.WebCamListener;
-import cz.yetanotherview.webcamviewer.model.Webcam;
 
 /**
  * Edit dialog fragment
  */
 public class EditDialog extends DialogFragment {
-
-    // Object for intrinsic lock
-    public static final Object sDataLock = new Object();
 
     private EditText mWebcamName;
     private EditText mWebcamUrl;
@@ -52,14 +46,13 @@ public class EditDialog extends DialogFragment {
     private WebCamListener mOnAddListener;
     private View positiveAction;
 
-    private Webcam webcam;
     private long id;
     private String mainHeader;
     private String resourceThumb;
+    private int pos;
+    private int status;
 
     private int position;
-
-    private DatabaseHelper db;
 
     public EditDialog() {
     }
@@ -84,13 +77,11 @@ public class EditDialog extends DialogFragment {
 
         Bundle bundle = this.getArguments();
         id = bundle.getLong("id", 0);
+        mainHeader = bundle.getString("name", "");
+        resourceThumb = bundle.getString("url", "");
+        pos = bundle.getInt("pos", 0);
+        status = bundle.getInt("status", 0);
         position = bundle.getInt("position", 0);
-
-        db = new DatabaseHelper(getActivity().getApplicationContext());
-        webcam = db.getWebcam(id);
-
-        mainHeader = webcam.getName();
-        resourceThumb = webcam.getUrl();
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
 
@@ -103,8 +94,14 @@ public class EditDialog extends DialogFragment {
                 .callback(new MaterialDialog.FullCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        editWebCam();
-                        notifyWebCamEdited();
+                        if (mOnAddListener != null)
+                            mOnAddListener.webcamEdited(
+                                    id,
+                                    mWebcamName.getText().toString().trim(),
+                                    mWebcamUrl.getText().toString().trim(),
+                                    pos,
+                                    status,
+                                    position);
                     }
 
                     @Override
@@ -113,7 +110,8 @@ public class EditDialog extends DialogFragment {
 
                     @Override
                     public void onNeutral(MaterialDialog dialog) {
-                        notifyWebCamDeleted(id,position);
+                        if (mOnAddListener != null)
+                            mOnAddListener.webcamDeleted(id,position);
                     }
                 }).build();
 
@@ -160,26 +158,5 @@ public class EditDialog extends DialogFragment {
         positiveAction.setEnabled(false);
 
         return dialog;
-    }
-
-    private void notifyWebCamEdited() {
-        if (mOnAddListener != null)
-            mOnAddListener.webcamEdited();
-    }
-
-    private void notifyWebCamDeleted(long id, int position) {
-        if (mOnAddListener != null)
-            mOnAddListener.webcamDeleted(id,position);
-    }
-
-    private void editWebCam() {
-        synchronized (EditDialog.sDataLock) {
-            webcam.setName(mWebcamName.getText().toString());
-            webcam.setUrl(mWebcamUrl.getText().toString());
-            db.updateWebCam(webcam);
-            db.closeDB();
-        }
-        BackupManager backupManager = new BackupManager(getActivity());
-        backupManager.dataChanged();
     }
 }

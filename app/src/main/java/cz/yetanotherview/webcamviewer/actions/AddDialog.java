@@ -20,7 +20,6 @@ package cz.yetanotherview.webcamviewer.actions;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.backup.BackupManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -34,21 +33,13 @@ import android.widget.Spinner;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import java.util.Random;
-
 import cz.yetanotherview.webcamviewer.R;
-import cz.yetanotherview.webcamviewer.db.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.helper.WebCamListener;
-import cz.yetanotherview.webcamviewer.model.Category;
-import cz.yetanotherview.webcamviewer.model.Webcam;
 
 /**
  * Input dialog fragment
  */
 public class AddDialog extends DialogFragment {
-
-    // Object for intrinsic lock
-    public static final Object sDataLock = new Object();
 
     private EditText mWebcamName;
     private EditText mWebcamUrl;
@@ -56,8 +47,6 @@ public class AddDialog extends DialogFragment {
     private ArrayAdapter<CharSequence> categoryAdapter;
     private WebCamListener mOnAddListener;
     private View positiveAction;
-
-    private DatabaseHelper db;
 
     public AddDialog() {
     }
@@ -82,8 +71,6 @@ public class AddDialog extends DialogFragment {
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
 
-        db = new DatabaseHelper(getActivity().getApplicationContext());
-
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.input_dialog_title)
                 .customView(view)
@@ -93,8 +80,12 @@ public class AddDialog extends DialogFragment {
                 .callback(new MaterialDialog.FullCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        insertNewWebCam();
-                        notifyWebCamAdded();
+                        if (mOnAddListener != null)
+                            mOnAddListener.webcamAdded(
+                                    mWebcamName.getText().toString().trim(),
+                                    mWebcamUrl.getText().toString().trim(),
+                                    0,
+                                    0);
                     }
 
                     @Override
@@ -138,29 +129,4 @@ public class AddDialog extends DialogFragment {
 
         return dialog;
     }
-
-    private void notifyWebCamAdded() {
-        if (mOnAddListener != null)
-            mOnAddListener.webcamAdded();
-    }
-
-    private void insertNewWebCam() {
-        synchronized (AddDialog.sDataLock) {
-
-            //ToDo: nenechávat takto, i když pozicování ještě nebude hotové
-            Random r = new Random();
-            int pos = r.nextInt(10000);
-
-            db.createWebCam(new Webcam(
-                    mWebcamName.getText().toString().trim(),
-                    mWebcamUrl.getText().toString().trim(),
-                    pos,
-                    0),
-                    new long[]{db.createCategory(new Category(""))});
-            db.closeDB();
-        }
-        BackupManager backupManager = new BackupManager(getActivity());
-        backupManager.dataChanged();
-    }
-
 }

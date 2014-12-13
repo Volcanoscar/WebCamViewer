@@ -19,7 +19,7 @@
 package cz.yetanotherview.webcamviewer.helper;
 
 public interface WebCamListener {
-    void webcamAdded();
-    void webcamEdited();
+    void webcamAdded(String name, String url, int pos, int status);
+    void webcamEdited(long id, String name, String url, int pos, int status, int position);
     void webcamDeleted(long id, int position);
 }
