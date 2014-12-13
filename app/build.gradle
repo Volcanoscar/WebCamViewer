@@ -26,4 +26,6 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:+'
     compile 'com.squareup.picasso:picasso:+'
     compile 'com.melnykov:floatingactionbutton:+'
+    compile 'com.afollestad:material-dialogs:+'
+    compile 'com.nispok:snackbar:+'
 }

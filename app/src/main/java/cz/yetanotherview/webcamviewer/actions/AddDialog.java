@@ -1,0 +1,166 @@
+/*
+* ******************************************************************************
+* Copyright (c) 2013-2014 Tomas Valenta.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* *****************************************************************************
+*/
+
+package cz.yetanotherview.webcamviewer.actions;
+
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.backup.BackupManager;
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
+
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+
+import java.util.Random;
+
+import cz.yetanotherview.webcamviewer.R;
+import cz.yetanotherview.webcamviewer.db.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.helper.WebCamListener;
+import cz.yetanotherview.webcamviewer.model.Category;
+import cz.yetanotherview.webcamviewer.model.Webcam;
+
+/**
+ * Input dialog fragment
+ */
+public class AddDialog extends DialogFragment {
+
+    // Object for intrinsic lock
+    public static final Object sDataLock = new Object();
+
+    private EditText mWebcamName;
+    private EditText mWebcamUrl;
+    private Spinner spinner;
+    private ArrayAdapter<CharSequence> categoryAdapter;
+    private WebCamListener mOnAddListener;
+    private View positiveAction;
+
+    private DatabaseHelper db;
+
+    public AddDialog() {
+    }
+
+    public static AddDialog newInstance(WebCamListener listener) {
+        AddDialog frag = new AddDialog();
+        frag.setOnAddListener(listener);
+        return frag;
+    }
+
+    public void setOnAddListener(WebCamListener onAddListener) {
+        mOnAddListener = onAddListener;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+        View view = getActivity().getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
+
+        db = new DatabaseHelper(getActivity().getApplicationContext());
+
+        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                .title(R.string.input_dialog_title)
+                .customView(view)
+                .positiveText(R.string.dialog_positive_text)
+                .negativeText(android.R.string.cancel)
+                .neutralText(R.string.how_to)
+                .callback(new MaterialDialog.FullCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        insertNewWebCam();
+                        notifyWebCamAdded();
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                    }
+
+                    @Override
+                    public void onNeutral(MaterialDialog dialog) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://youtu.be/ogypQGBQ66w"));
+                        startActivity(browserIntent);
+                    }
+                }).build();
+
+        mWebcamName = (EditText) view.findViewById(R.id.webcam_name);
+        mWebcamName.requestFocus();
+
+        mWebcamUrl = (EditText) view.findViewById(R.id.webcam_url);
+
+        spinner = (Spinner) view.findViewById(R.id.category_spinner);
+        categoryAdapter = ArrayAdapter.createFromResource(getActivity(),R.array.category_array, android.R.layout.simple_spinner_item);
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(categoryAdapter);
+
+        positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
+
+        mWebcamUrl.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                positiveAction.setEnabled(s.toString().trim().length() > 0);
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        dialog.show();
+        positiveAction.setEnabled(false);
+
+        return dialog;
+    }
+
+    private void notifyWebCamAdded() {
+        if (mOnAddListener != null)
+            mOnAddListener.webcamAdded();
+    }
+
+    private void insertNewWebCam() {
+        synchronized (AddDialog.sDataLock) {
+
+            //ToDo: nenechávat takto, i když pozicování ještě nebude hotové
+            Random r = new Random();
+            int pos = r.nextInt(10000);
+
+            db.createWebCam(new Webcam(
+                    mWebcamName.getText().toString().trim(),
+                    mWebcamUrl.getText().toString().trim(),
+                    pos,
+                    0),
+                    new long[]{db.createCategory(new Category(""))});
+            db.closeDB();
+        }
+        BackupManager backupManager = new BackupManager(getActivity());
+        backupManager.dataChanged();
+    }
+
+}

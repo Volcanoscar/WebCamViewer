@@ -50,6 +50,6 @@
             android:gravity="center"
             android:padding="@dimen/empty_textview_padding"
             android:textSize="@dimen/text_size_medium"
-            android:text="@string/empty_list_text" />
+            android:text="@string/empty_list_view" />
 
 </FrameLayout>

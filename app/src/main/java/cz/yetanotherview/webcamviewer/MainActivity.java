@@ -18,6 +18,7 @@
 
 package cz.yetanotherview.webcamviewer;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -27,23 +28,25 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 
 import com.melnykov.fab.FloatingActionButton;
+import com.nispok.snackbar.Snackbar;
 
 import java.util.List;
 
-import cz.yetanotherview.webcamviewer.actions.AddWebcam;
-import cz.yetanotherview.webcamviewer.actions.ModifyWebcam;
+import cz.yetanotherview.webcamviewer.actions.AddDialog;
+import cz.yetanotherview.webcamviewer.actions.EditDialog;
 import cz.yetanotherview.webcamviewer.fullscreen.FullScreenImage;
 import cz.yetanotherview.webcamviewer.helper.RecyclerItemClickListener;
 import cz.yetanotherview.webcamviewer.adapter.WebCamAdapter;
 import cz.yetanotherview.webcamviewer.db.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.helper.WebCamListener;
 import cz.yetanotherview.webcamviewer.model.Webcam;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements WebCamListener {
 
     private DatabaseHelper db;
+    private List<Webcam> allWebCams;
     private RecyclerView mRecyclerView;
     private View mEmptyView;
     private WebCamAdapter mAdapter;
@@ -55,28 +58,20 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.cardList);
-        mRecyclerView.setHasFixedSize(true);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.attachToRecyclerView(mRecyclerView);
-
-        ImageButton addButton = (ImageButton) findViewById(R.id.fab);
-        addButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent add_mem = new Intent(getApplicationContext(), AddWebcam.class);
-                startActivity(add_mem);
-            }
-        });
-
         mEmptyView = findViewById(R.id.empty);
 
+        init();
+        initFab();
+    }
+
+    private void init() {
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         db = new DatabaseHelper(getApplicationContext());
-        List<Webcam> allWebCams = db.getAllWebCams();
+        allWebCams = db.getAllWebCams();
         db.closeDB();
 
         mAdapter = new WebCamAdapter(allWebCams);
@@ -88,31 +83,34 @@ public class MainActivity extends ActionBarActivity {
             }
         });
 
-        //mAdapter.notifyDataSetChanged();
         mRecyclerView.setAdapter(mAdapter);
         checkAdapterIsEmpty();
 
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(),
-                        mRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        Webcam webcam = (Webcam) mAdapter.getItem(position);
-                        Intent fullScreenIntent = new Intent(getApplicationContext(), FullScreenImage.class);
-                        fullScreenIntent.putExtra("url", webcam.getUrl());
-                        startActivity(fullScreenIntent);
-                    }
-                    @Override
-                    public void onItemLongClick(View view, int position)
-                    {
-                        Webcam webcam = (Webcam) mAdapter.getItem(position);
-                        Intent modify_intent = new Intent(getApplicationContext(), ModifyWebcam.class);
-                        modify_intent.putExtra("id", webcam.getId());
-                        startActivity(modify_intent);
-                    }
-                })
+            mRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    showImageFullscreen(position);
+                }
+                @Override
+                public void onItemLongClick(View view, int position) {
+                    showEditDialog(position);
+                }
+            })
         );
-
     }
+
+    private void initFab() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.attachToRecyclerView(mRecyclerView);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showAddDialog();
+            }
+        });
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -140,6 +138,48 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
+    @Override
+    public void webcamAdded() {
+        webcamEdited();
+        mRecyclerView.smoothScrollToPosition(mAdapter.getItemCount() - 1);
+    }
+
+    @Override
+    public void webcamEdited() {
+        mAdapter.notifyDataSetChanged(); //ToDo: Not working
+        saveDone();
+    }
+
+    private void saveDone() {
+        Snackbar.with(getApplicationContext())
+                .text(R.string.dialog_positive_toast_message)
+                .actionLabel(R.string.dismiss)
+                .actionColor(getResources().getColor(R.color.yellow))
+                .show(this);
+    }
+
+    private void showImageFullscreen(int position) {
+        Webcam webcam = (Webcam) mAdapter.getItem(position);
+        Intent fullScreenIntent = new Intent(getApplicationContext(), FullScreenImage.class);
+        fullScreenIntent.putExtra("url", webcam.getUrl());
+        startActivity(fullScreenIntent);
+    }
+
+    private void showAddDialog() {
+        DialogFragment newFragment = AddDialog.newInstance(this);
+        newFragment.show(getFragmentManager(), "AddDialog");
+    }
+
+    private void showEditDialog(int position) {
+        DialogFragment newFragment = EditDialog.newInstance(this);
+        Webcam webcam = (Webcam) mAdapter.getItem(position);
+
+        Bundle bundle = new Bundle();
+        bundle.putLong("id", webcam.getId());
+        newFragment.setArguments(bundle);
+
+        newFragment.show(getFragmentManager(), "EditDialog");
+    }
 
 //    /**
 //     * Exports the cursor value to an excel sheet.
