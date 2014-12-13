@@ -21,4 +21,5 @@ package cz.yetanotherview.webcamviewer.helper;
 public interface WebCamListener {
     void webcamAdded();
     void webcamEdited();
+    void webcamDeleted(long id, int position);
 }

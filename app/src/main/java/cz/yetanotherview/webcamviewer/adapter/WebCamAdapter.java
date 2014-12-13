@@ -41,15 +41,6 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
     }
 
     @Override
-    public int getItemCount() {
-        return webcamItems.size();
-    }
-
-    public Object getItem(int location) {
-        return webcamItems.get(location);
-    }
-
-    @Override
     public void onBindViewHolder(WebCamViewHolder webcamViewHolder, int i) {
         Webcam webcam = webcamItems.get(i);
         webcamViewHolder.vName.setText(webcam.getName());
@@ -81,5 +72,31 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
             vName = (TextView) itemLayoutView.findViewById(R.id.titleTextView);
             vImage = (ImageView) itemLayoutView.findViewById(R.id.imageView);
         }
+    }
+
+    @Override
+    public int getItemCount() {
+        return webcamItems.size();
+    }
+
+    public Object getItem(int location) {
+        return webcamItems.get(location);
+    }
+
+    public Webcam getItemAt(int position) {
+        if (position < webcamItems.size())
+            return webcamItems.get(position);
+        return null;
+    }
+
+    public void addItem(int position, String name, String url, int pos, int status) {
+        webcamItems.add(position, new Webcam(name,url,pos,status));
+        notifyItemInserted(position);
+    }
+
+    public void removeItem(Webcam item) {
+        int position = webcamItems.indexOf(item);
+        webcamItems.remove(position);
+        notifyItemRemoved(position);
     }
 }

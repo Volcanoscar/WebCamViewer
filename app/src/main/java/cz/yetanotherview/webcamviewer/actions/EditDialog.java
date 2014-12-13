@@ -57,6 +57,8 @@ public class EditDialog extends DialogFragment {
     private String mainHeader;
     private String resourceThumb;
 
+    private int position;
+
     private DatabaseHelper db;
 
     public EditDialog() {
@@ -82,6 +84,7 @@ public class EditDialog extends DialogFragment {
 
         Bundle bundle = this.getArguments();
         id = bundle.getLong("id", 0);
+        position = bundle.getInt("position", 0);
 
         db = new DatabaseHelper(getActivity().getApplicationContext());
         webcam = db.getWebcam(id);
@@ -110,9 +113,7 @@ public class EditDialog extends DialogFragment {
 
                     @Override
                     public void onNeutral(MaterialDialog dialog) {
-                        db.deleteWebCam(id);
-                        db.closeDB();
-                        //dismiss();
+                        notifyWebCamDeleted(id,position);
                     }
                 }).build();
 
@@ -164,6 +165,11 @@ public class EditDialog extends DialogFragment {
     private void notifyWebCamEdited() {
         if (mOnAddListener != null)
             mOnAddListener.webcamEdited();
+    }
+
+    private void notifyWebCamDeleted(long id, int position) {
+        if (mOnAddListener != null)
+            mOnAddListener.webcamDeleted(id,position);
     }
 
     private void editWebCam() {

@@ -56,18 +56,18 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.cardList);
         mEmptyView = findViewById(R.id.empty);
 
-        init();
+        initRecyclerView();
         initFab();
     }
 
-    private void init() {
+    private void initRecyclerView() {
         mLayoutManager = new LinearLayoutManager(this);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.cardList);
+        mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         db = new DatabaseHelper(getApplicationContext());
@@ -140,22 +140,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
 
     @Override
     public void webcamAdded() {
-        webcamEdited();
+
         mRecyclerView.smoothScrollToPosition(mAdapter.getItemCount() - 1);
-    }
-
-    @Override
-    public void webcamEdited() {
-        mAdapter.notifyDataSetChanged(); //ToDo: Not working
-        saveDone();
-    }
-
-    private void saveDone() {
-        Snackbar.with(getApplicationContext())
-                .text(R.string.dialog_positive_toast_message)
-                .actionLabel(R.string.dismiss)
-                .actionColor(getResources().getColor(R.color.yellow))
-                .show(this);
     }
 
     private void showImageFullscreen(int position) {
@@ -176,9 +162,43 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
 
         Bundle bundle = new Bundle();
         bundle.putLong("id", webcam.getId());
+        bundle.putInt("position",position);
         newFragment.setArguments(bundle);
 
         newFragment.show(getFragmentManager(), "EditDialog");
+    }
+
+    @Override
+    public void webcamEdited() {
+
+        saveDone();
+    }
+
+    @Override
+    public void webcamDeleted(long id, int position) {
+        db.deleteWebCam(id);
+        db.closeDB();
+
+        if (mAdapter != null && mAdapter.getItemCount() > 0) {
+            mAdapter.removeItem(mAdapter.getItemAt(position));
+        }
+        delDone();
+    }
+
+    private void saveDone() {
+        Snackbar.with(getApplicationContext())
+                .text(R.string.dialog_positive_toast_message)
+                .actionLabel(R.string.dismiss)
+                .actionColor(getResources().getColor(R.color.yellow))
+                .show(this);
+    }
+
+    private void delDone() {
+        Snackbar.with(getApplicationContext())
+                .text(R.string.action_deleted)
+                .actionLabel(R.string.dismiss)
+                .actionColor(getResources().getColor(R.color.yellow))
+                .show(this);
     }
 
 //    /**
