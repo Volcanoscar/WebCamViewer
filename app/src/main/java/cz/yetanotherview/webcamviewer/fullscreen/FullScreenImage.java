@@ -62,6 +62,7 @@ public class FullScreenImage extends Activity {
         Picasso.with(FullScreenImage.getAppContext())
                 .load(url)
                 .fit()
+                .skipMemoryCache()
                 //.centerInside()
                 .placeholder(R.drawable.animation)
                 .error(R.drawable.placeholder_error)

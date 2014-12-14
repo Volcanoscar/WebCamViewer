@@ -37,4 +37,17 @@ public class Utils {
         File file = new File(filePath);
         return file.delete();
     }
+
+    /**
+     * Delete Picasso Cache.
+     */
+    public static void deletePicassoCache(File cache) {
+        File picassoCache = new File (cache+"/picasso-cache");
+        if (picassoCache.isDirectory()) {
+            String[] children = picassoCache.list();
+            for (int i = 0; i < children.length; i++) {
+                new File(picassoCache, children[i]).delete();
+            }
+        }
+    }
 }

@@ -22,6 +22,8 @@ import android.app.DialogFragment;
 import android.app.backup.BackupManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -45,7 +47,7 @@ import cz.yetanotherview.webcamviewer.helper.WebCamListener;
 import cz.yetanotherview.webcamviewer.model.Category;
 import cz.yetanotherview.webcamviewer.model.Webcam;
 
-public class MainActivity extends ActionBarActivity implements WebCamListener {
+public class MainActivity extends ActionBarActivity implements WebCamListener, SwipeRefreshLayout.OnRefreshListener {
 
     // Object for intrinsic lock
     public static final Object sDataLock = new Object();
@@ -58,6 +60,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
     private WebCamAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    private SwipeRefreshLayout swipeLayout;
     private Toolbar toolbar;
 
     @Override
@@ -69,6 +72,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
         initToolbar();
         initRecyclerView();
         initFab();
+        initPullToRefresh();
+
     }
 
     private void initToolbar() {
@@ -148,6 +153,13 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
         });
     }
 
+    private void initPullToRefresh() {
+        // Pull To Refresh 1/2
+        swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+        swipeLayout.setOnRefreshListener(this);
+        swipeLayout.setColorSchemeResources(R.color.primary_dark);
+    }
+
     private void checkAdapterIsEmpty () {
         if (mAdapter.getItemCount() == 0) {
             mEmptyView.setVisibility(View.VISIBLE);
@@ -184,8 +196,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
     public void webcamAdded(Webcam wc) {
         synchronized (sDataLock) {
             wc.setId(
-                db.createWebCam(wc,
-                        new long[]{db.createCategory(new Category(""))})
+                    db.createWebCam(wc,
+                            new long[]{db.createCategory(new Category(""))})
             );
             db.closeDB();
         }
@@ -246,6 +258,29 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
                 .actionLabel(R.string.dismiss)
                 .actionColor(getResources().getColor(R.color.yellow))
                 .show(this);
+    }
+
+    private void refreshDone() {
+        Snackbar.with(getApplicationContext())
+                .text(R.string.refresh_done)
+                .actionLabel(R.string.dismiss)
+                .actionColor(getResources().getColor(R.color.yellow))
+                .show(this);
+    }
+
+    // Pull To Refresh 2/2
+    @Override
+    public void onRefresh() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                swipeLayout.setRefreshing(false);
+                //ToDo: Resfresh code
+                Utils.deletePicassoCache(getApplicationContext().getCacheDir());
+                mAdapter.notifyDataSetChanged();
+                refreshDone();
+            }
+        }, 600);
     }
 
 //    /**
