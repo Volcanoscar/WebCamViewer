@@ -16,7 +16,7 @@
 * *****************************************************************************
 */
 
-package cz.yetanotherview.webcamviewer.fullscreen;
+package cz.yetanotherview.webcamviewer.app.fullscreen;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,7 +28,7 @@ import android.view.View;
 
 import com.squareup.picasso.Picasso;
 
-import cz.yetanotherview.webcamviewer.R;
+import cz.yetanotherview.webcamviewer.app.R;
 
 public class FullScreenImage extends Activity {
 

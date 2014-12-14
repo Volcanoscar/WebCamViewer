@@ -16,10 +16,10 @@
 * *****************************************************************************
 */
 
-package cz.yetanotherview.webcamviewer.db;
+package cz.yetanotherview.webcamviewer.app.db;
 
-import cz.yetanotherview.webcamviewer.model.Category;
-import cz.yetanotherview.webcamviewer.model.Webcam;
+import cz.yetanotherview.webcamviewer.app.model.Category;
+import cz.yetanotherview.webcamviewer.app.model.Webcam;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

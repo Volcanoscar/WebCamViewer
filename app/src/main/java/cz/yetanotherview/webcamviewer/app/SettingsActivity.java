@@ -16,9 +16,8 @@
 * *****************************************************************************
 */
 
-package cz.yetanotherview.webcamviewer;
+package cz.yetanotherview.webcamviewer.app;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;

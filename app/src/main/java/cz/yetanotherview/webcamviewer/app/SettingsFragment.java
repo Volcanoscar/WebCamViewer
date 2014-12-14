@@ -16,11 +16,10 @@
 * *****************************************************************************
 */
 
-package cz.yetanotherview.webcamviewer;
+package cz.yetanotherview.webcamviewer.app;
 
 import android.app.backup.BackupManager;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -29,7 +28,6 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -44,7 +42,7 @@ import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 
-import cz.yetanotherview.webcamviewer.db.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.app.db.DatabaseHelper;
 
 public class SettingsFragment extends PreferenceFragment {
 
@@ -64,8 +62,6 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        Log.d("",currentDBPath); //ToDo
 
         // Load the preferences from an XML resource
         addPreferencesFromResource(R.xml.preferences);

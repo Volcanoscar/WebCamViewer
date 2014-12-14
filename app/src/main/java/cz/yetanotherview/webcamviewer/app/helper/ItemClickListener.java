@@ -16,7 +16,7 @@
 * *****************************************************************************
 */
 
-package cz.yetanotherview.webcamviewer.helper;
+package cz.yetanotherview.webcamviewer.app.helper;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;

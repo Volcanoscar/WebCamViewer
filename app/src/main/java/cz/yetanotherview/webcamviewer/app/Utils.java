@@ -16,7 +16,7 @@
 * *****************************************************************************
 */
 
-package cz.yetanotherview.webcamviewer;
+package cz.yetanotherview.webcamviewer.app;
 
 import android.util.Log;
 

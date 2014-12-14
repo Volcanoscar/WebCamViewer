@@ -16,7 +16,7 @@
 * *****************************************************************************
 */
 
-package cz.yetanotherview.webcamviewer;
+package cz.yetanotherview.webcamviewer.app;
 
 import android.app.DialogFragment;
 import android.app.backup.BackupManager;
@@ -51,15 +51,15 @@ import com.nispok.snackbar.Snackbar;
 
 import java.util.List;
 
-import cz.yetanotherview.webcamviewer.actions.AddDialog;
-import cz.yetanotherview.webcamviewer.actions.EditDialog;
-import cz.yetanotherview.webcamviewer.fullscreen.FullScreenImage;
-import cz.yetanotherview.webcamviewer.helper.ItemClickListener;
-import cz.yetanotherview.webcamviewer.adapter.WebCamAdapter;
-import cz.yetanotherview.webcamviewer.db.DatabaseHelper;
-import cz.yetanotherview.webcamviewer.helper.WebCamListener;
-import cz.yetanotherview.webcamviewer.model.Category;
-import cz.yetanotherview.webcamviewer.model.Webcam;
+import cz.yetanotherview.webcamviewer.app.actions.AddDialog;
+import cz.yetanotherview.webcamviewer.app.actions.EditDialog;
+import cz.yetanotherview.webcamviewer.app.fullscreen.FullScreenImage;
+import cz.yetanotherview.webcamviewer.app.helper.ItemClickListener;
+import cz.yetanotherview.webcamviewer.app.adapter.WebCamAdapter;
+import cz.yetanotherview.webcamviewer.app.db.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.app.helper.WebCamListener;
+import cz.yetanotherview.webcamviewer.app.model.Category;
+import cz.yetanotherview.webcamviewer.app.model.Webcam;
 
 public class MainActivity extends ActionBarActivity implements WebCamListener, SwipeRefreshLayout.OnRefreshListener {
 

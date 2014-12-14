@@ -16,7 +16,7 @@
 * *****************************************************************************
 */
 
-package cz.yetanotherview.webcamviewer.model;
+package cz.yetanotherview.webcamviewer.app.model;
 
 public class Webcam {
 

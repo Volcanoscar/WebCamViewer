@@ -16,7 +16,7 @@
 * *****************************************************************************
 */
 
-package cz.yetanotherview.webcamviewer.adapter;
+package cz.yetanotherview.webcamviewer.app.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -29,8 +29,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import cz.yetanotherview.webcamviewer.R;
-import cz.yetanotherview.webcamviewer.model.Webcam;
+import cz.yetanotherview.webcamviewer.app.R;
+import cz.yetanotherview.webcamviewer.app.model.Webcam;
 
 public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamViewHolder> {
 

@@ -1,4 +1,4 @@
-package cz.yetanotherview.webcamviewer.fullscreen;
+package cz.yetanotherview.webcamviewer.app.fullscreen;
 
 import android.content.Context;
 import android.content.res.Configuration;

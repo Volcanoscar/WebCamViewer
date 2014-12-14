@@ -16,9 +16,9 @@
 * *****************************************************************************
 */
 
-package cz.yetanotherview.webcamviewer.helper;
+package cz.yetanotherview.webcamviewer.app.helper;
 
-import cz.yetanotherview.webcamviewer.model.Webcam;
+import cz.yetanotherview.webcamviewer.app.model.Webcam;
 
 public interface WebCamListener {
     void webcamAdded(Webcam webcam);

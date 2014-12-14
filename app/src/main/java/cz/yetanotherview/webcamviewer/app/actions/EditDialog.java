@@ -16,7 +16,7 @@
 * *****************************************************************************
 */
 
-package cz.yetanotherview.webcamviewer.actions;
+package cz.yetanotherview.webcamviewer.app.actions;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
@@ -31,10 +31,10 @@ import android.widget.Spinner;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import cz.yetanotherview.webcamviewer.R;
-import cz.yetanotherview.webcamviewer.db.DatabaseHelper;
-import cz.yetanotherview.webcamviewer.helper.WebCamListener;
-import cz.yetanotherview.webcamviewer.model.Webcam;
+import cz.yetanotherview.webcamviewer.app.R;
+import cz.yetanotherview.webcamviewer.app.db.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.app.helper.WebCamListener;
+import cz.yetanotherview.webcamviewer.app.model.Webcam;
 
 /**
  * Edit dialog fragment

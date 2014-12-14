@@ -12,10 +12,8 @@
         For help with the translation into your language <a href="http://goo.gl/MUJqYZ">use this online tool</a>.<br>
         <br>
         <b>Many thanks to these open source tools:</b><br>
-        <b><a href="https://github.com/gabrielemariotti/cardslib">Cardslib</a></b><br>
-        <i>by Gabriele Mariotti</i><br>
-        <b><a href="https://github.com/square/picasso">Picasso</a></b><br>
-        <i>by Square, Inc.</i><br><br>
+        <b><a href="https://github.com/square/picasso">Picasso</a></b><i> by Square, Inc.</i><br><br>
+        <b>Many thanks to these translators:</b><br>
         <b>Also big thanks to </b><b><a href="https://plus.google.com/u/0/104896455725487013630">Radek Matouch</a></b> for some help + useful tips.
     ]]></string>
 
@@ -80,6 +78,7 @@
     <string name="new_category_name">Category Name</string>
     <string name="new_category_hint">New list</string>
     <string name="dismiss">DISMISS</string>
+    <string name="refresh">Refresh</string>
     <string-array name="category_array">
         <item>Default list</item>
     </string-array>

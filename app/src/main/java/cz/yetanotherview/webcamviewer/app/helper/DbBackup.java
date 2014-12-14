@@ -16,20 +16,19 @@
 * *****************************************************************************
 */
 
-package cz.yetanotherview.webcamviewer.helper;
+package cz.yetanotherview.webcamviewer.app.helper;
 
 import android.app.backup.BackupAgentHelper;
 import android.app.backup.BackupDataInput;
 import android.app.backup.BackupDataOutput;
 import android.app.backup.FileBackupHelper;
-import android.app.backup.SharedPreferencesBackupHelper;
 import android.os.ParcelFileDescriptor;
 
 import java.io.File;
 import java.io.IOException;
 
-import cz.yetanotherview.webcamviewer.MainActivity;
-import cz.yetanotherview.webcamviewer.db.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.app.MainActivity;
+import cz.yetanotherview.webcamviewer.app.db.DatabaseHelper;
 
 public class DbBackup extends BackupAgentHelper {
 
