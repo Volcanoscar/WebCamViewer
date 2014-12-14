@@ -263,16 +263,14 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
 
             //Settings
             case R.id.action_settings:
-//                Intent intent = new Intent();
-//                intent.setClass(MainActivity.this, SettingsActivity.class);
-//                startActivityForResult(intent, 0);
+                Intent intent = new Intent();
+                intent.setClass(MainActivity.this, SettingsActivity.class);
+                startActivityForResult(intent, 0);
                 break;
 
             //About
             case R.id.menu_about:
                 showAbout();
-//                Cursor cursor = dbManager.fetch();
-//                exportToExcel(cursor);
                 break;
             default:
                 break;
@@ -443,6 +441,11 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         mAdapter.notifyDataSetChanged();
         refreshDone();
     }
+
+//                Cursor cursor = dbManager.fetch();
+//                exportToExcel(cursor);
+
+
 
 //    /**
 //     * Exports the cursor value to an excel sheet.

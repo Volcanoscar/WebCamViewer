@@ -25,7 +25,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
+        <activity
+            android:name=".SettingsActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/action_settings"
+            android:parentActivityName=".MainActivity">
+        </activity>
         <activity
             android:name=".fullscreen.FullScreenImage"
             android:theme="@style/NoActionBar"

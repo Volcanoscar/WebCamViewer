@@ -1,0 +1,74 @@
+<!--
+~ *******************************************************************************
+~ Copyright (c) 2013-2014 Tomas Valenta
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+~ *****************************************************************************
+-->
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+            android:title="@string/pref_general"
+            android:key="pref_key_general_settings">
+
+    <CheckBoxPreference
+        android:key="pref_full_screen"
+        android:enabled="false"
+        android:checked="false"
+        android:title="@string/pref_full_screen"
+        android:summary="@string/pref_full_screen_summ" />
+
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/manage_categories"
+        android:key="pref_key_category_settings">
+
+        <Preference
+            android:key="pref_category_add"
+            android:title="@string/action_new"
+            android:summary="@string/add_new_summary" />
+        <Preference
+            android:key="pref_category_edit"
+            android:title="@string/action_edit"
+            android:summary="@string/edit_summary" />
+        <Preference
+            android:key="pref_category_delete"
+            android:title="@string/action_delete"
+            android:summary="@string/delete_summary" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:title="@string/pref_database"
+        android:key="pref_key_database_settings">
+
+        <Preference
+            android:key="pref_delete_all"
+            android:title="@string/pref_delete_all"
+            android:summary="@string/pref_delete_all_summ" />
+
+        <Preference
+            android:key="pref_import_from_ext"
+            android:title="@string/pref_import_from_ext"
+            android:summary="@string/pref_import_from_ext_summ" />
+
+        <Preference
+            android:key="pref_export_to_ext"
+            android:title="@string/pref_export_to_ext"
+            android:summary="@string/pref_export_to_ext_summ" />
+
+        <Preference
+            android:key="pref_clean_folder"
+            android:title="@string/pref_clean_folder"
+            android:summary="@string/pref_clean_folder_summ" />
+
+    </PreferenceCategory>
+</PreferenceScreen>
