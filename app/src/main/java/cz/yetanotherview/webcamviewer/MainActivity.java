@@ -26,6 +26,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,18 +54,54 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
     private DatabaseHelper db;
     private List<Webcam> allWebCams;
     private RecyclerView mRecyclerView;
-    private View mEmptyView;
     private WebCamAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mEmptyView = findViewById(R.id.empty);
 
+        initToolbar();
         initRecyclerView();
         initFab();
+    }
+
+    private void initToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        //Title and subtitle
+        toolbar.setTitle(R.string.app_name);
+        //toolbar.setSubtitle("Subtitle");
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+
+                switch (menuItem.getItemId()){
+                    case R.id.menu_about:
+                        //Cursor cursor = dbManager.fetch();
+                        //exportToExcel(cursor);
+                        return true;
+                }
+
+                return false;
+            }
+        });
+
+        //Navigation Icon
+        //toolbar.setNavigationIcon(R.drawable.ic_launcher);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Toast.makeText(ToolbarActivity.this,"Navigation",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Inflate a menu to be displayed in the toolbar
+        toolbar.inflateMenu(R.menu.toolbar_menu);
     }
 
     private void initRecyclerView() {
@@ -80,16 +117,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
         //db.closeDB(); ToDo...
 
         mAdapter = new WebCamAdapter(allWebCams);
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                checkAdapterIsEmpty();
-            }
-        });
-
         mRecyclerView.setAdapter(mAdapter);
-        checkAdapterIsEmpty();
 
         mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(),
             mRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
@@ -114,34 +142,6 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
                 showAddDialog();
             }
         });
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//        if (id == R.id.add_record) {
-//            Intent add_mem = new Intent(this, AddWebcam.class);
-//            startActivity(add_mem);
-//        }
-//        else if (id == R.id.export_records) {
-//            Cursor cursor = dbManager.fetch();
-//            exportToExcel(cursor);
-//        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    private void checkAdapterIsEmpty () {
-        if (mAdapter.getItemCount() == 0) {
-            mEmptyView.setVisibility(View.VISIBLE);
-        } else {
-            mEmptyView.setVisibility(View.GONE);
-        }
     }
 
     private void showImageFullscreen(int position) {

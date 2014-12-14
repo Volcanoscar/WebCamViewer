@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:appcompat="http://schemas.android.com/apk/res-auto">
+
+    <!-- Sort, should appear as action button -->
+    <item
+        android:icon="@drawable/ic_action_sort_by_size_white"
+        android:id="@+id/action_sort"
+        android:title="@string/action_sort"
+        appcompat:showAsAction="ifRoom" >
+        <menu>
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/sort_def"
+                    android:orderInCategory="1"
+                    appcompat:showAsAction="ifRoom"
+                    android:title="@string/action_sort_def" />
+
+                <item
+                    android:id="@+id/sort_asc"
+                    android:orderInCategory="2"
+                    appcompat:showAsAction="ifRoom"
+                    android:title="@string/action_sort_name" />
+
+                <item
+                    android:id="@+id/sort_desc"
+                    android:orderInCategory="3"
+                    appcompat:showAsAction="ifRoom"
+                    android:title="@string/action_sort_name_desc" />
+            </group>
+        </menu>
+    </item>
+
+    <item android:id="@+id/action_settings"
+        android:title="@string/action_settings"
+        android:orderInCategory="1"
+        appcompat:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_about"
+        android:title="@string/action_menu_about"
+        android:orderInCategory="2"
+        appcompat:showAsAction="never"/>
+
+</menu>
