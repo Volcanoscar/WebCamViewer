@@ -3,10 +3,16 @@
     xmlns:appcompat="http://schemas.android.com/apk/res-auto">
 
     <!-- Sort, should appear as action button -->
+    <item android:icon="@drawable/ic_action_refresh"
+        android:id="@+id/action_refresh"
+        android:title="@string/refresh"
+        android:orderInCategory="1"
+        appcompat:showAsAction="ifRoom" />
     <item
         android:icon="@drawable/ic_action_sort_by_size_white"
         android:id="@+id/action_sort"
         android:title="@string/action_sort"
+        android:orderInCategory="2"
         appcompat:showAsAction="ifRoom" >
         <menu>
             <group android:checkableBehavior="single">
@@ -33,13 +39,13 @@
 
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
-        android:orderInCategory="1"
+        android:orderInCategory="3"
         appcompat:showAsAction="never" />
 
     <item
         android:id="@+id/menu_about"
         android:title="@string/action_menu_about"
-        android:orderInCategory="2"
+        android:orderInCategory="4"
         appcompat:showAsAction="never"/>
 
 </menu>

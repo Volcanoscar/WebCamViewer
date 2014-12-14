@@ -21,17 +21,31 @@ package cz.yetanotherview.webcamviewer;
 import android.app.DialogFragment;
 import android.app.backup.BackupManager;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Spinner;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.melnykov.fab.FloatingActionButton;
 import com.nispok.snackbar.Snackbar;
 
@@ -60,8 +74,12 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private WebCamAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    private ListView mDrawerList;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
     private SwipeRefreshLayout swipeLayout;
-    private Toolbar toolbar;
+    private Spinner mSpinner;
+    private Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +88,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         mEmptyView = findViewById(R.id.empty);
 
         initToolbar();
+        initDrawer();
         initRecyclerView();
         initFab();
         initPullToRefresh();
@@ -77,38 +96,46 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     }
 
     private void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+    }
 
-        //Title and subtitle
-        toolbar.setTitle(R.string.app_name);
-        //toolbar.setSubtitle("Subtitle");
+    private void initDrawer() {
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
+        mDrawerList = (ListView) findViewById(R.id.drawer);
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-                switch (menuItem.getItemId()){
-                    case R.id.menu_about:
-                        //Cursor cursor = dbManager.fetch();
-                        //exportToExcel(cursor);
-                        return true;
-                }
+        if (mDrawerList != null) {
+            ArrayAdapter<CharSequence> mArrayAdapter = ArrayAdapter.createFromResource(this, R.array.category_array, android.R.layout.simple_list_item_1);
+            mDrawerList.setAdapter(mArrayAdapter);
 
-                return false;
+            mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        }
+
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                mToolbar, R.drawable.ic_action_content_new, R.drawable.ic_action_sort_by_size_white) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle("mTitle");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
-        });
 
-        //Navigation Icon
-        //toolbar.setNavigationIcon(R.drawable.ic_launcher);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Toast.makeText(ToolbarActivity.this,"Navigation",Toast.LENGTH_SHORT).show();
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle("mDrawerTitle");
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
-        });
+        };
 
-        // Inflate a menu to be displayed in the toolbar
-        toolbar.inflateMenu(R.menu.toolbar_menu);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
     }
 
     private void initRecyclerView() {
@@ -166,6 +193,137 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         } else {
             mEmptyView.setVisibility(View.GONE);
         }
+    }
+
+    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position,
+                                long id) {
+        }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        // Sync the toggle state after onRestoreInstanceState has occurred.
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        setItemChecked(menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        /*
+         * The action bar home/up should open or close the drawer.
+         * ActionBarDrawerToggle will take care of this.
+         */
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
+        switch (item.getItemId()) {
+
+            //Refresh
+            case R.id.action_refresh:
+                refresh();
+                break;
+
+            //Sort view
+            case R.id.sort_def:
+//                sortOrder = defSort;
+//                mCardsFragment.setSortOrder(sortOrder);
+//                item.setChecked(true);
+//                saveToPref();
+                break;
+            case R.id.sort_asc:
+//                sortOrder = ascSort;
+//                mCardsFragment.setSortOrder(sortOrder);
+//                item.setChecked(true);
+//                saveToPref();
+                break;
+            case R.id.sort_desc:
+//                sortOrder = descSort;
+//                mCardsFragment.setSortOrder(sortOrder);
+//                item.setChecked(true);
+//                saveToPref();
+                break;
+
+            //Settings
+            case R.id.action_settings:
+//                Intent intent = new Intent();
+//                intent.setClass(MainActivity.this, SettingsActivity.class);
+//                startActivityForResult(intent, 0);
+                break;
+
+            //About
+            case R.id.menu_about:
+                showAbout();
+//                Cursor cursor = dbManager.fetch();
+//                exportToExcel(cursor);
+                break;
+            default:
+                break;
+        }
+
+        // Handle your other action bar items...
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void showAbout() {
+        final String VERSION_UNAVAILABLE = "N/A";
+
+        // Get app version
+        PackageManager pm = getPackageManager();
+        String packageName = getPackageName();
+        String versionName;
+        try {
+            PackageInfo info = pm.getPackageInfo(packageName, 0);
+            versionName = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            versionName = VERSION_UNAVAILABLE;
+        }
+
+        new MaterialDialog.Builder(this)
+                .title(getString(R.string.app_name)+ " " + versionName)
+                .content(Html.fromHtml(getString(R.string.about_body)))
+                .contentLineSpacing(1)
+                .positiveText(android.R.string.ok)
+                .callback(new MaterialDialog.SimpleCallback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                    }
+                })
+                .icon(R.drawable.ic_launcher)
+                .build()
+                .show();
+    }
+
+    private void setItemChecked(Menu menu) {
+        MenuItem def = menu.findItem(R.id.sort_def);
+        MenuItem asc = menu.findItem(R.id.sort_asc);
+        MenuItem desc = menu.findItem(R.id.sort_desc);
+//        if (sortOrder.equals(defSort)) {
+//            def.setChecked(true);
+//        }
+//        else if (sortOrder.equals(ascSort)) {
+//            asc.setChecked(true);
+//        }
+//        else if (sortOrder.equals(descSort)) {
+//            desc.setChecked(true);
+//        }
     }
 
     private void showImageFullscreen(int position) {
@@ -275,12 +433,15 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
             @Override
             public void run() {
                 swipeLayout.setRefreshing(false);
-                //ToDo: Resfresh code
-                Utils.deletePicassoCache(getApplicationContext().getCacheDir());
-                mAdapter.notifyDataSetChanged();
-                refreshDone();
+                refresh();
             }
         }, 600);
+    }
+
+    private void refresh() {
+        Utils.deletePicassoCache(getApplicationContext().getCacheDir());
+        mAdapter.notifyDataSetChanged();
+        refreshDone();
     }
 
 //    /**
