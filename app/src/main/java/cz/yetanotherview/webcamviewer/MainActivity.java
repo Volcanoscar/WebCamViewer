@@ -21,8 +21,8 @@ package cz.yetanotherview.webcamviewer;
 import android.app.DialogFragment;
 import android.app.backup.BackupManager;
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -38,7 +38,7 @@ import java.util.List;
 import cz.yetanotherview.webcamviewer.actions.AddDialog;
 import cz.yetanotherview.webcamviewer.actions.EditDialog;
 import cz.yetanotherview.webcamviewer.fullscreen.FullScreenImage;
-import cz.yetanotherview.webcamviewer.helper.RecyclerItemClickListener;
+import cz.yetanotherview.webcamviewer.helper.ItemClickListener;
 import cz.yetanotherview.webcamviewer.adapter.WebCamAdapter;
 import cz.yetanotherview.webcamviewer.db.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.helper.WebCamListener;
@@ -51,8 +51,10 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
     public static final Object sDataLock = new Object();
 
     private DatabaseHelper db;
+    private Webcam webcam;
     private List<Webcam> allWebCams;
     private RecyclerView mRecyclerView;
+    private View mEmptyView;
     private WebCamAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
@@ -62,6 +64,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mEmptyView = findViewById(R.id.empty);
 
         initToolbar();
         initRecyclerView();
@@ -113,13 +116,15 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
 
         db = new DatabaseHelper(getApplicationContext());
         allWebCams = db.getAllWebCams();
-        //db.closeDB(); ToDo...
+        db.closeDB();
 
         mAdapter = new WebCamAdapter(allWebCams);
         mRecyclerView.setAdapter(mAdapter);
 
-        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(getApplicationContext(),
-            mRecyclerView, new RecyclerItemClickListener.OnItemClickListener() {
+        checkAdapterIsEmpty();
+
+        mRecyclerView.addOnItemTouchListener(new ItemClickListener(getApplicationContext(),
+            mRecyclerView, new ItemClickListener.OnItemClickListener() {
                 @Override
                 public void onItemClick(View view, int position) {
                     showImageFullscreen(position);
@@ -143,8 +148,16 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
         });
     }
 
+    private void checkAdapterIsEmpty () {
+        if (mAdapter.getItemCount() == 0) {
+            mEmptyView.setVisibility(View.VISIBLE);
+        } else {
+            mEmptyView.setVisibility(View.GONE);
+        }
+    }
+
     private void showImageFullscreen(int position) {
-        Webcam webcam = (Webcam) mAdapter.getItem(position);
+        webcam = (Webcam) mAdapter.getItem(position);
         Intent fullScreenIntent = new Intent(getApplicationContext(), FullScreenImage.class);
         fullScreenIntent.putExtra("url", webcam.getUrl());
         startActivity(fullScreenIntent);
@@ -157,57 +170,46 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
 
     private void showEditDialog(int position) {
         DialogFragment newFragment = EditDialog.newInstance(this);
-        Webcam webcam = (Webcam) mAdapter.getItem(position);
 
+        webcam = (Webcam) mAdapter.getItem(position);
         Bundle bundle = new Bundle();
         bundle.putLong("id", webcam.getId());
-        bundle.putString("name",webcam.getName());
-        bundle.putString("url",webcam.getUrl());
-        bundle.putInt("pos",webcam.getPosition());
-        bundle.putInt("status",webcam.getStatus());
-        bundle.putInt("position",position);
+        bundle.putInt("position", position);
         newFragment.setArguments(bundle);
 
         newFragment.show(getFragmentManager(), "EditDialog");
     }
 
     @Override
-    public void webcamAdded(String name, String url, int pos, int status) {
-        Webcam webcam = new Webcam(
-                name,
-                url,
-                pos,
-                status);
+    public void webcamAdded(Webcam wc) {
         synchronized (sDataLock) {
-            db.createWebCam(webcam,
-                    new long[]{db.createCategory(new Category(""))});
-            //db.closeDB(); ToDo...
+            wc.setId(
+                db.createWebCam(wc,
+                        new long[]{db.createCategory(new Category(""))})
+            );
+            db.closeDB();
         }
         BackupManager backupManager = new BackupManager(this);
         backupManager.dataChanged();
 
-        mAdapter.addItem(mAdapter.getItemCount(), webcam);
+        mAdapter.addItem(mAdapter.getItemCount(), wc);
         mRecyclerView.smoothScrollToPosition(mAdapter.getItemCount() - 1);
+
+        checkAdapterIsEmpty();
 
         saveDone();
     }
 
     @Override
-    public void webcamEdited(long id, String name, String url, int pos, int status, int position) {
-        Webcam webcam = db.getWebcam(id);
-        webcam.setName(name);
-        webcam.setUrl(url);
-        webcam.setPosition(pos);
-        webcam.setStatus(status);
-
+    public void webcamEdited(int position, Webcam wc) {
         synchronized (sDataLock) {
-            db.updateWebCam(webcam);
-            //db.closeDB();
+            db.updateWebCam(wc);
+            db.closeDB();
         }
         BackupManager backupManager = new BackupManager(this);
         backupManager.dataChanged();
 
-        mAdapter.modifyItem(position,webcam);
+        mAdapter.modifyItem(position,wc);
 
         saveDone();
     }
@@ -216,7 +218,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
     public void webcamDeleted(long id, int position) {
         synchronized (sDataLock) {
             db.deleteWebCam(id);
-            //db.closeDB(); ToDo...
+            db.closeDB();
         }
         BackupManager backupManager = new BackupManager(this);
         backupManager.dataChanged();
@@ -224,6 +226,9 @@ public class MainActivity extends ActionBarActivity implements WebCamListener {
         if (mAdapter != null && mAdapter.getItemCount() > 0) {
             mAdapter.removeItem(mAdapter.getItemAt(position));
         }
+
+        checkAdapterIsEmpty();
+
         delDone();
     }
 

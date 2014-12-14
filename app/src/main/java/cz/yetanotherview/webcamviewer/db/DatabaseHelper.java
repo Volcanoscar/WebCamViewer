@@ -287,10 +287,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Deleting a webcam
      */
-    public void deleteWebCam(long tado_id) {
+    public void deleteWebCam(long webcam_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_WEBCAM, KEY_ID + " = ?",
-                new String[] { String.valueOf(tado_id) });
+                new String[] { String.valueOf(webcam_id) });
     }
 
     // ------------------------ "categorys" table methods ----------------//

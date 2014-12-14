@@ -32,7 +32,9 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import cz.yetanotherview.webcamviewer.R;
+import cz.yetanotherview.webcamviewer.db.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.helper.WebCamListener;
+import cz.yetanotherview.webcamviewer.model.Webcam;
 
 /**
  * Edit dialog fragment
@@ -43,12 +45,12 @@ public class EditDialog extends DialogFragment {
     private EditText mWebcamUrl;
     private Spinner spinner;
     private ArrayAdapter<CharSequence> categoryAdapter;
+    private Webcam webcam;
     private WebCamListener mOnAddListener;
     private View positiveAction;
 
+    private DatabaseHelper db;
     private long id;
-    private String mainHeader;
-    private String resourceThumb;
     private int pos;
     private int status;
 
@@ -77,11 +79,13 @@ public class EditDialog extends DialogFragment {
 
         Bundle bundle = this.getArguments();
         id = bundle.getLong("id", 0);
-        mainHeader = bundle.getString("name", "");
-        resourceThumb = bundle.getString("url", "");
-        pos = bundle.getInt("pos", 0);
-        status = bundle.getInt("status", 0);
         position = bundle.getInt("position", 0);
+
+        db = new DatabaseHelper(getActivity());
+        webcam = db.getWebcam(id);
+
+        pos = webcam.getPosition();
+        status = webcam.getStatus();
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
 
@@ -94,14 +98,13 @@ public class EditDialog extends DialogFragment {
                 .callback(new MaterialDialog.FullCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
+
+                        webcam.setName(mWebcamName.getText().toString().trim());
+                        webcam.setUrl(mWebcamUrl.getText().toString().trim());
+                        webcam.setPosition(pos);
+                        webcam.setStatus(status);
                         if (mOnAddListener != null)
-                            mOnAddListener.webcamEdited(
-                                    id,
-                                    mWebcamName.getText().toString().trim(),
-                                    mWebcamUrl.getText().toString().trim(),
-                                    pos,
-                                    status,
-                                    position);
+                            mOnAddListener.webcamEdited(position,webcam);
                     }
 
                     @Override
@@ -116,11 +119,11 @@ public class EditDialog extends DialogFragment {
                 }).build();
 
         mWebcamName = (EditText) view.findViewById(R.id.webcam_name);
-        mWebcamName.setText(mainHeader);
+        mWebcamName.setText(webcam.getName());
         mWebcamName.requestFocus();
 
         mWebcamUrl = (EditText) view.findViewById(R.id.webcam_url);
-        mWebcamUrl.setText(resourceThumb);
+        mWebcamUrl.setText(webcam.getUrl());
 
         spinner = (Spinner) view.findViewById(R.id.category_spinner);
         categoryAdapter = ArrayAdapter.createFromResource(getActivity(),R.array.category_array, android.R.layout.simple_spinner_item);

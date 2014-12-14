@@ -35,6 +35,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 import cz.yetanotherview.webcamviewer.R;
 import cz.yetanotherview.webcamviewer.helper.WebCamListener;
+import cz.yetanotherview.webcamviewer.model.Webcam;
 
 /**
  * Input dialog fragment
@@ -45,6 +46,7 @@ public class AddDialog extends DialogFragment {
     private EditText mWebcamUrl;
     private Spinner spinner;
     private ArrayAdapter<CharSequence> categoryAdapter;
+    private Webcam webcam;
     private WebCamListener mOnAddListener;
     private View positiveAction;
 
@@ -80,12 +82,13 @@ public class AddDialog extends DialogFragment {
                 .callback(new MaterialDialog.FullCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
+                        webcam = new Webcam(
+                                mWebcamName.getText().toString().trim(),
+                                mWebcamUrl.getText().toString().trim(),
+                                0,
+                                0);
                         if (mOnAddListener != null)
-                            mOnAddListener.webcamAdded(
-                                    mWebcamName.getText().toString().trim(),
-                                    mWebcamUrl.getText().toString().trim(),
-                                    0,
-                                    0);
+                            mOnAddListener.webcamAdded(webcam);
                     }
 
                     @Override

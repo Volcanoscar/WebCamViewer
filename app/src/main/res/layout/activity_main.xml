@@ -58,5 +58,14 @@
                     fab:fab_colorPressed="@color/primary_dark"
                     fab:fab_colorRipple="@color/ripple" />
 
+            <TextView
+                android:id="@+id/empty"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:padding="@dimen/empty_textview_padding"
+                android:textSize="@dimen/text_size_medium"
+                android:text="@string/empty_list_view" />
+
         </FrameLayout>
 </LinearLayout>

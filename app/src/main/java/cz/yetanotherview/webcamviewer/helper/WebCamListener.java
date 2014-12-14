@@ -18,8 +18,10 @@
 
 package cz.yetanotherview.webcamviewer.helper;
 
+import cz.yetanotherview.webcamviewer.model.Webcam;
+
 public interface WebCamListener {
-    void webcamAdded(String name, String url, int pos, int status);
-    void webcamEdited(long id, String name, String url, int pos, int status, int position);
+    void webcamAdded(Webcam webcam);
+    void webcamEdited(int position, Webcam webcam);
     void webcamDeleted(long id, int position);
 }

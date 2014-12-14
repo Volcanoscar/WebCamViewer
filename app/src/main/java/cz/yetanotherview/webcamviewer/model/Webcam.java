@@ -20,7 +20,7 @@ package cz.yetanotherview.webcamviewer.model;
 
 public class Webcam {
 
-    int id;
+    long id;
     String name;
     String url;
     int position;
@@ -38,7 +38,7 @@ public class Webcam {
         this.status = status;
     }
 
-    public Webcam(int id, String name, String url, int position, int status) {
+    public Webcam(long id, String name, String url, int position, int status) {
         this.id = id;
         this.name = name;
         this.url = url;
@@ -47,7 +47,7 @@ public class Webcam {
     }
 
     // setters
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
