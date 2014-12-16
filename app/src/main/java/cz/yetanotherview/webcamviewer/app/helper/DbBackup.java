@@ -22,12 +22,14 @@ import android.app.backup.BackupAgentHelper;
 import android.app.backup.BackupDataInput;
 import android.app.backup.BackupDataOutput;
 import android.app.backup.FileBackupHelper;
+import android.app.backup.SharedPreferencesBackupHelper;
 import android.os.ParcelFileDescriptor;
 
 import java.io.File;
 import java.io.IOException;
 
 import cz.yetanotherview.webcamviewer.app.MainActivity;
+import cz.yetanotherview.webcamviewer.app.SettingsFragment;
 import cz.yetanotherview.webcamviewer.app.db.DatabaseHelper;
 
 public class DbBackup extends BackupAgentHelper {
@@ -42,8 +44,8 @@ public class DbBackup extends BackupAgentHelper {
     public void onCreate(){
         FileBackupHelper filehelper = new FileBackupHelper(this, DB_NAME);
         addHelper(FILES_BACKUP_KEY, filehelper);
-//        SharedPreferencesBackupHelper preferenceshelper = new SharedPreferencesBackupHelper(this, PREFS);
-//        addHelper(PREFS_BACKUP_KEY, preferenceshelper);
+        SharedPreferencesBackupHelper preferenceshelper = new SharedPreferencesBackupHelper(this, PREFS);
+        addHelper(PREFS_BACKUP_KEY, preferenceshelper);
     }
 
     @Override
@@ -60,9 +62,9 @@ public class DbBackup extends BackupAgentHelper {
             super.onBackup(oldState, data, newState);
         }
 
-//        synchronized (CardsFragment.sDataLock) {
-//            super.onBackup(oldState, data, newState);
-//        }
+        synchronized (SettingsFragment.sDataLock) {
+            super.onBackup(oldState, data, newState);
+        }
     }
 
     @Override
@@ -73,9 +75,9 @@ public class DbBackup extends BackupAgentHelper {
             super.onRestore(data, appVersionCode, newState);
         }
 
-//        synchronized (CardsFragment.sDataLock) {
-//            super.onRestore(data, appVersionCode, newState);
-//        }
+        synchronized (SettingsFragment.sDataLock) {
+            super.onRestore(data, appVersionCode, newState);
+        }
     }
 
 }

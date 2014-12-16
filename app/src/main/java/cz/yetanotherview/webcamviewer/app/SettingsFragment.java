@@ -19,7 +19,7 @@
 package cz.yetanotherview.webcamviewer.app;
 
 import android.app.backup.BackupManager;
-import android.content.ContentResolver;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -31,18 +31,18 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.nispok.snackbar.Snackbar;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
+import java.util.List;
 
 import cz.yetanotherview.webcamviewer.app.db.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.app.model.Category;
 
 public class SettingsFragment extends PreferenceFragment {
 
@@ -51,13 +51,14 @@ public class SettingsFragment extends PreferenceFragment {
 
     private String currentDBPath = "/data/" + "cz.yetanotherview.webcamviewer.app"
             + "/databases/" + DatabaseHelper.DATABASE_NAME;
-    private String folderName = "/WebCamViewer";
     private String inputName;
     private String extension = ".wcv";
     private View positiveAction;
     private EditText input;
     private String[] items;
-    private ContentResolver resolver;
+
+    private DatabaseHelper db;
+    private SharedPreferences sharedPref;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,49 @@ public class SettingsFragment extends PreferenceFragment {
             getPreferenceScreen().findPreference("pref_full_screen").setEnabled(true);
         }
 
+        db = new DatabaseHelper(getActivity().getApplicationContext());
+
+        setZoom();
+
+        categoryAdd();
+        categoryEdit();
+        categoryDelete();
+
+        deleteAllWebCams();
+        importFromExt();
+        exportToExt();
+        cleanExtFolder();
+
+    }
+
+    private void setZoom() {
+        // Import from Ext OnPreferenceClickListener
+        Preference pref_zoom = findPreference("pref_zoom");
+        pref_zoom.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+
+                    sharedPref = getPreferenceManager().getSharedPreferences();
+                    float zoom = sharedPref.getFloat("pref_zoom", 2);
+                    int selected = Math.round(zoom);
+
+                    new MaterialDialog.Builder(getActivity())
+                            .title(R.string.choose_title)
+                            .positiveText(android.R.string.ok)
+                            .items(new CharSequence[]{"No zoom","2x","3x","4x"})
+                            .itemsCallbackSingleChoice(selected-1, new MaterialDialog.ListCallback() {
+                                @Override
+                                public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                    sharedPref.edit().putFloat("pref_zoom", which+1).apply();
+                                }
+                            })
+                            .show();
+
+                return true;
+            }
+        });
+    }
+
+    private void categoryAdd() {
         // Category Add OnPreferenceClickListener
         Preference pref_category_add = findPreference("pref_category_add");
         pref_category_add.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -87,13 +131,10 @@ public class SettingsFragment extends PreferenceFragment {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 inputName = input.getText().toString().trim();
-                                String inputNameClean = inputName.replaceAll("[^a-zA-Z0-9]+", "").replaceAll("\\s+", "").toLowerCase();
                                 synchronized (SettingsFragment.sDataLock) {
-//                                    ContentValues newValues = new ContentValues();
-//                                    newValues.put(CardCursorContract.CardCursor.KeyColumns.KEY_CATEGORY_NAME, inputName);
-//                                    newValues.put(CardCursorContract.CardCursor.KeyColumns.KEY_CATEGORY, inputNameClean);
-//                                    resolver = getActivity().getContentResolver();
-//                                    resolver.insert(CardCursorContract.CardCursor.CONTENT_URI2, newValues);
+                                    Category category = new Category(inputName);
+                                    db.createCategory(category);
+                                    db.closeDB();
                                 }
                                 BackupManager backupManager = new BackupManager(getActivity());
                                 backupManager.dataChanged();
@@ -135,54 +176,46 @@ public class SettingsFragment extends PreferenceFragment {
                 return true;
             }
         });
+    }
 
+    private void categoryEdit() {
         // Category Edit OnPreferenceClickListener
+    }
 
+    private void categoryDelete() {
         // Category Delete OnPreferenceClickListener
         Preference pref_category_delete = findPreference("pref_category_delete");
         pref_category_delete.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
 
+                List<Category> allCategorys = db.getAllCategorys();
 
-
-
-
-                resolver = getActivity().getContentResolver();
-//                String[] projection = { People._ID, People.NAME, People.NUMBER };
-//                String sa1 = "%A%"; // contains an "A"
-//                String name =  "Donald Duck' OR name = 'Mickey Mouse"; // notice the " and '
-//                Cursor c = resolver.query(People.CONTENT_URI, projection,
-//                        People.NAME + " = '" + name + "'",
-//                        new String[] { sa1 }, null);
-//
-//                String[] result = new String[c.getCount()];
-//                c.moveToFirst();
-//                for(int i = 0; i < c.getCount(); i++){
-//                    String row = c.getString(c.getColumnIndex(ReminderProvider.COLUMN_BODY));
-//                    //You can here manipulate a single string as you please
-//                    result[i] = row;
-//                    c.moveToNext();
-//                }
-
-
+                String[] items = new String[allCategorys.size()];
+                int count = 0;
+                for (Category category : allCategorys) {
+                    items[count] = category.getcategoryName();
+                    count++;
+                }
 
                 new MaterialDialog.Builder(getActivity())
                         .title(R.string.choose_title)
                         .positiveText(android.R.string.ok)
-                                //.items(result)
-                        .itemsCallbackMultiChoice(null,new MaterialDialog.ListCallbackMulti() {
+                        .items(items)
+                        .itemsCallbackMultiChoice(new Integer[]{}, new MaterialDialog.ListCallbackMulti() {
                             @Override
                             public void onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
                                 synchronized (SettingsFragment.sDataLock) {
 
+                                    StringBuilder str = new StringBuilder();
+                                    for (int i = 0; i < which.length; i++) {
+                                        str.append(which[i]);
+                                        str.append(": ");
+                                        str.append(text[i]);
+                                        str.append('\n');
+                                    }
+                                    Toast.makeText(getActivity().getApplicationContext(), str.toString(), Toast.LENGTH_LONG).show();
 
-
-
-
-//                                    resolver.delete(CardCursorContract.CardCursor.CONTENT_URI2, null, null);
-
-
-
+                                    //db.deleteCategory();
 
                                 }
                                 BackupManager backupManager = new BackupManager(getActivity());
@@ -195,13 +228,14 @@ public class SettingsFragment extends PreferenceFragment {
                                         .show(getActivity());
                             }
                         })
-                        .build()
                         .show();
 
                 return true;
             }
         });
+    }
 
+    private void deleteAllWebCams() {
         // Delete all OnPreferenceClickListener
         Preference pref_delete_all = findPreference("pref_delete_all");
         pref_delete_all.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -215,63 +249,27 @@ public class SettingsFragment extends PreferenceFragment {
                         .callback(new MaterialDialog.Callback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
-                                resolver = getActivity().getContentResolver();
-//                                resolver.delete(CardCursorContract.CardCursor.CONTENT_URI, null, null);
-
+                                db.deleteAllWebCams();
+                                db.closeDB();
                                 Snackbar.with(getActivity().getApplicationContext())
                                         .text(R.string.action_deleted)
                                         .actionLabel(R.string.dismiss)
                                         .actionColor(getResources().getColor(R.color.yellow))
                                         .show(getActivity());
                             }
+
                             @Override
                             public void onNegative(MaterialDialog dialog) {
                             }
                         })
-                        .build()
                         .show();
 
                 return true;
             }
         });
+    }
 
-        // Import from Ext OnPreferenceClickListener
-        Preference pref_import_from_ext = findPreference("pref_import_from_ext");
-        pref_import_from_ext.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-
-                File[] filesList = GetFiles(Environment.getExternalStorageDirectory().toString() + folderName);
-                ArrayList<String> fileNames = getFileNames(filesList);
-
-                if (fileNames != null) {
-                    items = fileNames.toArray(new String[fileNames.size()]);
-
-                    new MaterialDialog.Builder(getActivity())
-                            .title(R.string.choose_title)
-                            .positiveText(android.R.string.ok)
-                            .items(items)
-                            .itemsCallbackSingleChoice(0,new MaterialDialog.ListCallback() {
-                                @Override
-                                public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                    resolver = getActivity().getContentResolver();
-//                                    resolver.delete(CardCursorContract.CardCursor.CONTENT_URI, null, null);
-                                    inputName = (items[which]);
-                                    importDB(inputName);
-                                }
-                            })
-                            .build()
-                            .show();
-                }
-                else Snackbar.with(getActivity().getApplicationContext())
-                        .text(R.string.nothing_to_import)
-                        .actionLabel(R.string.dismiss)
-                        .actionColor(getResources().getColor(R.color.yellow))
-                        .show(getActivity());
-
-                return true;
-            }
-        });
-
+    private void exportToExt() {
         // Export to Ext OnPreferenceClickListener
         Preference pref_export_to_ext = findPreference("pref_export_to_ext");
         pref_export_to_ext.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -288,7 +286,7 @@ public class SettingsFragment extends PreferenceFragment {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 inputName = input.getText().toString().trim();
-                                exportDB(inputName + extension);
+//                                exportDB(inputName + extension);
                             }
 
                             @Override
@@ -301,7 +299,7 @@ public class SettingsFragment extends PreferenceFragment {
                 input.setHint(R.string.export_input_sample);
 
                 TextView message = (TextView) view.findViewById(R.id.message);
-                message.setText(getString(R.string.export_message) + "\n" + Environment.getExternalStorageDirectory().toString() + folderName + "\n");
+//                message.setText(getString(R.string.export_message) + "\n" + Environment.getExternalStorageDirectory().toString() + folderName + "\n");
 
                 positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
 
@@ -324,7 +322,47 @@ public class SettingsFragment extends PreferenceFragment {
                 return true;
             }
         });
+    }
 
+    private void importFromExt() {
+        // Import from Ext OnPreferenceClickListener
+        Preference pref_import_from_ext = findPreference("pref_import_from_ext");
+        pref_import_from_ext.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+
+                File[] filesList = GetFiles(Environment.getExternalStorageDirectory().toString() + Utils.folderWCV);
+                ArrayList<String> fileNames = getFileNames(filesList);
+
+                if (fileNames != null) {
+                    items = fileNames.toArray(new String[fileNames.size()]);
+
+                    new MaterialDialog.Builder(getActivity())
+                            .title(R.string.choose_title)
+                            .positiveText(android.R.string.ok)
+                            .items(items)
+                            .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
+                                @Override
+                                public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+
+//                                    resolver.delete(CardCursorContract.CardCursor.CONTENT_URI, null, null);
+                                    inputName = (items[which]);
+                                    //importDB(inputName);
+                                }
+                            })
+                            .show();
+                }
+                else Snackbar.with(getActivity().getApplicationContext())
+                        .text(R.string.nothing_to_import)
+                        .actionLabel(R.string.dismiss)
+                        .actionColor(getResources().getColor(R.color.yellow))
+                        .show(getActivity());
+
+                return true;
+            }
+        });
+    }
+
+    private void cleanExtFolder() {
         // Clean Folder OnPreferenceClickListener
         Preference pref_clean_folder = findPreference("pref_clean_folder");
         pref_clean_folder.setOnPreferenceClickListener(new OnPreferenceClickListener() {
@@ -338,20 +376,18 @@ public class SettingsFragment extends PreferenceFragment {
                         .callback(new MaterialDialog.Callback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
-                                File folder = new File(Environment.getExternalStorageDirectory().toString() + folderName);
-                                deleteRecursive(folder);
-
+                                Utils.cleanBackupFolder();
                                 Snackbar.with(getActivity().getApplicationContext())
                                         .text(R.string.action_deleted)
                                         .actionLabel(R.string.dismiss)
                                         .actionColor(getResources().getColor(R.color.yellow))
                                         .show(getActivity());
                             }
+
                             @Override
                             public void onNegative(MaterialDialog dialog) {
                             }
                         })
-                        .build()
                         .show();
 
                 return true;
@@ -375,78 +411,71 @@ public class SettingsFragment extends PreferenceFragment {
         return arrayFiles;
     }
 
-    private void deleteRecursive(File fileOrDirectory) {
-        if (fileOrDirectory.isDirectory())
-            for (File child : fileOrDirectory.listFiles())
-                deleteRecursive(child);
-        fileOrDirectory.delete();
-    }
+//    private void importDB(String backupDBPath) {
+//        try {
+//            File sd = Environment.getExternalStorageDirectory();
+//            File data = Environment.getDataDirectory();
+//            if (sd.canWrite()) {
+//                File backupDB = new File(data, currentDBPath);
+//                File currentDB = new File(sd + folderName, backupDBPath); // From SD directory.
+//
+//                FileChannel src = new FileInputStream(currentDB).getChannel();
+//                FileChannel dst = new FileOutputStream(backupDB).getChannel();
+//                dst.transferFrom(src, 0, src.size());
+//                src.close();
+//                dst.close();
+//
+//                Snackbar.with(getActivity().getApplicationContext())
+//                        .text(R.string.import_done)
+//                        .actionLabel(R.string.dismiss)
+//                        .actionColor(getResources().getColor(R.color.yellow))
+//                        .show(getActivity());
+//            }
+//        } catch (Exception e) {
+//            Snackbar.with(getActivity().getApplicationContext())
+//                    .text(R.string.import_failed)
+//                    .actionLabel(R.string.dismiss)
+//                    .actionColor(getResources().getColor(R.color.yellow))
+//                    .show(getActivity());
+//        }
+//    }
 
-    private void importDB(String backupDBPath) {
-        try {
-            File sd = Environment.getExternalStorageDirectory();
-            File data = Environment.getDataDirectory();
-            if (sd.canWrite()) {
-                File backupDB = new File(data, currentDBPath);
-                File currentDB = new File(sd + folderName, backupDBPath); // From SD directory.
-
-                FileChannel src = new FileInputStream(currentDB).getChannel();
-                FileChannel dst = new FileOutputStream(backupDB).getChannel();
-                dst.transferFrom(src, 0, src.size());
-                src.close();
-                dst.close();
-
-                Snackbar.with(getActivity().getApplicationContext())
-                        .text(R.string.import_done)
-                        .actionLabel(R.string.dismiss)
-                        .actionColor(getResources().getColor(R.color.yellow))
-                        .show(getActivity());
-            }
-        } catch (Exception e) {
-            Snackbar.with(getActivity().getApplicationContext())
-                    .text(R.string.import_failed)
-                    .actionLabel(R.string.dismiss)
-                    .actionColor(getResources().getColor(R.color.yellow))
-                    .show(getActivity());
-        }
-    }
-
-    private void exportDB(String backupDBPath) {
-
-        //creating a new folder for the database to be backuped to
-        File directory = new File(Environment.getExternalStorageDirectory() + folderName);
-
-        if (!directory.exists()) {
-            directory.mkdir();
-        }
-
-        try {
-            File sd = Environment.getExternalStorageDirectory();
-            File data = Environment.getDataDirectory();
-
-            if (sd.canWrite()) {
-                File currentDB = new File(data, currentDBPath);
-                File backupDB = new File(sd + folderName, backupDBPath);
-
-                FileChannel src = new FileInputStream(currentDB).getChannel();
-                FileChannel dst = new FileOutputStream(backupDB).getChannel();
-                dst.transferFrom(src, 0, src.size());
-                src.close();
-                dst.close();
-
-                Snackbar.with(getActivity().getApplicationContext())
-                        .text(R.string.export_done)
-                        .actionLabel(R.string.dismiss)
-                        .actionColor(getResources().getColor(R.color.yellow))
-                        .show(getActivity());
-            }
-        } catch (Exception e) {
-            Snackbar.with(getActivity().getApplicationContext())
-                    .text(R.string.export_failed)
-                    .actionLabel(R.string.dismiss)
-                    .actionColor(getResources().getColor(R.color.yellow))
-                    .show(getActivity());
-        }
-    }
+//    private void exportDB(String backupDBPath) {
+//
+//        //creating a new folder for the database to be backuped to
+//        File directory = new File(Environment.getExternalStorageDirectory() + folderName);
+//
+//        if (!directory.exists()) {
+//            directory.mkdir();
+//        }
+//
+//        try {
+//            File sd = Environment.getExternalStorageDirectory();
+//            File data = Environment.getDataDirectory();
+//
+//            if (sd.canWrite()) {
+//                File currentDB = new File(data, currentDBPath);
+//                File backupDB = new File(sd + folderName, backupDBPath);
+//
+//                FileChannel src = new FileInputStream(currentDB).getChannel();
+//                FileChannel dst = new FileOutputStream(backupDB).getChannel();
+//                dst.transferFrom(src, 0, src.size());
+//                src.close();
+//                dst.close();
+//
+//                Snackbar.with(getActivity().getApplicationContext())
+//                        .text(R.string.export_done)
+//                        .actionLabel(R.string.dismiss)
+//                        .actionColor(getResources().getColor(R.color.yellow))
+//                        .show(getActivity());
+//            }
+//        } catch (Exception e) {
+//            Snackbar.with(getActivity().getApplicationContext())
+//                    .text(R.string.export_failed)
+//                    .actionLabel(R.string.dismiss)
+//                    .actionColor(getResources().getColor(R.color.yellow))
+//                    .show(getActivity());
+//        }
+//    }
 
 }

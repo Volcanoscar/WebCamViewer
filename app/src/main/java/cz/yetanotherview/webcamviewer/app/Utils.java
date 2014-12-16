@@ -18,11 +18,14 @@
 
 package cz.yetanotherview.webcamviewer.app;
 
+import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
 
 public class Utils {
+
+    public static String folderWCV = "/WebCamViewer";
 
     public static boolean checkIfExist(String filePath) {
         Log.d("", "Check is running...");
@@ -42,12 +45,27 @@ public class Utils {
      * Delete Picasso Cache.
      */
     public static void deletePicassoCache(File cache) {
-        File picassoCache = new File (cache+"/picasso-cache");
+        String folderPicassoCache = "/picasso-cache";
+        File picassoCache = new File (cache + folderPicassoCache);
         if (picassoCache.isDirectory()) {
             String[] children = picassoCache.list();
-            for (int i = 0; i < children.length; i++) {
-                new File(picassoCache, children[i]).delete();
+            for (String aChildren : children) {
+                new File(picassoCache, aChildren).delete();
             }
         }
     }
+
+    /**
+     * Clean backup folder.
+     */
+    public static void cleanBackupFolder() {
+        File backupFolder = new File(Environment.getExternalStorageDirectory().toString() + folderWCV);
+        if (backupFolder.isDirectory()) {
+            String[] children = backupFolder.list();
+            for (String aChildren : children) {
+                new File(backupFolder, aChildren).delete();
+            }
+        }
+    }
+
 }

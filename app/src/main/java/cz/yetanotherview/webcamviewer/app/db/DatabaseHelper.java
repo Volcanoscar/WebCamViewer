@@ -190,9 +190,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * getting all webcams
      * */
-    public List<Webcam> getAllWebCams() {
+    public List<Webcam> getAllWebCams(String orderby) {
         List<Webcam> webcams = new ArrayList<Webcam>();
-        String selectQuery = "SELECT  * FROM " + TABLE_WEBCAM;
+        String selectQuery = "SELECT * FROM " + TABLE_WEBCAM + " ORDER BY " + orderby;
 
         Log.d(LOG, selectQuery);
 
@@ -291,6 +291,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_WEBCAM, KEY_ID + " = ?",
                 new String[] { String.valueOf(webcam_id) });
+    }
+
+    /**
+     * Delete all webcams
+     */
+    public void deleteAllWebCams() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_WEBCAM, null, null);
     }
 
     // ------------------------ "categorys" table methods ----------------//

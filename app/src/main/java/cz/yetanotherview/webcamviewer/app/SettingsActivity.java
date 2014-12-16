@@ -18,6 +18,7 @@
 
 package cz.yetanotherview.webcamviewer.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
@@ -38,11 +39,10 @@ public class SettingsActivity extends ActionBarActivity {
                 .commit();
     }
 
-//    @Override
-//    public void onBackPressed(){
-//        Intent intent = new Intent(this,MainActivity.class);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//        startActivity(intent);
-//    }
-
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent(this,MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+    }
 }

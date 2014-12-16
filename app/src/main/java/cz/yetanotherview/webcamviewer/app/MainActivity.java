@@ -21,11 +21,14 @@ package cz.yetanotherview.webcamviewer.app;
 import android.app.DialogFragment;
 import android.app.backup.BackupManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -43,7 +46,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Spinner;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.melnykov.fab.FloatingActionButton;
@@ -78,14 +80,28 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
     private SwipeRefreshLayout swipeLayout;
-    private Spinner mSpinner;
     private Toolbar mToolbar;
+
+    private String sortOrder = "id ASC";
+    private float zoom;
+    private boolean FullScreen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // loading saved preferences
+        loadPref();
+
+        // Go FullScreen only on Kitkat and up
+        if (Build.VERSION.SDK_INT >= 19 && FullScreen) {
+            goFullScreen();
+        }
+
         setContentView(R.layout.activity_main);
         mEmptyView = findViewById(R.id.empty);
+
+        db = new DatabaseHelper(getApplicationContext());
 
         initToolbar();
         initDrawer();
@@ -146,8 +162,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        db = new DatabaseHelper(getApplicationContext());
-        allWebCams = db.getAllWebCams();
+        allWebCams = db.getAllWebCams(sortOrder);
         db.closeDB();
 
         mAdapter = new WebCamAdapter(allWebCams);
@@ -243,22 +258,19 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
 
             //Sort view
             case R.id.sort_def:
-//                sortOrder = defSort;
-//                mCardsFragment.setSortOrder(sortOrder);
-//                item.setChecked(true);
-//                saveToPref();
+                sortOrder = "id ASC";
+                reInitializeAdapter();
+                item.setChecked(true);
                 break;
             case R.id.sort_asc:
-//                sortOrder = ascSort;
-//                mCardsFragment.setSortOrder(sortOrder);
-//                item.setChecked(true);
-//                saveToPref();
+                sortOrder = "webcam_name COLLATE UNICODE";
+                reInitializeAdapter();
+                item.setChecked(true);
                 break;
             case R.id.sort_desc:
-//                sortOrder = descSort;
-//                mCardsFragment.setSortOrder(sortOrder);
-//                item.setChecked(true);
-//                saveToPref();
+                sortOrder = "webcam_name COLLATE UNICODE DESC";
+                reInitializeAdapter();
+                item.setChecked(true);
                 break;
 
             //Settings
@@ -280,6 +292,19 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         return super.onOptionsItemSelected(item);
     }
 
+    private void setItemChecked(Menu menu) {
+        MenuItem def = menu.findItem(R.id.sort_def);
+        def.setChecked(true);
+    }
+
+    private void reInitializeAdapter() {
+        allWebCams.clear();
+        allWebCams = db.getAllWebCams(sortOrder);
+        db.closeDB();
+        mAdapter = new WebCamAdapter(allWebCams);
+        mRecyclerView.swapAdapter(mAdapter, true);
+    }
+
     private void showAbout() {
         final String VERSION_UNAVAILABLE = "N/A";
 
@@ -295,7 +320,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         }
 
         new MaterialDialog.Builder(this)
-                .title(getString(R.string.app_name)+ " " + versionName)
+                .title(getString(R.string.app_name) + " " + versionName)
                 .content(Html.fromHtml(getString(R.string.about_body)))
                 .contentLineSpacing(1)
                 .positiveText(android.R.string.ok)
@@ -305,29 +330,14 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
                     }
                 })
                 .icon(R.drawable.ic_launcher)
-                .build()
                 .show();
-    }
-
-    private void setItemChecked(Menu menu) {
-        MenuItem def = menu.findItem(R.id.sort_def);
-        MenuItem asc = menu.findItem(R.id.sort_asc);
-        MenuItem desc = menu.findItem(R.id.sort_desc);
-//        if (sortOrder.equals(defSort)) {
-//            def.setChecked(true);
-//        }
-//        else if (sortOrder.equals(ascSort)) {
-//            asc.setChecked(true);
-//        }
-//        else if (sortOrder.equals(descSort)) {
-//            desc.setChecked(true);
-//        }
     }
 
     private void showImageFullscreen(int position) {
         webcam = (Webcam) mAdapter.getItem(position);
         Intent fullScreenIntent = new Intent(getApplicationContext(), FullScreenImage.class);
         fullScreenIntent.putExtra("url", webcam.getUrl());
+        fullScreenIntent.putExtra("zoom", zoom);
         startActivity(fullScreenIntent);
     }
 
@@ -441,6 +451,40 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         mAdapter.notifyDataSetChanged();
         refreshDone();
     }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus && FullScreen) {
+            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        }
+    }
+
+    private void goFullScreen() {
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+    private void loadPref(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        FullScreen = preferences.getBoolean("pref_full_screen", false);
+        zoom = preferences.getFloat("pref_zoom", 2);
+    }
+
+//    private void saveToPref(){
+//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        SharedPreferences.Editor editor = preferences.edit();
+//        //editor.putString("sort",sortOrder);
+//        editor.apply();
+//    }
+
 
 //                Cursor cursor = dbManager.fetch();
 //                exportToExcel(cursor);

@@ -4,5 +4,5 @@
     <dimen name="navdrawer_image_height">205dp</dimen>
 
     <!--  Card customization ***************************************************  -->
-    <dimen name="card_height">400dp</dimen>
+    <dimen name="card_height">380dp</dimen>
 </resources>

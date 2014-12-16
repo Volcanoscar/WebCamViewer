@@ -53,9 +53,10 @@ public class FullScreenImage extends Activity {
 
         Intent intent = getIntent();
         String url = intent.getExtras().getString("url");
+        float zoom = intent.getExtras().getFloat("zoom");
 
         TouchImageView imageView = new TouchImageView(this);
-        imageView.setMaxZoom(2f);
+        imageView.setMaxZoom(zoom);
         imageView.setBackgroundColor(getResources().getColor(R.color.white));
 
         //Picasso.with(FullScreenImage.getAppContext()).setIndicatorsEnabled(true);
