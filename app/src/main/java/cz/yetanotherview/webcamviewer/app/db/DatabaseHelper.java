@@ -320,9 +320,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * getting all categorys
+     * getting all categories
      * */
-    public List<Category> getAllCategorys() {
+    public List<Category> getAllCategories() {
         List<Category> categories = new ArrayList<Category>();
         String selectQuery = "SELECT  * FROM " + TABLE_CATEGORY;
 

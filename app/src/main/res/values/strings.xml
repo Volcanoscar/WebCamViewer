@@ -90,6 +90,7 @@
     <string name="pref_auto_refresh_summ">Enable or disable WebCam auto refreshing</string>
     <string name="auto_refresh_interval">Auto Refresh interval</string>
     <string name="auto_refresh_interval_summary">Enter auto refreshing interval in seconds</string>
+    <string name="image_description">WebCam image</string>
     <string-array name="category_array">
         <item>Default list</item>
     </string-array>

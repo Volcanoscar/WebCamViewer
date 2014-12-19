@@ -31,7 +31,6 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -56,6 +55,8 @@ public class SettingsFragment extends PreferenceFragment {
     private View positiveAction;
     private EditText input;
     private String[] items;
+    private List<Category> allCategories;
+    private Category category;
 
     private DatabaseHelper db;
     private SharedPreferences sharedPref;
@@ -250,6 +251,100 @@ public class SettingsFragment extends PreferenceFragment {
 
     private void categoryEdit() {
         // Category Edit OnPreferenceClickListener
+        Preference pref_category_edit = findPreference("pref_category_edit");
+        pref_category_edit.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+
+                allCategories = db.getAllCategories();
+
+                String[] items = new String[allCategories.size()];
+                int count = 0;
+                for (Category category : allCategories) {
+                    items[count] = category.getcategoryName();
+                    count++;
+                }
+
+                if (allCategories.size() > 0) {
+                    new MaterialDialog.Builder(getActivity())
+                            .title(R.string.choose_title)
+                            .positiveText(android.R.string.ok)
+                            .items(items)
+                            .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
+                                @Override
+                                public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+
+                                        Category editCategory = allCategories.get(which);
+                                        categoryEditDialog(editCategory);
+
+                                }
+                            })
+                            .show();
+                } else Snackbar.with(getActivity().getApplicationContext())
+                        .text("No categories found")
+                        .actionLabel(R.string.dismiss)
+                        .actionColor(getResources().getColor(R.color.yellow))
+                        .show(getActivity());
+                return true;
+            }
+        });
+    }
+
+    private void categoryEditDialog(Category editCategory) {
+
+        this.category = editCategory;
+
+        View view = getActivity().getLayoutInflater().inflate(R.layout.enter_name_dialog, null);
+
+        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                .title(R.string.new_category_name)
+                .customView(view)
+                .positiveText(R.string.dialog_positive_text)
+                .negativeText(android.R.string.cancel)
+                .callback(new MaterialDialog.Callback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        inputName = input.getText().toString().trim();
+                        synchronized (SettingsFragment.sDataLock) {
+                            category.setcategoryName(inputName);
+                            db.updateCategory(category);
+                            db.closeDB();
+                        }
+                        BackupManager backupManager = new BackupManager(getActivity());
+                        backupManager.dataChanged();
+
+                        Snackbar.with(getActivity().getApplicationContext())
+                                .text(R.string.dialog_positive_toast_message)
+                                .actionLabel(R.string.dismiss)
+                                .actionColor(getResources().getColor(R.color.yellow))
+                                .show(getActivity());
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                    }
+                }).build();
+
+        input = (EditText) view.findViewById(R.id.input_name);
+        input.requestFocus();
+        input.setText(category.getcategoryName());
+
+        positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
+
+        input.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                positiveAction.setEnabled(s.toString().trim().length() > 0);
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+
+        dialog.show();
+        positiveAction.setEnabled(false);
     }
 
     private void categoryDelete() {
@@ -258,48 +353,49 @@ public class SettingsFragment extends PreferenceFragment {
         pref_category_delete.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
 
-                List<Category> allCategorys = db.getAllCategorys();
+                allCategories = db.getAllCategories();
 
-                String[] items = new String[allCategorys.size()];
+                String[] items = new String[allCategories.size()];
                 int count = 0;
-                for (Category category : allCategorys) {
+                for (Category category : allCategories) {
                     items[count] = category.getcategoryName();
                     count++;
                 }
 
-                new MaterialDialog.Builder(getActivity())
-                        .title(R.string.choose_title)
-                        .positiveText(android.R.string.ok)
-                        .items(items)
-                        .itemsCallbackMultiChoice(new Integer[]{}, new MaterialDialog.ListCallbackMulti() {
-                            @Override
-                            public void onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
-                                synchronized (SettingsFragment.sDataLock) {
+                    if (allCategories.size() > 0) {
+                        new MaterialDialog.Builder(getActivity())
+                                .title(R.string.choose_title)
+                                .positiveText(android.R.string.ok)
+                                .items(items)
+                                .itemsCallbackMultiChoice(new Integer[]{}, new MaterialDialog.ListCallbackMulti() {
+                                    @Override
+                                    public void onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
+                                        synchronized (SettingsFragment.sDataLock) {
 
-                                    StringBuilder str = new StringBuilder();
-                                    for (int i = 0; i < which.length; i++) {
-                                        str.append(which[i]);
-                                        str.append(": ");
-                                        str.append(text[i]);
-                                        str.append('\n');
+                                            //Todo: Before check if category is not connected to webcams in webcam_category table
+                                            for (int i = 0; i < which.length; i++) {
+                                                Category deleteCategory = allCategories.get(i);
+                                                db.deleteCategory(deleteCategory,false);
+                                            }
+                                            db.closeDB();
+                                        }
+                                        BackupManager backupManager = new BackupManager(getActivity());
+                                        backupManager.dataChanged();
+
+                                        Snackbar.with(getActivity().getApplicationContext())
+                                                .text(R.string.action_deleted)
+                                                .actionLabel(R.string.dismiss)
+                                                .actionColor(getResources().getColor(R.color.yellow))
+                                                .show(getActivity());
                                     }
-                                    Toast.makeText(getActivity().getApplicationContext(), str.toString(), Toast.LENGTH_LONG).show();
-
-                                    //db.deleteCategory();
-
-                                }
-                                BackupManager backupManager = new BackupManager(getActivity());
-                                backupManager.dataChanged();
-
-                                Snackbar.with(getActivity().getApplicationContext())
-                                        .text(R.string.action_deleted)
-                                        .actionLabel(R.string.dismiss)
-                                        .actionColor(getResources().getColor(R.color.yellow))
-                                        .show(getActivity());
-                            }
-                        })
-                        .show();
-
+                                })
+                                .show();
+                    }
+                    else Snackbar.with(getActivity().getApplicationContext())
+                            .text("No categories found")
+                            .actionLabel(R.string.dismiss)
+                            .actionColor(getResources().getColor(R.color.yellow))
+                            .show(getActivity());
                 return true;
             }
         });

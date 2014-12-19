@@ -24,6 +24,8 @@
     <android.support.v7.widget.CardView
         xmlns:card_view="http://schemas.android.com/apk/res-auto"
         card_view:cardCornerRadius="@dimen/card_corner_radius"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
         style="@style/MainCardView">
 
         <RelativeLayout
@@ -34,9 +36,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
                 android:adjustViewBounds="true"
-                android:layout_alignParentLeft="true"
+                android:layout_centerHorizontal="true"
                 android:layout_alignParentTop="true"
-                android:id="@+id/imageView"/>
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:scaleType="centerCrop"
+                android:id="@+id/imageView"
+                android:contentDescription="@string/image_description" />
 
             <TextView
                 style="@style/CardTitle"
