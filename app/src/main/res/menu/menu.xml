@@ -48,4 +48,10 @@
         android:orderInCategory="4"
         appcompat:showAsAction="never"/>
 
+    <item
+        android:id="@+id/menu_help"
+        android:title="@string/action_menu_help"
+        android:orderInCategory="5"
+        appcompat:showAsAction="never"/>
+
 </menu>

@@ -28,6 +28,18 @@
         android:title="@string/pref_full_screen"
         android:summary="@string/pref_full_screen_summ" />
 
+    <CheckBoxPreference
+        android:key="pref_auto_refresh"
+        android:checked="false"
+        android:title="@string/pref_auto_refresh"
+        android:summary="@string/pref_auto_refresh_summ" />
+
+        <Preference
+            android:dependency="pref_auto_refresh"
+            android:key="pref_auto_refresh_interval"
+            android:title="@string/auto_refresh_interval"
+            android:summary="@string/auto_refresh_interval_summary" />
+
     <Preference
         android:key="pref_zoom"
         android:title="@string/pref_zoom"

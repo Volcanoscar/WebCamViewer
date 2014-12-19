@@ -52,6 +52,8 @@ import com.melnykov.fab.FloatingActionButton;
 import com.nispok.snackbar.Snackbar;
 
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import cz.yetanotherview.webcamviewer.app.actions.AddDialog;
 import cz.yetanotherview.webcamviewer.app.actions.EditDialog;
@@ -85,6 +87,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private String sortOrder = "id ASC";
     private float zoom;
     private boolean FullScreen;
+    private boolean AutoRefresh;
+    private int autoRefreshinterval;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +96,11 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
 
         // loading saved preferences
         loadPref();
+
+        // Auto Refreshing
+        if (AutoRefresh) {
+            autoRefreshTimer(autoRefreshinterval);
+        }
 
         // Go FullScreen only on Kitkat and up
         if (Build.VERSION.SDK_INT >= 19 && FullScreen) {
@@ -254,6 +263,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
             //Refresh
             case R.id.action_refresh:
                 refresh();
+                refreshDone();
                 break;
 
             //Sort view
@@ -431,6 +441,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
                 .text(R.string.refresh_done)
                 .actionLabel(R.string.dismiss)
                 .actionColor(getResources().getColor(R.color.yellow))
+                .duration(Snackbar.SnackbarDuration.LENGTH_SHORT)
                 .show(this);
     }
 
@@ -442,6 +453,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
             public void run() {
                 swipeLayout.setRefreshing(false);
                 refresh();
+                refreshDone();
             }
         }, 600);
     }
@@ -449,7 +461,26 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private void refresh() {
         Utils.deletePicassoCache(getApplicationContext().getCacheDir());
         mAdapter.notifyDataSetChanged();
-        refreshDone();
+    }
+
+    private void autoRefreshTimer(int interval) {
+        final Handler handler = new Handler();
+        Timer timer = new Timer();
+        TimerTask doAsynchronousTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        try {
+                            refresh();
+                        } catch (Exception e) {
+                            // Auto-generated catch block
+                        }
+                    }
+                });
+            }
+        };
+        timer.schedule(doAsynchronousTask, 0, interval);
     }
 
     @Override
@@ -475,6 +506,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private void loadPref(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         FullScreen = preferences.getBoolean("pref_full_screen", false);
+        AutoRefresh = preferences.getBoolean("pref_auto_refresh", false);
+        autoRefreshinterval = preferences.getInt("pref_auto_refresh_interval", 10000);
         zoom = preferences.getFloat("pref_zoom", 2);
     }
 

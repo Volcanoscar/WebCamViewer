@@ -74,6 +74,7 @@ public class SettingsFragment extends PreferenceFragment {
 
         db = new DatabaseHelper(getActivity().getApplicationContext());
 
+        setAutoRefresh();
         setZoom();
 
         categoryAdd();
@@ -85,6 +86,71 @@ public class SettingsFragment extends PreferenceFragment {
         exportToExt();
         cleanExtFolder();
 
+    }
+
+    private void setAutoRefresh() {
+        // Import from Ext OnPreferenceClickListener
+        Preference pref_auto_refresh_interval = findPreference("pref_auto_refresh_interval");
+        pref_auto_refresh_interval.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+
+                sharedPref = getPreferenceManager().getSharedPreferences();
+                int auto_refresh_interval_value = sharedPref.getInt("pref_auto_refresh_interval", 10000);
+
+                View view = getActivity().getLayoutInflater().inflate(R.layout.enter_time_dialog, null);
+
+                MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                        .title(R.string.auto_refresh_interval)
+                        .customView(view)
+                        .positiveText(R.string.dialog_positive_text)
+                        .negativeText(android.R.string.cancel)
+                        .callback(new MaterialDialog.Callback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                int inputTime = Integer.parseInt(input.getText().toString().trim());
+
+                                sharedPref.edit().putInt("pref_auto_refresh_interval", inputTime * 1000).apply();
+
+                                Snackbar.with(getActivity().getApplicationContext())
+                                        .text(R.string.dialog_positive_toast_message)
+                                        .actionLabel(R.string.dismiss)
+                                        .actionColor(getResources().getColor(R.color.yellow))
+                                        .show(getActivity());
+                            }
+
+                            @Override
+                            public void onNegative(MaterialDialog dialog) {
+                            }
+                        }).build();
+
+                input = (EditText) view.findViewById(R.id.input_name);
+                input.requestFocus();
+                input.setText(String.valueOf(auto_refresh_interval_value / 1000));
+
+                TextView info = (TextView) view.findViewById(R.id.time_message);
+                info.setText(getString(R.string.auto_refresh_interval_summary) + ".");
+
+                positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
+
+                input.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    }
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        positiveAction.setEnabled(s.toString().trim().length() > 0);
+                    }
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                    }
+                });
+
+                dialog.show();
+                positiveAction.setEnabled(false);
+
+                return true;
+            }
+        });
     }
 
     private void setZoom() {
@@ -100,11 +166,15 @@ public class SettingsFragment extends PreferenceFragment {
                     new MaterialDialog.Builder(getActivity())
                             .title(R.string.choose_title)
                             .positiveText(android.R.string.ok)
-                            .items(new CharSequence[]{"No zoom","2x","3x","4x"})
-                            .itemsCallbackSingleChoice(selected-1, new MaterialDialog.ListCallback() {
+                            .items(new CharSequence[]{
+                                    String.valueOf(getString(R.string.no_zoom)),
+                                    String.valueOf(getString(R.string.zoom_2x)),
+                                    String.valueOf(getString(R.string.zoom_3x)),
+                                    String.valueOf(getString(R.string.zoom_4x))})
+                            .itemsCallbackSingleChoice(selected - 1, new MaterialDialog.ListCallback() {
                                 @Override
                                 public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                    sharedPref.edit().putFloat("pref_zoom", which+1).apply();
+                                    sharedPref.edit().putFloat("pref_zoom", which + 1).apply();
                                 }
                             })
                             .show();

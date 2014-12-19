@@ -81,6 +81,15 @@
     <string name="refresh">Refresh</string>
     <string name="pref_zoom">Zoom</string>
     <string name="pref_zoom_summary">Set maximum zoom level in Full Screen view</string>
+    <string name="no_zoom">No zoom</string>
+    <string name="zoom_2x">2x zoom</string>
+    <string name="zoom_3x">3x zoom</string>
+    <string name="zoom_4x">4x zoom</string>
+    <string name="action_menu_help">Help and feedback</string>
+    <string name="pref_auto_refresh">Auto Refresh</string>
+    <string name="pref_auto_refresh_summ">Enable or disable WebCam auto refreshing</string>
+    <string name="auto_refresh_interval">Auto Refresh interval</string>
+    <string name="auto_refresh_interval_summary">Enter auto refreshing interval in seconds</string>
     <string-array name="category_array">
         <item>Default list</item>
     </string-array>
