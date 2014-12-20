@@ -28,6 +28,7 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -370,23 +371,25 @@ public class SettingsFragment extends PreferenceFragment {
                                 .itemsCallbackMultiChoice(new Integer[]{}, new MaterialDialog.ListCallbackMulti() {
                                     @Override
                                     public void onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
-                                        synchronized (SettingsFragment.sDataLock) {
+                                        if (which.length > 0) {
+                                            synchronized (SettingsFragment.sDataLock) {
 
-                                            //Todo: Before check if category is not connected to webcams in webcam_category table
-                                            for (int i = 0; i < which.length; i++) {
-                                                Category deleteCategory = allCategories.get(i);
-                                                db.deleteCategory(deleteCategory,false);
+                                                //Todo: Before check if category is not connected to webcams in webcam_category table
+                                                for (Integer aWhich : which) {
+                                                    Category deleteCategory = allCategories.get(aWhich);
+                                                    db.deleteCategory(deleteCategory, false);
+                                                }
+                                                db.closeDB();
                                             }
-                                            db.closeDB();
-                                        }
-                                        BackupManager backupManager = new BackupManager(getActivity());
-                                        backupManager.dataChanged();
+                                            BackupManager backupManager = new BackupManager(getActivity());
+                                            backupManager.dataChanged();
 
-                                        Snackbar.with(getActivity().getApplicationContext())
-                                                .text(R.string.action_deleted)
-                                                .actionLabel(R.string.dismiss)
-                                                .actionColor(getResources().getColor(R.color.yellow))
-                                                .show(getActivity());
+                                            Snackbar.with(getActivity().getApplicationContext())
+                                                    .text(R.string.action_deleted)
+                                                    .actionLabel(R.string.dismiss)
+                                                    .actionColor(getResources().getColor(R.color.yellow))
+                                                    .show(getActivity());
+                                        }
                                     }
                                 })
                                 .show();
