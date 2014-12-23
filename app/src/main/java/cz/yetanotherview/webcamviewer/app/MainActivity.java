@@ -73,6 +73,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private DatabaseHelper db;
     private Webcam webcam;
     private List<Webcam> allWebCams;
+    private List<Category> allCategories;
+    private String[] items;
     private RecyclerView mRecyclerView;
     private View mEmptyView;
     private WebCamAdapter mAdapter;
@@ -85,6 +87,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private Toolbar mToolbar;
 
     private String sortOrder = "id ASC";
+    private String selectedCategoryName;
+    private int selectedCategory;
     private float zoom;
     private boolean FullScreen;
     private boolean AutoRefresh;
@@ -122,6 +126,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
 
     private void initToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar.setTitle(selectedCategoryName);
         setSupportActionBar(mToolbar);
     }
 
@@ -131,13 +136,23 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         mDrawerList = (ListView) findViewById(R.id.drawer);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-        if (mDrawerList != null) {
-            ArrayAdapter<CharSequence> mArrayAdapter = ArrayAdapter.createFromResource(this, R.array.category_array, android.R.layout.simple_list_item_1);
-            mDrawerList.setAdapter(mArrayAdapter);
-
-            mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        allCategories = db.getAllCategories();
+        items = new String[allCategories.size() + 1];
+        items [0] = getString(R.string.all_webcams);
+        int count = 1;
+        for (Category category : allCategories) {
+            items[count] = category.getcategoryName();
+            count++;
         }
 
+        if (mDrawerList != null) {
+            ArrayAdapter<String> mArrayAdapter = new ArrayAdapter<String>(
+                    this,
+                    android.R.layout.simple_list_item_1,
+                    items);
+            mDrawerList.setAdapter(mArrayAdapter);
+            mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        }
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
                 mToolbar, R.drawable.ic_action_content_new, R.drawable.ic_action_sort_by_size_white) {
@@ -145,14 +160,14 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getSupportActionBar().setTitle("mTitle");
+                getSupportActionBar().setTitle(selectedCategoryName);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle("mDrawerTitle");
+                //getSupportActionBar().setTitle("mDrawerTitle");
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
@@ -222,9 +237,32 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
         @Override
-        public void onItemClick(AdapterView<?> parent, View view, int position,
-                                long id) {
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            reInitializeAdapter(position);
+            selectedCategory = position;
+
+            mDrawerLayout.closeDrawers();
         }
+    }
+
+    private void reInitializeAdapter(int position) {
+        allWebCams.clear();
+        if (position == 0) {
+            allWebCams = db.getAllWebCams(sortOrder);
+            db.closeDB();
+            mAdapter = new WebCamAdapter(allWebCams);
+            mRecyclerView.swapAdapter(mAdapter, true);
+            selectedCategoryName = getString(R.string.all_webcams);
+        }
+        else {
+            Category category = allCategories.get(position - 1);
+            allWebCams = db.getAllWebCamsByCategory(category.getcategoryName(),sortOrder);
+            db.closeDB();
+            mAdapter = new WebCamAdapter(allWebCams);
+            mRecyclerView.swapAdapter(mAdapter, true);
+            selectedCategoryName = category.getcategoryName();
+        }
+        saveToPref();
     }
 
     @Override
@@ -269,17 +307,17 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
             //Sort view
             case R.id.sort_def:
                 sortOrder = "id ASC";
-                reInitializeAdapter();
+                reInitializeAdapter(selectedCategory);
                 item.setChecked(true);
                 break;
             case R.id.sort_asc:
                 sortOrder = "webcam_name COLLATE UNICODE";
-                reInitializeAdapter();
+                reInitializeAdapter(selectedCategory);
                 item.setChecked(true);
                 break;
             case R.id.sort_desc:
                 sortOrder = "webcam_name COLLATE UNICODE DESC";
-                reInitializeAdapter();
+                reInitializeAdapter(selectedCategory);
                 item.setChecked(true);
                 break;
 
@@ -305,14 +343,6 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private void setItemChecked(Menu menu) {
         MenuItem def = menu.findItem(R.id.sort_def);
         def.setChecked(true);
-    }
-
-    private void reInitializeAdapter() {
-        allWebCams.clear();
-        allWebCams = db.getAllWebCams(sortOrder);
-        db.closeDB();
-        mAdapter = new WebCamAdapter(allWebCams);
-        mRecyclerView.swapAdapter(mAdapter, true);
     }
 
     private void showAbout() {
@@ -369,12 +399,14 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     }
 
     @Override
-    public void webcamAdded(Webcam wc) {
+    public void webcamAdded(Webcam wc, long[] category_ids) {
         synchronized (sDataLock) {
-            wc.setId(
-                    db.createWebCam(wc,
-                            new long[]{db.createCategory(new Category(""))})
-            );
+            if (category_ids != null) {
+                wc.setId(db.createWebCam(wc, category_ids));
+            }
+            else {
+                wc.setId(db.createWebCam(wc, null));
+            }
             db.closeDB();
         }
         BackupManager backupManager = new BackupManager(this);
@@ -389,9 +421,14 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     }
 
     @Override
-    public void webcamEdited(int position, Webcam wc) {
+    public void webcamEdited(int position, Webcam wc, long[] category_ids) {
         synchronized (sDataLock) {
-            db.updateWebCam(wc);
+            if (category_ids != null) {
+                db.updateWebCam(wc, category_ids);
+            }
+            else {
+                db.updateWebCam(wc, null);
+            }
             db.closeDB();
         }
         BackupManager backupManager = new BackupManager(this);
@@ -509,15 +546,17 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         AutoRefresh = preferences.getBoolean("pref_auto_refresh", false);
         autoRefreshinterval = preferences.getInt("pref_auto_refresh_interval", 10000);
         zoom = preferences.getFloat("pref_zoom", 2);
+        selectedCategory = preferences.getInt("pref_selected_category", 0);
+        selectedCategoryName = preferences.getString("pref_selectedCategoryName", getString(R.string.all_webcams));
     }
 
-//    private void saveToPref(){
-//        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        SharedPreferences.Editor editor = preferences.edit();
-//        //editor.putString("sort",sortOrder);
-//        editor.apply();
-//    }
-
+    private void saveToPref(){
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt("pref_selected_category",selectedCategory);
+        editor.putString("pref_selectedCategoryName",selectedCategoryName);
+        editor.apply();
+    }
 
 //                Cursor cursor = dbManager.fetch();
 //                exportToExcel(cursor);

@@ -28,10 +28,10 @@ import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -167,7 +167,6 @@ public class SettingsFragment extends PreferenceFragment {
 
                     new MaterialDialog.Builder(getActivity())
                             .title(R.string.choose_title)
-                            .positiveText(android.R.string.ok)
                             .items(new CharSequence[]{
                                     String.valueOf(getString(R.string.no_zoom)),
                                     String.valueOf(getString(R.string.zoom_2x)),
@@ -268,9 +267,8 @@ public class SettingsFragment extends PreferenceFragment {
                 if (allCategories.size() > 0) {
                     new MaterialDialog.Builder(getActivity())
                             .title(R.string.choose_title)
-                            .positiveText(android.R.string.ok)
                             .items(items)
-                            .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
+                            .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallback() {
                                 @Override
                                 public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
 
@@ -363,15 +361,15 @@ public class SettingsFragment extends PreferenceFragment {
                     count++;
                 }
 
-                    if (allCategories.size() > 0) {
-                        new MaterialDialog.Builder(getActivity())
-                                .title(R.string.choose_title)
-                                .positiveText(android.R.string.ok)
-                                .items(items)
-                                .itemsCallbackMultiChoice(new Integer[]{}, new MaterialDialog.ListCallbackMulti() {
-                                    @Override
-                                    public void onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
-                                        if (which.length > 0) {
+                if (allCategories.size() > 0) {
+                    new MaterialDialog.Builder(getActivity())
+                            .title(R.string.choose_title)
+                            .positiveText(android.R.string.ok)
+                            .items(items)
+                            .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMulti() {
+                                @Override
+                                public void onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
+                                        if (which.length != 0) {
                                             synchronized (SettingsFragment.sDataLock) {
 
                                                 //Todo: Before check if category is not connected to webcams in webcam_category table
@@ -390,15 +388,15 @@ public class SettingsFragment extends PreferenceFragment {
                                                     .actionColor(getResources().getColor(R.color.yellow))
                                                     .show(getActivity());
                                         }
-                                    }
-                                })
-                                .show();
-                    }
-                    else Snackbar.with(getActivity().getApplicationContext())
-                            .text("No categories found")
-                            .actionLabel(R.string.dismiss)
-                            .actionColor(getResources().getColor(R.color.yellow))
-                            .show(getActivity());
+                                }
+                            })
+                            .show();
+                }
+                else Snackbar.with(getActivity().getApplicationContext())
+                        .text("No categories found")
+                        .actionLabel(R.string.dismiss)
+                        .actionColor(getResources().getColor(R.color.yellow))
+                        .show(getActivity());
                 return true;
             }
         });
@@ -444,49 +442,49 @@ public class SettingsFragment extends PreferenceFragment {
         pref_export_to_ext.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
 
-                View view = getActivity().getLayoutInflater().inflate(R.layout.enter_name_dialog, null);
-
-                MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
-                        .title(R.string.export_title)
-                        .customView(view)
-                        .positiveText(android.R.string.ok)
-                        .negativeText(android.R.string.cancel)
-                        .callback(new MaterialDialog.Callback() {
-                            @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                inputName = input.getText().toString().trim();
-//                                exportDB(inputName + extension);
-                            }
-
-                            @Override
-                            public void onNegative(MaterialDialog dialog) {
-                            }
-                        }).build();
-
-                input = (EditText) view.findViewById(R.id.input_name);
-                input.requestFocus();
-                input.setHint(R.string.export_input_sample);
-
-                TextView message = (TextView) view.findViewById(R.id.message);
-//                message.setText(getString(R.string.export_message) + "\n" + Environment.getExternalStorageDirectory().toString() + folderName + "\n");
-
-                positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
-
-                input.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                    }
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        positiveAction.setEnabled(s.toString().trim().length() > 0);
-                    }
-                    @Override
-                    public void afterTextChanged(Editable s) {
-                    }
-                });
-
-                dialog.show();
-                positiveAction.setEnabled(false);
+//                View view = getActivity().getLayoutInflater().inflate(R.layout.enter_name_dialog, null);
+//
+//                MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+//                        .title(R.string.export_title)
+//                        .customView(view)
+//                        .positiveText(android.R.string.ok)
+//                        .negativeText(android.R.string.cancel)
+//                        .callback(new MaterialDialog.Callback() {
+//                            @Override
+//                            public void onPositive(MaterialDialog dialog) {
+//                                inputName = input.getText().toString().trim();
+////                                exportDB(inputName + extension);
+//                            }
+//
+//                            @Override
+//                            public void onNegative(MaterialDialog dialog) {
+//                            }
+//                        }).build();
+//
+//                input = (EditText) view.findViewById(R.id.input_name);
+//                input.requestFocus();
+//                input.setHint(R.string.export_input_sample);
+//
+//                TextView message = (TextView) view.findViewById(R.id.message);
+////                message.setText(getString(R.string.export_message) + "\n" + Environment.getExternalStorageDirectory().toString() + folderName + "\n");
+//
+//                positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
+//
+//                input.addTextChangedListener(new TextWatcher() {
+//                    @Override
+//                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//                    }
+//                    @Override
+//                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+//                        positiveAction.setEnabled(s.toString().trim().length() > 0);
+//                    }
+//                    @Override
+//                    public void afterTextChanged(Editable s) {
+//                    }
+//                });
+//
+//                dialog.show();
+//                positiveAction.setEnabled(false);
 
                 return true;
             }
@@ -499,32 +497,31 @@ public class SettingsFragment extends PreferenceFragment {
         pref_import_from_ext.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
 
-                File[] filesList = GetFiles(Environment.getExternalStorageDirectory().toString() + Utils.folderWCV);
-                ArrayList<String> fileNames = getFileNames(filesList);
-
-                if (fileNames != null) {
-                    items = fileNames.toArray(new String[fileNames.size()]);
-
-                    new MaterialDialog.Builder(getActivity())
-                            .title(R.string.choose_title)
-                            .positiveText(android.R.string.ok)
-                            .items(items)
-                            .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
-                                @Override
-                                public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-
-//                                    resolver.delete(CardCursorContract.CardCursor.CONTENT_URI, null, null);
-                                    inputName = (items[which]);
-                                    //importDB(inputName);
-                                }
-                            })
-                            .show();
-                }
-                else Snackbar.with(getActivity().getApplicationContext())
-                        .text(R.string.nothing_to_import)
-                        .actionLabel(R.string.dismiss)
-                        .actionColor(getResources().getColor(R.color.yellow))
-                        .show(getActivity());
+//                File[] filesList = GetFiles(Environment.getExternalStorageDirectory().toString() + Utils.folderWCV);
+//                ArrayList<String> fileNames = getFileNames(filesList);
+//
+//                if (fileNames != null) {
+//                    items = fileNames.toArray(new String[fileNames.size()]);
+//
+//                    new MaterialDialog.Builder(getActivity())
+//                            .title(R.string.choose_title)
+//                            .items(items)
+//                            .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallback() {
+//                                @Override
+//                                public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+//
+////                                    resolver.delete(CardCursorContract.CardCursor.CONTENT_URI, null, null);
+//                                    inputName = (items[which]);
+//                                    //importDB(inputName);
+//                                }
+//                            })
+//                            .show();
+//                }
+//                else Snackbar.with(getActivity().getApplicationContext())
+//                        .text(R.string.nothing_to_import)
+//                        .actionLabel(R.string.dismiss)
+//                        .actionColor(getResources().getColor(R.color.yellow))
+//                        .show(getActivity());
 
                 return true;
             }

@@ -47,7 +47,7 @@
 
     </PreferenceCategory>
     <PreferenceCategory
-        android:title="@string/manage_categories"
+        android:title="@string/webcam_category"
         android:key="pref_key_category_settings">
 
         <Preference

@@ -58,7 +58,7 @@
     <string name="input_dialog_title">New WebCam</string>
     <string name="webcam_name">Name</string>
     <string name="webcam_url">Web address</string>
-    <string name="webcam_category">Category</string>
+    <string name="webcam_category">Categories</string>
     <string name="hint_webcam_name">My WebCam</string>
     <string name="hint_webcam_url">http://www.example.com/webcam/cam.jpg</string>
     <string name="how_to">How to</string>
@@ -67,11 +67,10 @@
     <string name="dialog_positive_toast_message">Saved!</string>
 
     <!-- Misc -->
-    <string name="empty_list_view">No WebCams found. Use the top right menu to add new WebCam…</string>
+    <string name="empty_list_view">No WebCams found. Use the FAB button to add new WebCam…</string>
     <string name="nothing_to_import">No database files found</string>
 
     <string name="category_name">Default list</string>
-    <string name="manage_categories">Categories</string>
     <string name="add_new_summary">Add new category to the database</string>
     <string name="edit_summary">Edit category in database</string>
     <string name="delete_summary">Delete category from database</string>
@@ -91,8 +90,8 @@
     <string name="auto_refresh_interval">Auto Refresh interval</string>
     <string name="auto_refresh_interval_summary">Enter auto refreshing interval in seconds</string>
     <string name="image_description">WebCam image</string>
-    <string-array name="category_array">
-        <item>Default list</item>
-    </string-array>
+    <string name="category_array_empty">No categories created yet</string>
+    <string name="category_array_choose">Choose categories</string>
+    <string name="all_webcams">All WebCams</string>
 
 </resources>

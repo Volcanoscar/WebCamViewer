@@ -23,17 +23,21 @@ import android.app.DialogFragment;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.Arrays;
+import java.util.List;
+
 import cz.yetanotherview.webcamviewer.app.R;
 import cz.yetanotherview.webcamviewer.app.db.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.app.helper.WebCamListener;
+import cz.yetanotherview.webcamviewer.app.model.Category;
 import cz.yetanotherview.webcamviewer.app.model.Webcam;
 
 /**
@@ -43,13 +47,20 @@ public class EditDialog extends DialogFragment {
 
     private EditText mWebcamName;
     private EditText mWebcamUrl;
-    private Spinner spinner;
-    private ArrayAdapter<CharSequence> categoryAdapter;
     private Webcam webcam;
     private WebCamListener mOnAddListener;
     private View positiveAction;
 
     private DatabaseHelper db;
+    private List<Category> allCategories;
+    private Category category;
+
+    private Button webcamCategoryButton;
+    private String[] items;
+    private long[] category_ids;
+    private long[] webcam_category_ids;
+    private Integer[] checked;
+
     private long id;
     private int pos;
     private int status;
@@ -83,9 +94,37 @@ public class EditDialog extends DialogFragment {
 
         db = new DatabaseHelper(getActivity());
         webcam = db.getWebcam(id);
+        allCategories = db.getAllCategories();
+        webcam_category_ids = db.getWebcamCategoriesIds(webcam.getId());
+        db.closeDB();
 
         pos = webcam.getPosition();
         status = webcam.getStatus();
+
+        int[] ids = new int[allCategories.size()];
+        items = new String[allCategories.size()];
+        int count = 0;
+        for (Category category : allCategories) {
+            ids [count] = category.getId();
+            items[count] = category.getcategoryName();
+            count++;
+        }
+
+        checked = new Integer[webcam_category_ids.length];
+        StringBuilder checkedNames = new StringBuilder();
+        int count2 = 0;
+        for (int i=0; i < ids.length; i++) {
+            for (long webcam_category_id : webcam_category_ids) {
+                if (ids[i] == webcam_category_id) {
+                    checkedNames.append("[");
+                    checkedNames.append(items[i]);
+                    checkedNames.append("] ");
+
+                    checked[count2] = i;
+                    count2++;
+                }
+            }
+        }
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
 
@@ -101,10 +140,10 @@ public class EditDialog extends DialogFragment {
 
                         webcam.setName(mWebcamName.getText().toString().trim());
                         webcam.setUrl(mWebcamUrl.getText().toString().trim());
-                        webcam.setPosition(pos);
+                        webcam.setPosition(EditDialog.this.pos);
                         webcam.setStatus(status);
                         if (mOnAddListener != null)
-                            mOnAddListener.webcamEdited(position,webcam);
+                            mOnAddListener.webcamEdited(position, webcam, category_ids);
                     }
 
                     @Override
@@ -125,10 +164,57 @@ public class EditDialog extends DialogFragment {
         mWebcamUrl = (EditText) view.findViewById(R.id.webcam_url);
         mWebcamUrl.setText(webcam.getUrl());
 
-        spinner = (Spinner) view.findViewById(R.id.category_spinner);
-        categoryAdapter = ArrayAdapter.createFromResource(getActivity(),R.array.category_array, android.R.layout.simple_spinner_item);
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(categoryAdapter);
+        webcamCategoryButton = (Button) view.findViewById(R.id.webcam_category_button);
+        if (allCategories.size() == 0 ) {
+            webcamCategoryButton.setText(R.string.category_array_empty);
+        }
+        else {
+            if (webcam_category_ids.length == 0) {
+                webcamCategoryButton.setText(R.string.category_array_choose);
+            }
+            else webcamCategoryButton.setText(checkedNames);
+
+            webcamCategoryButton.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    new MaterialDialog.Builder(getActivity())
+                            .title(R.string.category_array_choose)
+                            .positiveText(android.R.string.ok)
+                            .items(items)
+                            .itemsCallbackMultiChoice(checked, new MaterialDialog.ListCallbackMulti() {
+                                @Override
+                                public void onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
+
+                                    if (which.length != 0) {
+                                        StringBuilder str = new StringBuilder();
+
+                                        category_ids = new long[which.length];
+                                        int count = 0;
+
+                                        for (Integer aWhich : which) {
+                                            category = allCategories.get(aWhich);
+
+                                            category_ids[count] = category.getId();
+                                            count++;
+
+                                            str.append("[");
+                                            str.append(category.getcategoryName());
+                                            str.append("] ");
+                                        }
+                                        webcamCategoryButton.setText(str);
+                                    } else {
+                                        webcamCategoryButton.setText(R.string.category_array_choose);
+                                    }
+                                    checked = which;
+                                    positiveAction.setEnabled(true);
+                                }
+                            })
+                            .show();
+                }
+
+            });
+        }
 
         positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
 

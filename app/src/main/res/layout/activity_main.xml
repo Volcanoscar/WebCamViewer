@@ -77,20 +77,16 @@
             </FrameLayout>
     </LinearLayout>
 
-    <ScrollView
+    <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="@dimen/navdrawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:id="@+id/navdrawer"
-        android:background="@color/white">
-
-        <LinearLayout android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        android:background="@color/white"
+        android:orientation="vertical">
 
             <FrameLayout
-                android:id="@+id/chosen_account_view"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/navdrawer_image_height">
 
@@ -116,7 +112,5 @@
                     android:choiceMode="singleChoice"/>
             </FrameLayout>
 
-        </LinearLayout>
-
-    </ScrollView>
+    </LinearLayout>
 </android.support.v4.widget.DrawerLayout>

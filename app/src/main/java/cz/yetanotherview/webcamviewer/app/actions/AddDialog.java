@@ -26,15 +26,18 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.util.List;
+
 import cz.yetanotherview.webcamviewer.app.R;
+import cz.yetanotherview.webcamviewer.app.db.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.app.helper.WebCamListener;
+import cz.yetanotherview.webcamviewer.app.model.Category;
 import cz.yetanotherview.webcamviewer.app.model.Webcam;
 
 /**
@@ -44,11 +47,17 @@ public class AddDialog extends DialogFragment {
 
     private EditText mWebcamName;
     private EditText mWebcamUrl;
-    private Spinner spinner;
-    private ArrayAdapter<CharSequence> categoryAdapter;
     private Webcam webcam;
     private WebCamListener mOnAddListener;
     private View positiveAction;
+
+    private DatabaseHelper db;
+    private List<Category> allCategories;
+    private Category category;
+
+    private Button webcamCategoryButton;
+    private String[] items;
+    private long[] category_ids;
 
     public AddDialog() {
     }
@@ -73,6 +82,17 @@ public class AddDialog extends DialogFragment {
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
 
+        db = new DatabaseHelper(getActivity());
+        allCategories = db.getAllCategories();
+        db.closeDB();
+
+        items = new String[allCategories.size()];
+        int count = 0;
+        for (Category category : allCategories) {
+            items[count] = category.getcategoryName();
+            count++;
+        }
+
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.input_dialog_title)
                 .customView(view)
@@ -88,7 +108,7 @@ public class AddDialog extends DialogFragment {
                                 0,
                                 0);
                         if (mOnAddListener != null)
-                            mOnAddListener.webcamAdded(webcam);
+                            mOnAddListener.webcamAdded(webcam, category_ids);
                     }
 
                     @Override
@@ -107,10 +127,49 @@ public class AddDialog extends DialogFragment {
 
         mWebcamUrl = (EditText) view.findViewById(R.id.webcam_url);
 
-        spinner = (Spinner) view.findViewById(R.id.category_spinner);
-        categoryAdapter = ArrayAdapter.createFromResource(getActivity(),R.array.category_array, android.R.layout.simple_spinner_item);
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(categoryAdapter);
+        webcamCategoryButton = (Button) view.findViewById(R.id.webcam_category_button);
+        if (allCategories.size() == 0 ) {
+            webcamCategoryButton.setText(R.string.category_array_empty);
+        }
+        else {
+            webcamCategoryButton.setText(R.string.category_array_choose);
+            webcamCategoryButton.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    new MaterialDialog.Builder(getActivity())
+                            .title(R.string.category_array_choose)
+                            .positiveText(android.R.string.ok)
+                            .items(items)
+                            .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMulti() {
+                                @Override
+                                public void onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
+
+                                    if (which.length != 0) {
+                                        StringBuilder str = new StringBuilder();
+
+                                        category_ids = new long[which.length];
+                                        int count = 0;
+
+                                        for (Integer aWhich : which) {
+                                            category = allCategories.get(aWhich);
+
+                                            category_ids[count] = category.getId();
+                                            count++;
+
+                                            str.append("[");
+                                            str.append(category.getcategoryName());
+                                            str.append("] ");
+                                        }
+                                        webcamCategoryButton.setText(str);
+                                    } else webcamCategoryButton.setText(R.string.category_array_choose);
+                                }
+                            })
+                            .show();
+                }
+
+            });
+        }
 
         positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
 
