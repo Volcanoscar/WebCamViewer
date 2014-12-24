@@ -23,7 +23,6 @@ import android.app.DialogFragment;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -31,7 +30,6 @@ import android.widget.EditText;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
-import java.util.Arrays;
 import java.util.List;
 
 import cz.yetanotherview.webcamviewer.app.R;
@@ -140,7 +138,7 @@ public class EditDialog extends DialogFragment {
 
                         webcam.setName(mWebcamName.getText().toString().trim());
                         webcam.setUrl(mWebcamUrl.getText().toString().trim());
-                        webcam.setPosition(EditDialog.this.pos);
+                        webcam.setPosition(pos);
                         webcam.setStatus(status);
                         if (mOnAddListener != null)
                             mOnAddListener.webcamEdited(position, webcam, category_ids);

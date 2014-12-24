@@ -40,6 +40,11 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
         this.webcamItems = webcamItems;
     }
 
+    public void swapData(List<Webcam> webcamItems) {
+        this.webcamItems = webcamItems;
+        notifyDataSetChanged();
+    }
+
     @Override
     public void onBindViewHolder(WebCamViewHolder webcamViewHolder, int i) {
         Webcam webcam = webcamItems.get(i);

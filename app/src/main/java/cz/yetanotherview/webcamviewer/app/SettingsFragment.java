@@ -372,7 +372,7 @@ public class SettingsFragment extends PreferenceFragment {
                                         if (which.length != 0) {
                                             synchronized (SettingsFragment.sDataLock) {
 
-                                                //Todo: Before check if category is not connected to webcams in webcam_category table
+                                                //Todo: Before deleting check if category is not connected to webcams in webcam_category table?
                                                 for (Integer aWhich : which) {
                                                     Category deleteCategory = allCategories.get(aWhich);
                                                     db.deleteCategory(deleteCategory, false);

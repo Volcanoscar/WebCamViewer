@@ -232,7 +232,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 Webcam wc = new Webcam();
-                wc.setId(c.getInt((c.getColumnIndex(KEY_ID))));
+                wc.setId(c.getInt(0));
                 wc.setName((c.getString(c.getColumnIndex(KEY_WEBCAM))));
                 wc.setUrl((c.getString(c.getColumnIndex(KEY_WEBCAM_URL))));
                 wc.setPosition((c.getInt(c.getColumnIndex(KEY_POSITION))));

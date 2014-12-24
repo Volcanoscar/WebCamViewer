@@ -87,6 +87,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private Toolbar mToolbar;
 
     private String sortOrder = "id ASC";
+    private String allWebCamsString;
     private String selectedCategoryName;
     private int selectedCategory;
     private float zoom;
@@ -100,6 +101,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
 
         // loading saved preferences
         loadPref();
+        allWebCamsString = getString(R.string.all_webcams);
 
         // Auto Refreshing
         if (AutoRefresh) {
@@ -126,7 +128,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
 
     private void initToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle(selectedCategoryName);
+        mToolbar.setTitle(allWebCamsString);
         setSupportActionBar(mToolbar);
     }
 
@@ -138,7 +140,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
 
         allCategories = db.getAllCategories();
         items = new String[allCategories.size() + 1];
-        items [0] = getString(R.string.all_webcams);
+        items [0] = allWebCamsString;
         int count = 1;
         for (Category category : allCategories) {
             items[count] = category.getcategoryName();
@@ -250,16 +252,14 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         if (position == 0) {
             allWebCams = db.getAllWebCams(sortOrder);
             db.closeDB();
-            mAdapter = new WebCamAdapter(allWebCams);
-            mRecyclerView.swapAdapter(mAdapter, true);
-            selectedCategoryName = getString(R.string.all_webcams);
+            mAdapter.swapData(allWebCams);
+            selectedCategoryName = allWebCamsString;
         }
         else {
             Category category = allCategories.get(position - 1);
             allWebCams = db.getAllWebCamsByCategory(category.getcategoryName(),sortOrder);
             db.closeDB();
-            mAdapter = new WebCamAdapter(allWebCams);
-            mRecyclerView.swapAdapter(mAdapter, true);
+            mAdapter.swapData(allWebCams);
             selectedCategoryName = category.getcategoryName();
         }
         saveToPref();
@@ -547,7 +547,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         autoRefreshinterval = preferences.getInt("pref_auto_refresh_interval", 10000);
         zoom = preferences.getFloat("pref_zoom", 2);
         selectedCategory = preferences.getInt("pref_selected_category", 0);
-        selectedCategoryName = preferences.getString("pref_selectedCategoryName", getString(R.string.all_webcams));
+        selectedCategoryName = preferences.getString("pref_selectedCategoryName", allWebCamsString);
     }
 
     private void saveToPref(){
