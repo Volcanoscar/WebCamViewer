@@ -364,30 +364,38 @@ public class SettingsFragment extends PreferenceFragment {
                 if (allCategories.size() > 0) {
                     new MaterialDialog.Builder(getActivity())
                             .title(R.string.choose_title)
-                            .positiveText(android.R.string.ok)
                             .items(items)
+                            .autoDismiss(false)
                             .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMulti() {
                                 @Override
                                 public void onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
-                                        if (which.length != 0) {
-                                            synchronized (SettingsFragment.sDataLock) {
+                                }
+                            })
+                            .positiveText(android.R.string.ok)
+                            .callback(new MaterialDialog.ButtonCallback() {
+                                @Override
+                                public void onPositive(MaterialDialog dialog) {
+                                    Integer[] which = dialog.getSelectedIndices();
+                                    if (which != null && which.length != 0) {
+                                        synchronized (SettingsFragment.sDataLock) {
 
-                                                //Todo: Before deleting check if category is not connected to webcams in webcam_category table?
-                                                for (Integer aWhich : which) {
-                                                    Category deleteCategory = allCategories.get(aWhich);
-                                                    db.deleteCategory(deleteCategory, false);
-                                                }
-                                                db.closeDB();
+                                            //Todo: Before deleting check if category is not connected to webcams in webcam_category table?
+                                            for (Integer aWhich : which) {
+                                                Category deleteCategory = allCategories.get(aWhich);
+                                                db.deleteCategory(deleteCategory, false);
                                             }
-                                            BackupManager backupManager = new BackupManager(getActivity());
-                                            backupManager.dataChanged();
-
-                                            Snackbar.with(getActivity().getApplicationContext())
-                                                    .text(R.string.action_deleted)
-                                                    .actionLabel(R.string.dismiss)
-                                                    .actionColor(getResources().getColor(R.color.yellow))
-                                                    .show(getActivity());
+                                            db.closeDB();
                                         }
+                                        BackupManager backupManager = new BackupManager(getActivity());
+                                        backupManager.dataChanged();
+
+                                        Snackbar.with(getActivity().getApplicationContext())
+                                                .text(R.string.action_deleted)
+                                                .actionLabel(R.string.dismiss)
+                                                .actionColor(getResources().getColor(R.color.yellow))
+                                                .show(getActivity());
+                                    }
+                                    dialog.dismiss();
                                 }
                             })
                             .show();

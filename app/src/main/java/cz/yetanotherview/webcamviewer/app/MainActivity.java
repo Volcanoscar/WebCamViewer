@@ -263,6 +263,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
             selectedCategoryName = category.getcategoryName();
         }
         saveToPref();
+        checkAdapterIsEmpty();
     }
 
     @Override

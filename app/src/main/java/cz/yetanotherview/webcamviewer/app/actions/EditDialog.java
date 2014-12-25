@@ -178,13 +178,20 @@ public class EditDialog extends DialogFragment {
                 public void onClick(View v) {
                     new MaterialDialog.Builder(getActivity())
                             .title(R.string.category_array_choose)
-                            .positiveText(android.R.string.ok)
+                            .autoDismiss(false)
                             .items(items)
                             .itemsCallbackMultiChoice(checked, new MaterialDialog.ListCallbackMulti() {
                                 @Override
-                                public void onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
+                                public void onSelection(MaterialDialog multidialog, Integer[] which, CharSequence[] text) {
+                                }
+                            })
+                            .positiveText(android.R.string.ok)
+                            .callback(new MaterialDialog.ButtonCallback() {
+                                @Override
+                                public void onPositive(MaterialDialog multidialog) {
+                                    Integer[] which = multidialog.getSelectedIndices();
 
-                                    if (which.length != 0) {
+                                    if (which != null && which.length != 0) {
                                         StringBuilder str = new StringBuilder();
 
                                         category_ids = new long[which.length];
@@ -206,6 +213,8 @@ public class EditDialog extends DialogFragment {
                                     }
                                     checked = which;
                                     positiveAction.setEnabled(true);
+
+                                    multidialog.dismiss();
                                 }
                             })
                             .show();
