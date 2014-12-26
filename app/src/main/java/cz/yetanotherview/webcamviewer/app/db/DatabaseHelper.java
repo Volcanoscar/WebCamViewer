@@ -310,7 +310,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
      */
     public void deleteAllWebCams() {
         SQLiteDatabase db = this.getWritableDatabase();
+
+        //WebCams table
         db.delete(TABLE_WEBCAM, null, null);
+
+        //WebCam categories table
+        db.delete(TABLE_WEBCAM_CATEGORY, null, null);
     }
 
     // ------------------------ "categorys" table methods ----------------//
@@ -392,6 +397,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // now delete the category
         db.delete(TABLE_CATEGORY, KEY_ID + " = ?",
+                new String[] { String.valueOf(category.getId()) });
+
+        // and webcam categories table
+        db.delete(TABLE_WEBCAM_CATEGORY, KEY_CATEGORY_ID + " = ?",
                 new String[] { String.valueOf(category.getId()) });
     }
 
