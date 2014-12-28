@@ -19,15 +19,9 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
-    <style name="MainLayout">
-        <item name="android:orientation">vertical</item>
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/card_height</item>
-    </style>
-
     <style name="MainCardView">
-        <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_marginTop">@dimen/margin_top</item>
         <item name="android:layout_marginBottom">@dimen/margin_bottom</item>
     </style>
