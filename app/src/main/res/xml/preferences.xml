@@ -32,7 +32,7 @@
         android:key="pref_auto_refresh"
         android:checked="false"
         android:title="@string/pref_auto_refresh"
-        android:summary="@string/pref_auto_refresh_summ" />
+        android:summary="@string/pref_auto_refresh_summary" />
 
         <Preference
             android:dependency="pref_auto_refresh"
@@ -53,15 +53,15 @@
         <Preference
             android:key="pref_category_add"
             android:title="@string/action_new"
-            android:summary="@string/add_new_summary" />
+            android:summary="@string/add_new_category_summary" />
         <Preference
             android:key="pref_category_edit"
             android:title="@string/action_edit"
-            android:summary="@string/edit_summary" />
+            android:summary="@string/edit_category_summary" />
         <Preference
             android:key="pref_category_delete"
             android:title="@string/action_delete"
-            android:summary="@string/delete_summary" />
+            android:summary="@string/delete_category_summary" />
     </PreferenceCategory>
     <PreferenceCategory
         android:title="@string/pref_database"

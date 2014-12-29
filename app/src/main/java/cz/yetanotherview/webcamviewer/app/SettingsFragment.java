@@ -22,7 +22,6 @@ import android.app.backup.BackupManager;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
@@ -31,7 +30,6 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -103,7 +101,7 @@ public class SettingsFragment extends PreferenceFragment {
 
                 MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                         .title(R.string.auto_refresh_interval)
-                        .customView(view)
+                        .customView(view, false)
                         .positiveText(R.string.dialog_positive_text)
                         .negativeText(android.R.string.cancel)
                         .callback(new MaterialDialog.Callback() {
@@ -195,7 +193,7 @@ public class SettingsFragment extends PreferenceFragment {
 
                 MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                         .title(R.string.new_category_name)
-                        .customView(view)
+                        .customView(view, false)
                         .positiveText(R.string.dialog_positive_text)
                         .negativeText(android.R.string.cancel)
                         .callback(new MaterialDialog.Callback() {
@@ -296,7 +294,7 @@ public class SettingsFragment extends PreferenceFragment {
 
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.new_category_name)
-                .customView(view)
+                .customView(view, false)
                 .positiveText(R.string.dialog_positive_text)
                 .negativeText(android.R.string.cancel)
                 .callback(new MaterialDialog.Callback() {

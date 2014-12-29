@@ -95,7 +95,7 @@ public class AddDialog extends DialogFragment {
 
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.input_dialog_title)
-                .customView(view)
+                .customView(view, false)
                 .positiveText(R.string.dialog_positive_text)
                 .negativeText(android.R.string.cancel)
                 .neutralText(R.string.how_to)

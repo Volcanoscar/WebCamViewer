@@ -128,7 +128,7 @@ public class EditDialog extends DialogFragment {
 
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.action_edit)
-                .customView(view)
+                .customView(view, false)
                 .positiveText(R.string.dialog_positive_text)
                 .negativeText(android.R.string.cancel)
                 .neutralText(R.string.action_delete)
