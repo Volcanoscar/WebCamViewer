@@ -57,7 +57,7 @@ import java.util.TimerTask;
 
 import cz.yetanotherview.webcamviewer.app.actions.AddDialog;
 import cz.yetanotherview.webcamviewer.app.actions.EditDialog;
-import cz.yetanotherview.webcamviewer.app.actions.JsonFetcher;
+import cz.yetanotherview.webcamviewer.app.actions.WelcomeDialog;
 import cz.yetanotherview.webcamviewer.app.fullscreen.FullScreenImage;
 import cz.yetanotherview.webcamviewer.app.helper.ItemClickListener;
 import cz.yetanotherview.webcamviewer.app.adapter.WebCamAdapter;
@@ -87,6 +87,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private SwipeRefreshLayout swipeLayout;
     private Toolbar mToolbar;
 
+    private boolean firstRun;
     private String sortOrder = "id ASC";
     private String allWebCamsString;
     private String selectedCategoryName;
@@ -94,7 +95,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private float zoom;
     private boolean FullScreen;
     private boolean AutoRefresh;
-    private int autoRefreshinterval;
+    private int autoRefreshInterval;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,18 +105,26 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         loadPref();
         allWebCamsString = getString(R.string.all_webcams);
 
+        setContentView(R.layout.activity_main);
+        mEmptyView = findViewById(R.id.empty);
+
         // Auto Refreshing
         if (AutoRefresh) {
-            autoRefreshTimer(autoRefreshinterval);
+            autoRefreshTimer(autoRefreshInterval);
         }
 
-        // Go FullScreen only on Kitkat and up
+        // Go FullScreen only on KitKat and up
         if (Build.VERSION.SDK_INT >= 19 && FullScreen) {
             goFullScreen();
         }
 
-        setContentView(R.layout.activity_main);
-        mEmptyView = findViewById(R.id.empty);
+        // First run
+        if (firstRun){
+            showWelcomeDialog();
+            // Save the state
+            firstRun = false;
+            saveToPref();
+        }
 
         db = new DatabaseHelper(getApplicationContext());
 
@@ -194,12 +203,6 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
 
         mAdapter = new WebCamAdapter(allWebCams);
         mRecyclerView.setAdapter(mAdapter);
-
-        // ToDo: Temp...
-        if (mAdapter.getItemCount() == 0) {
-            DialogFragment fetcher = new JsonFetcher();
-            fetcher.show(getFragmentManager(), "JsonFetcher");
-        }
 
         checkAdapterIsEmpty();
 
@@ -351,6 +354,11 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private void setItemChecked(Menu menu) {
         MenuItem def = menu.findItem(R.id.sort_def);
         def.setChecked(true);
+    }
+
+    private void showWelcomeDialog() {
+        DialogFragment newFragment = new WelcomeDialog();
+        newFragment.show(getFragmentManager(), "WelcomeDialog");
     }
 
     private void showAbout() {
@@ -550,9 +558,10 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
 
     private void loadPref(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        firstRun = preferences.getBoolean("pref_first_run", true);
         FullScreen = preferences.getBoolean("pref_full_screen", false);
         AutoRefresh = preferences.getBoolean("pref_auto_refresh", false);
-        autoRefreshinterval = preferences.getInt("pref_auto_refresh_interval", 10000);
+        autoRefreshInterval = preferences.getInt("pref_auto_refresh_interval", 10000);
         zoom = preferences.getFloat("pref_zoom", 2);
         selectedCategory = preferences.getInt("pref_selected_category", 0);
         selectedCategoryName = preferences.getString("pref_selectedCategoryName", allWebCamsString);
@@ -561,68 +570,9 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private void saveToPref(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean("pref_first_run", firstRun);
         editor.putInt("pref_selected_category",selectedCategory);
         editor.putString("pref_selectedCategoryName",selectedCategoryName);
         editor.apply();
     }
-
-//                Cursor cursor = dbManager.fetch();
-//                exportToExcel(cursor);
-
-
-
-//    /**
-//     * Exports the cursor value to an excel sheet.
-//     * Recommended to call this method in a separate thread,
-//     * especially if you have more number of threads.
-//     *
-//     * @param cursor
-//     */
-//    private void exportToExcel(Cursor cursor) {
-//        final String fileName = "WebcamList.xls";
-//        //Saving file in external storage
-//        File sdCard = Environment.getExternalStorageDirectory();
-//        File directory = new File(sdCard.getAbsolutePath() + "/javatechig.webCam");
-//        //create directory if not exist
-//        if(!directory.isDirectory()){
-//            directory.mkdirs();
-//        }
-//        //file path
-//        File file = new File(directory, fileName);
-//        WorkbookSettings wbSettings = new WorkbookSettings();
-//        wbSettings.setLocale(new Locale("en", "EN"));
-//        WritableWorkbook workbook;
-//        try {
-//            workbook = Workbook.createWorkbook(file, wbSettings);
-//            //Excel sheet name. 0 represents first sheet
-//            WritableSheet sheet = workbook.createSheet("MyShoppingList", 0);
-//            try {
-//                sheet.addCell(new Label(0, 0, "Subject")); // column and row
-//                sheet.addCell(new Label(1, 0, "Description"));
-//                if (cursor.moveToFirst()) {
-//                    do {
-//                        String title = cursor.getString(cursor.getColumnIndex(DatabaseHelper.WEBCAM_SUBJECT));
-//                        String desc = cursor.getString(cursor.getColumnIndex(DatabaseHelper.WEBCAM_DESC));
-//                        int i = cursor.getPosition() + 1;
-//                        sheet.addCell(new Label(0, i, title));
-//                        sheet.addCell(new Label(1, i, desc));
-//                    } while (cursor.moveToNext());
-//                }
-//                //closing cursor
-//                cursor.close();
-//            } catch (RowsExceededException e) {
-//                e.printStackTrace();
-//            } catch (WriteException e) {
-//                e.printStackTrace();
-//            }
-//            workbook.write();
-//            try {
-//                workbook.close();
-//            } catch (WriteException e) {
-//                e.printStackTrace();
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }
