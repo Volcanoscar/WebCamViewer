@@ -20,7 +20,7 @@ package cz.yetanotherview.webcamviewer.app.model;
 
 import java.util.List;
 
-public class Webcam {
+public class WebCam {
 
     private long id;
     private String webcamName;
