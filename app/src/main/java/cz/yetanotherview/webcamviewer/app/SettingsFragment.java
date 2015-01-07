@@ -39,7 +39,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import cz.yetanotherview.webcamviewer.app.db.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.app.model.Category;
 
 public class SettingsFragment extends PreferenceFragment {
@@ -101,7 +101,7 @@ public class SettingsFragment extends PreferenceFragment {
 
                 MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                         .title(R.string.auto_refresh_interval)
-                        .customView(view, false)
+                        .customView(view, true)
                         .positiveText(R.string.dialog_positive_text)
                         .negativeText(android.R.string.cancel)
                         .callback(new MaterialDialog.Callback() {
@@ -193,7 +193,7 @@ public class SettingsFragment extends PreferenceFragment {
 
                 MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                         .title(R.string.new_category_name)
-                        .customView(view, false)
+                        .customView(view, true)
                         .positiveText(R.string.dialog_positive_text)
                         .negativeText(android.R.string.cancel)
                         .callback(new MaterialDialog.Callback() {
@@ -294,7 +294,7 @@ public class SettingsFragment extends PreferenceFragment {
 
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.new_category_name)
-                .customView(view, false)
+                .customView(view, true)
                 .positiveText(R.string.dialog_positive_text)
                 .negativeText(android.R.string.cancel)
                 .callback(new MaterialDialog.Callback() {
@@ -451,7 +451,7 @@ public class SettingsFragment extends PreferenceFragment {
 //
 //                MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
 //                        .title(R.string.export_title)
-//                        .customView(view)
+//                        .customView(view, true)
 //                        .positiveText(android.R.string.ok)
 //                        .negativeText(android.R.string.cancel)
 //                        .callback(new MaterialDialog.Callback() {

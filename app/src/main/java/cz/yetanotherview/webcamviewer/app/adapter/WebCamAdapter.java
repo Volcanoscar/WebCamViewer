@@ -30,29 +30,29 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import cz.yetanotherview.webcamviewer.app.R;
-import cz.yetanotherview.webcamviewer.app.model.Webcam;
+import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
 public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamViewHolder> {
 
-    private List<Webcam> webcamItems;
+    private List<WebCam> webCamItems;
 
-    public WebCamAdapter(List<Webcam> webcamItems) {
-        this.webcamItems = webcamItems;
+    public WebCamAdapter(List<WebCam> webCamItems) {
+        this.webCamItems = webCamItems;
     }
 
-    public void swapData(List<Webcam> webcamItems) {
-        this.webcamItems = webcamItems;
+    public void swapData(List<WebCam> webCamItems) {
+        this.webCamItems = webCamItems;
         notifyDataSetChanged();
     }
 
     @Override
     public void onBindViewHolder(WebCamViewHolder webcamViewHolder, int i) {
-        Webcam webcam = webcamItems.get(i);
-        webcamViewHolder.vName.setText(webcam.getName());
+        WebCam webCam = webCamItems.get(i);
+        webcamViewHolder.vName.setText(webCam.getName());
 
         //Picasso.with(webcamViewHolder.itemView.getContext()).setIndicatorsEnabled(true);
         Picasso.with(webcamViewHolder.itemView.getContext())
-                .load(webcam.getUrl())
+                .load(webCam.getUrl())
                 .skipMemoryCache()
                 .fit()
                 .placeholder(R.drawable.animation)
@@ -83,32 +83,32 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
 
     @Override
     public int getItemCount() {
-        return webcamItems.size();
+        return webCamItems.size();
     }
 
     public Object getItem(int location) {
-        return webcamItems.get(location);
+        return webCamItems.get(location);
     }
 
-    public Webcam getItemAt(int position) {
-        if (position < webcamItems.size())
-            return webcamItems.get(position);
+    public WebCam getItemAt(int position) {
+        if (position < webCamItems.size())
+            return webCamItems.get(position);
         return null;
     }
 
-    public void addItem(int position, Webcam webcam) {
-        webcamItems.add(position, webcam);
+    public void addItem(int position, WebCam webCam) {
+        webCamItems.add(position, webCam);
         notifyItemInserted(position);
     }
 
-    public void modifyItem(int position, Webcam webcam) {
-        webcamItems.set(position, webcam);
+    public void modifyItem(int position, WebCam webCam) {
+        webCamItems.set(position, webCam);
         notifyItemChanged(position);
     }
 
-    public void removeItem(Webcam item) {
-        int position = webcamItems.indexOf(item);
-        webcamItems.remove(position);
+    public void removeItem(WebCam item) {
+        int position = webCamItems.indexOf(item);
+        webCamItems.remove(position);
         notifyItemRemoved(position);
     }
 }

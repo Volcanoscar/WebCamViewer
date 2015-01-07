@@ -57,13 +57,14 @@ import java.util.TimerTask;
 
 import cz.yetanotherview.webcamviewer.app.actions.AddDialog;
 import cz.yetanotherview.webcamviewer.app.actions.EditDialog;
+import cz.yetanotherview.webcamviewer.app.actions.JsonFetcher;
 import cz.yetanotherview.webcamviewer.app.fullscreen.FullScreenImage;
 import cz.yetanotherview.webcamviewer.app.helper.ItemClickListener;
 import cz.yetanotherview.webcamviewer.app.adapter.WebCamAdapter;
-import cz.yetanotherview.webcamviewer.app.db.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.app.helper.WebCamListener;
 import cz.yetanotherview.webcamviewer.app.model.Category;
-import cz.yetanotherview.webcamviewer.app.model.Webcam;
+import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
 public class MainActivity extends ActionBarActivity implements WebCamListener, SwipeRefreshLayout.OnRefreshListener {
 
@@ -71,8 +72,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     public static final Object sDataLock = new Object();
 
     private DatabaseHelper db;
-    private Webcam webcam;
-    private List<Webcam> allWebCams;
+    private WebCam webCam;
+    private List<WebCam> allWebCams;
     private List<Category> allCategories;
     private String[] items;
     private RecyclerView mRecyclerView;
@@ -193,6 +194,12 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
 
         mAdapter = new WebCamAdapter(allWebCams);
         mRecyclerView.setAdapter(mAdapter);
+
+        // ToDo: Temp...
+        if (mAdapter.getItemCount() == 0) {
+            DialogFragment fetcher = new JsonFetcher();
+            fetcher.show(getFragmentManager(), "JsonFetcher");
+        }
 
         checkAdapterIsEmpty();
 
@@ -370,14 +377,14 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
                     public void onPositive(MaterialDialog dialog) {
                     }
                 })
-                .icon(R.drawable.ic_launcher)
+                .iconRes(R.drawable.ic_launcher)
                 .show();
     }
 
     private void showImageFullscreen(int position) {
-        webcam = (Webcam) mAdapter.getItem(position);
+        webCam = (WebCam) mAdapter.getItem(position);
         Intent fullScreenIntent = new Intent(getApplicationContext(), FullScreenImage.class);
-        fullScreenIntent.putExtra("url", webcam.getUrl());
+        fullScreenIntent.putExtra("url", webCam.getUrl());
         fullScreenIntent.putExtra("zoom", zoom);
         startActivity(fullScreenIntent);
     }
@@ -390,9 +397,9 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private void showEditDialog(int position) {
         DialogFragment newFragment = EditDialog.newInstance(this);
 
-        webcam = (Webcam) mAdapter.getItem(position);
+        webCam = (WebCam) mAdapter.getItem(position);
         Bundle bundle = new Bundle();
-        bundle.putLong("id", webcam.getId());
+        bundle.putLong("id", webCam.getId());
         bundle.putInt("position", position);
         newFragment.setArguments(bundle);
 
@@ -400,7 +407,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     }
 
     @Override
-    public void webcamAdded(Webcam wc, long[] category_ids) {
+    public void webcamAdded(WebCam wc, long[] category_ids) {
         synchronized (sDataLock) {
             if (category_ids != null) {
                 wc.setId(db.createWebCam(wc, category_ids));
@@ -422,7 +429,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     }
 
     @Override
-    public void webcamEdited(int position, Webcam wc, long[] category_ids) {
+    public void webcamEdited(int position, WebCam wc, long[] category_ids) {
         synchronized (sDataLock) {
             if (category_ids != null) {
                 db.updateWebCam(wc, category_ids);
@@ -575,7 +582,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
 //        final String fileName = "WebcamList.xls";
 //        //Saving file in external storage
 //        File sdCard = Environment.getExternalStorageDirectory();
-//        File directory = new File(sdCard.getAbsolutePath() + "/javatechig.webcam");
+//        File directory = new File(sdCard.getAbsolutePath() + "/javatechig.webCam");
 //        //create directory if not exist
 //        if(!directory.isDirectory()){
 //            directory.mkdirs();

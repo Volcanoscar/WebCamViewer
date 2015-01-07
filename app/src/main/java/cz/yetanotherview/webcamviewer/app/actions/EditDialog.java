@@ -33,10 +33,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.List;
 
 import cz.yetanotherview.webcamviewer.app.R;
-import cz.yetanotherview.webcamviewer.app.db.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.app.helper.WebCamListener;
 import cz.yetanotherview.webcamviewer.app.model.Category;
-import cz.yetanotherview.webcamviewer.app.model.Webcam;
+import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
 /**
  * Edit dialog fragment
@@ -45,7 +45,7 @@ public class EditDialog extends DialogFragment {
 
     private EditText mWebcamName;
     private EditText mWebcamUrl;
-    private Webcam webcam;
+    private WebCam webCam;
     private WebCamListener mOnAddListener;
     private View positiveAction;
 
@@ -91,13 +91,13 @@ public class EditDialog extends DialogFragment {
         position = bundle.getInt("position", 0);
 
         db = new DatabaseHelper(getActivity());
-        webcam = db.getWebcam(id);
+        webCam = db.getWebCam(id);
         allCategories = db.getAllCategories();
-        webcam_category_ids = db.getWebcamCategoriesIds(webcam.getId());
+        webcam_category_ids = db.getWebcamCategoriesIds(webCam.getId());
         db.closeDB();
 
-        pos = webcam.getPosition();
-        status = webcam.getStatus();
+        pos = webCam.getPosition();
+        status = webCam.getStatus();
 
         int[] ids = new int[allCategories.size()];
         items = new String[allCategories.size()];
@@ -128,7 +128,7 @@ public class EditDialog extends DialogFragment {
 
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.action_edit)
-                .customView(view, false)
+                .customView(view, true)
                 .positiveText(R.string.dialog_positive_text)
                 .negativeText(android.R.string.cancel)
                 .neutralText(R.string.action_delete)
@@ -136,12 +136,12 @@ public class EditDialog extends DialogFragment {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
 
-                        webcam.setName(mWebcamName.getText().toString().trim());
-                        webcam.setUrl(mWebcamUrl.getText().toString().trim());
-                        webcam.setPosition(pos);
-                        webcam.setStatus(status);
+                        webCam.setName(mWebcamName.getText().toString().trim());
+                        webCam.setUrl(mWebcamUrl.getText().toString().trim());
+                        webCam.setPosition(pos);
+                        webCam.setStatus(status);
                         if (mOnAddListener != null)
-                            mOnAddListener.webcamEdited(position, webcam, category_ids);
+                            mOnAddListener.webcamEdited(position, webCam, category_ids);
                     }
 
                     @Override
@@ -156,11 +156,11 @@ public class EditDialog extends DialogFragment {
                 }).build();
 
         mWebcamName = (EditText) view.findViewById(R.id.webcam_name);
-        mWebcamName.setText(webcam.getName());
+        mWebcamName.setText(webCam.getName());
         mWebcamName.requestFocus();
 
         mWebcamUrl = (EditText) view.findViewById(R.id.webcam_url);
-        mWebcamUrl.setText(webcam.getUrl());
+        mWebcamUrl.setText(webCam.getUrl());
 
         webcamCategoryButton = (Button) view.findViewById(R.id.webcam_category_button);
         if (allCategories.size() == 0 ) {

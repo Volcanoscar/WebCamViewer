@@ -30,9 +30,9 @@ import java.io.IOException;
 
 import cz.yetanotherview.webcamviewer.app.MainActivity;
 import cz.yetanotherview.webcamviewer.app.SettingsFragment;
-import cz.yetanotherview.webcamviewer.app.db.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.app.actions.JsonFetcher;
 
-public class DbBackup extends BackupAgentHelper {
+public class BackupAgent extends BackupAgentHelper {
 
     private static final String DB_NAME = DatabaseHelper.DATABASE_NAME;
     private static final String PREFS = "cz.yetanotherview.webcamviewer.app_preferences";
@@ -65,6 +65,10 @@ public class DbBackup extends BackupAgentHelper {
         synchronized (SettingsFragment.sDataLock) {
             super.onBackup(oldState, data, newState);
         }
+
+        synchronized (JsonFetcher.sDataLock) {
+            super.onBackup(oldState, data, newState);
+        }
     }
 
     @Override
@@ -76,6 +80,10 @@ public class DbBackup extends BackupAgentHelper {
         }
 
         synchronized (SettingsFragment.sDataLock) {
+            super.onRestore(data, appVersionCode, newState);
+        }
+
+        synchronized (JsonFetcher.sDataLock) {
             super.onRestore(data, appVersionCode, newState);
         }
     }

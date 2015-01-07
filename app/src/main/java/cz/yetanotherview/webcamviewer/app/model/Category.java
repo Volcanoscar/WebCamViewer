@@ -20,8 +20,8 @@ package cz.yetanotherview.webcamviewer.app.model;
 
 public class Category {
 
-    int id;
-    String category_name;
+    private int id;
+    private String category_name;
 
     // constructors
     public Category() {

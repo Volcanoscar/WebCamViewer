@@ -35,10 +35,10 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.List;
 
 import cz.yetanotherview.webcamviewer.app.R;
-import cz.yetanotherview.webcamviewer.app.db.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.app.helper.WebCamListener;
 import cz.yetanotherview.webcamviewer.app.model.Category;
-import cz.yetanotherview.webcamviewer.app.model.Webcam;
+import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
 /**
  * Input dialog fragment
@@ -47,7 +47,7 @@ public class AddDialog extends DialogFragment {
 
     private EditText mWebcamName;
     private EditText mWebcamUrl;
-    private Webcam webcam;
+    private WebCam webCam;
     private WebCamListener mOnAddListener;
     private View positiveAction;
 
@@ -95,20 +95,20 @@ public class AddDialog extends DialogFragment {
 
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.input_dialog_title)
-                .customView(view, false)
+                .customView(view, true)
                 .positiveText(R.string.dialog_positive_text)
                 .negativeText(android.R.string.cancel)
                 .neutralText(R.string.how_to)
                 .callback(new MaterialDialog.FullCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        webcam = new Webcam(
+                        webCam = new WebCam(
                                 mWebcamName.getText().toString().trim(),
                                 mWebcamUrl.getText().toString().trim(),
                                 0,
                                 0);
                         if (mOnAddListener != null)
-                            mOnAddListener.webcamAdded(webcam, category_ids);
+                            mOnAddListener.webcamAdded(webCam, category_ids);
                     }
 
                     @Override
