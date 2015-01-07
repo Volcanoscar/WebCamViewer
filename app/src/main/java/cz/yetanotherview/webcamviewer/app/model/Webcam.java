@@ -18,30 +18,45 @@
 
 package cz.yetanotherview.webcamviewer.app.model;
 
+import java.util.List;
+
 public class Webcam {
 
-    long id;
-    String name;
-    String url;
-    int position;
-    int status;
-    String created_at;
+    private long id;
+    private String webcamName;
+    private String webcamUrl;
+    private int position;
+    private int status;
+    private double latitude;
+    private double longitude;
+    private String created_at;
+
+    private List tags;
 
     // constructors
-    public Webcam() {
+    public WebCam() {
     }
 
-    public Webcam(String name, String url, int position, int status) {
-        this.name = name;
-        this.url = url;
+    public WebCam(String webcamName, String webcamUrl, int position, int status) {
+        this.webcamName = webcamName;
+        this.webcamUrl = webcamUrl;
         this.position = position;
         this.status = status;
     }
 
-    public Webcam(long id, String name, String url, int position, int status) {
+    public WebCam(String webcamName, String webcamUrl, int position, int status, double latitude, double longitude) {
+        this.webcamName = webcamName;
+        this.webcamUrl = webcamUrl;
+        this.position = position;
+        this.status = status;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public WebCam(long id, String webcamName, String webcamUrl, int position, int status) {
         this.id = id;
-        this.name = name;
-        this.url = url;
+        this.webcamName = webcamName;
+        this.webcamUrl = webcamUrl;
         this.position = position;
         this.status = status;
     }
@@ -51,12 +66,12 @@ public class Webcam {
         this.id = id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String webcamName) {
+        this.webcamName = webcamName;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUrl(String webcamUrl) {
+        this.webcamUrl = webcamUrl;
     }
 
     public void setPosition(int position) {
@@ -65,6 +80,14 @@ public class Webcam {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public void setCreatedAt(String created_at){
@@ -77,11 +100,11 @@ public class Webcam {
     }
 
     public String getName() {
-        return this.name;
+        return this.webcamName;
     }
 
     public String getUrl() {
-        return this.url;
+        return this.webcamUrl;
     }
 
     public int getPosition() {
@@ -90,5 +113,13 @@ public class Webcam {
 
     public int getStatus() {
         return this.status;
+    }
+
+    public double getLatitude() {
+        return this.latitude;
+    }
+
+    public double getLongitude() {
+        return this.longitude;
     }
 }
