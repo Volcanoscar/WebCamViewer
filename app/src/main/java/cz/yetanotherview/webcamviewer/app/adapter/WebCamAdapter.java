@@ -21,7 +21,9 @@ package cz.yetanotherview.webcamviewer.app.adapter;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -35,6 +37,7 @@ import cz.yetanotherview.webcamviewer.app.model.WebCam;
 public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamViewHolder> {
 
     private List<WebCam> webCamItems;
+    private ClickListener clickListener;
 
     public WebCamAdapter(List<WebCam> webCamItems) {
         this.webCamItems = webCamItems;
@@ -43,6 +46,12 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
     public void swapData(List<WebCam> webCamItems) {
         this.webCamItems = webCamItems;
         notifyDataSetChanged();
+    }
+
+    @Override
+    public WebCamViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.webcam_layout, viewGroup, false);
+        return new WebCamViewHolder(itemView);
     }
 
     @Override
@@ -60,25 +69,40 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
                 .into(webcamViewHolder.vImage);
     }
 
-    // Create new views (invoked by the layout manager)
-    @Override
-    public WebCamViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        // create a new view
-        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.webcam_layout, viewGroup, false);
-        // set the view's size, margins, paddings and layout parameters
-        return new WebCamViewHolder(itemView);
-    }
-
-    public static class WebCamViewHolder extends RecyclerView.ViewHolder {
+    public class WebCamViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
 
         protected TextView vName;
         protected ImageView vImage;
+        protected ImageButton vButton;
 
         public WebCamViewHolder(View itemLayoutView) {
             super(itemLayoutView);
             vName = (TextView) itemLayoutView.findViewById(R.id.titleTextView);
             vImage = (ImageView) itemLayoutView.findViewById(R.id.imageView);
+            vButton = (ImageButton) itemLayoutView.findViewById(R.id.action_edit);
+
+            vImage.setOnClickListener(this);
+            vButton.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v) {
+            if (v instanceof ImageButton){
+                clickListener.onClick(v, getPosition(), true);
+            } else {
+                clickListener.onClick(v, getPosition(), false);
+            }
+        }
+    }
+
+    public interface ClickListener {
+
+        public void onClick(View v, int position, boolean isEditClick);
+    }
+
+    /* Setter for listener. */
+    public void setClickListener(ClickListener clickListener) {
+        this.clickListener = clickListener;
     }
 
     @Override

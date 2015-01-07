@@ -40,6 +40,13 @@
             android:title="@string/auto_refresh_interval"
             android:summary="@string/auto_refresh_interval_summary" />
 
+        <CheckBoxPreference
+            android:dependency="pref_auto_refresh"
+            android:key="pref_auto_refresh_fullscreen"
+            android:checked="false"
+            android:title="@string/auto_refresh_fullscreen"
+            android:summary="@string/auto_refresh_fullscreen_summary" />
+
     <Preference
         android:key="pref_zoom"
         android:title="@string/pref_zoom"
@@ -68,9 +75,9 @@
         android:key="pref_key_database_settings">
 
         <Preference
-            android:key="pref_delete_all"
-            android:title="@string/pref_delete_all"
-            android:summary="@string/pref_delete_all_summ" />
+            android:key="pref_import_from_server"
+            android:title="@string/pref_import_from_server"
+            android:summary="@string/pref_import_from_server_summary" />
 
         <Preference
             android:key="pref_import_from_ext"
@@ -81,6 +88,11 @@
             android:key="pref_export_to_ext"
             android:title="@string/pref_export_to_ext"
             android:summary="@string/pref_export_to_ext_summ" />
+
+        <Preference
+            android:key="pref_delete_all"
+            android:title="@string/pref_delete_all"
+            android:summary="@string/pref_delete_all_summ" />
 
         <Preference
             android:key="pref_clean_folder"

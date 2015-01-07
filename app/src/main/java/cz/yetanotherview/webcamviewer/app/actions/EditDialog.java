@@ -93,7 +93,7 @@ public class EditDialog extends DialogFragment {
         db = new DatabaseHelper(getActivity());
         webCam = db.getWebCam(id);
         allCategories = db.getAllCategories();
-        webcam_category_ids = db.getWebcamCategoriesIds(webCam.getId());
+        webcam_category_ids = db.getWebCamCategoriesIds(webCam.getId());
         db.closeDB();
 
         pos = webCam.getPosition();

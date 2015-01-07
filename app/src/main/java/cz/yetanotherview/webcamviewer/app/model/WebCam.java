@@ -94,6 +94,10 @@ public class WebCam {
         this.created_at = created_at;
     }
 
+    public void setTags(List tags) {
+        this.tags = tags;
+    }
+
     // getters
     public long getId() {
         return this.id;
@@ -122,4 +126,9 @@ public class WebCam {
     public double getLongitude() {
         return this.longitude;
     }
+
+    public List getTags() {
+        return tags;
+    }
+
 }

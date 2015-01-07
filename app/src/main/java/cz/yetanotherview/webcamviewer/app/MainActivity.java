@@ -59,7 +59,6 @@ import cz.yetanotherview.webcamviewer.app.actions.AddDialog;
 import cz.yetanotherview.webcamviewer.app.actions.EditDialog;
 import cz.yetanotherview.webcamviewer.app.actions.WelcomeDialog;
 import cz.yetanotherview.webcamviewer.app.fullscreen.FullScreenImage;
-import cz.yetanotherview.webcamviewer.app.helper.ItemClickListener;
 import cz.yetanotherview.webcamviewer.app.adapter.WebCamAdapter;
 import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.app.helper.WebCamListener;
@@ -206,18 +205,17 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
 
         checkAdapterIsEmpty();
 
-        mRecyclerView.addOnItemTouchListener(new ItemClickListener(getApplicationContext(),
-            mRecyclerView, new ItemClickListener.OnItemClickListener() {
-                @Override
-                public void onItemClick(View view, int position) {
+        mAdapter.setClickListener(new WebCamAdapter.ClickListener() {
+
+            @Override
+            public void onClick(View v, int position, boolean isEditClick) {
+                if (isEditClick) {
+                    showEditDialog(position);
+                } else {
                     showImageFullscreen(position);
                 }
-                @Override
-                public void onItemLongClick(View view, int position) {
-                    showEditDialog(position);
-                }
-            })
-        );
+            }
+        });
     }
 
     private void initFab() {

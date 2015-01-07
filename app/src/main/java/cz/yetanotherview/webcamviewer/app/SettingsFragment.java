@@ -18,6 +18,7 @@
 
 package cz.yetanotherview.webcamviewer.app;
 
+import android.app.DialogFragment;
 import android.app.backup.BackupManager;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -39,6 +40,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cz.yetanotherview.webcamviewer.app.actions.JsonFetcher;
 import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.app.model.Category;
 
@@ -74,22 +76,23 @@ public class SettingsFragment extends PreferenceFragment {
 
         db = new DatabaseHelper(getActivity().getApplicationContext());
 
-        setAutoRefresh();
+        setAutoRefreshInterval();
         setZoom();
 
         categoryAdd();
         categoryEdit();
         categoryDelete();
 
-        deleteAllWebCams();
+        importFromServer();
         importFromExt();
         exportToExt();
+        deleteAllWebCams();
         cleanExtFolder();
 
     }
 
-    private void setAutoRefresh() {
-        // Import from Ext OnPreferenceClickListener
+    private void setAutoRefreshInterval() {
+        // Auto Refresh Interval OnPreferenceClickListener
         Preference pref_auto_refresh_interval = findPreference("pref_auto_refresh_interval");
         pref_auto_refresh_interval.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
@@ -154,7 +157,7 @@ public class SettingsFragment extends PreferenceFragment {
     }
 
     private void setZoom() {
-        // Import from Ext OnPreferenceClickListener
+        // setZoom OnPreferenceClickListener
         Preference pref_zoom = findPreference("pref_zoom");
         pref_zoom.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
@@ -270,8 +273,8 @@ public class SettingsFragment extends PreferenceFragment {
                                 @Override
                                 public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
 
-                                        Category editCategory = allCategories.get(which);
-                                        categoryEditDialog(editCategory);
+                                    Category editCategory = allCategories.get(which);
+                                    categoryEditDialog(editCategory);
 
                                 }
                             })
@@ -407,35 +410,13 @@ public class SettingsFragment extends PreferenceFragment {
         });
     }
 
-    private void deleteAllWebCams() {
-        // Delete all OnPreferenceClickListener
-        Preference pref_delete_all = findPreference("pref_delete_all");
-        pref_delete_all.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+    private void importFromServer() {
+        // Import from Server OnPreferenceClickListener
+        Preference pref_import_from_server = findPreference("pref_import_from_server");
+        pref_import_from_server.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
-
-                new MaterialDialog.Builder(getActivity())
-                        .title(R.string.pref_delete_all)
-                        .content(R.string.are_you_sure)
-                        .positiveText(R.string.Yes)
-                        .negativeText(R.string.No)
-                        .callback(new MaterialDialog.Callback() {
-                            @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                db.deleteAllWebCams();
-                                db.closeDB();
-                                Snackbar.with(getActivity().getApplicationContext())
-                                        .text(R.string.action_deleted)
-                                        .actionLabel(R.string.dismiss)
-                                        .actionColor(getResources().getColor(R.color.yellow))
-                                        .show(getActivity());
-                            }
-
-                            @Override
-                            public void onNegative(MaterialDialog dialog) {
-                            }
-                        })
-                        .show();
-
+                    DialogFragment fetcher = new JsonFetcher();
+                    fetcher.show(getFragmentManager(), "JsonFetcher");
                 return true;
             }
         });
@@ -527,6 +508,40 @@ public class SettingsFragment extends PreferenceFragment {
 //                        .actionLabel(R.string.dismiss)
 //                        .actionColor(getResources().getColor(R.color.yellow))
 //                        .show(getActivity());
+
+                return true;
+            }
+        });
+    }
+
+    private void deleteAllWebCams() {
+        // Delete all OnPreferenceClickListener
+        Preference pref_delete_all = findPreference("pref_delete_all");
+        pref_delete_all.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+
+                new MaterialDialog.Builder(getActivity())
+                        .title(R.string.pref_delete_all)
+                        .content(R.string.are_you_sure)
+                        .positiveText(R.string.Yes)
+                        .negativeText(R.string.No)
+                        .callback(new MaterialDialog.Callback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                db.deleteAllWebCams();
+                                db.closeDB();
+                                Snackbar.with(getActivity().getApplicationContext())
+                                        .text(R.string.action_deleted)
+                                        .actionLabel(R.string.dismiss)
+                                        .actionColor(getResources().getColor(R.color.yellow))
+                                        .show(getActivity());
+                            }
+
+                            @Override
+                            public void onNegative(MaterialDialog dialog) {
+                            }
+                        })
+                        .show();
 
                 return true;
             }

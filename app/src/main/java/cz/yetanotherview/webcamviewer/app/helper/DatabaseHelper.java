@@ -383,12 +383,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Deleting a category
      */
-    public void deleteCategory(Category category, boolean should_delete_all_category_webcams) {
+    public void deleteCategory(Category category, boolean should_delete_all_category_WebCams) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         // before deleting category
         // check if WebCams under this category should also be deleted
-        if (should_delete_all_category_webcams) {
+        if (should_delete_all_category_WebCams) {
             // get all WebCams under this category
             List<WebCam> allCategoryWebCams = getAllWebCamsByCategory(category.getcategoryName(),"id ASC");
 
@@ -413,10 +413,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Creating WebCam_category
      */
-    public long[] getWebcamCategoriesIds(long webcam_id) {
+    public long[] getWebCamCategoriesIds(long webCam_id) {
 
         String selectQuery = "SELECT * FROM " + TABLE_WEBCAM_CATEGORY + " WHERE "
-                + KEY_WEBCAM_ID + " = " + webcam_id;
+                + KEY_WEBCAM_ID + " = " + webCam_id;
         Log.d(LOG, selectQuery);
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -438,11 +438,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Creating WebCam_category
      */
-    public long createWebCamCategory(long webcam_id, long category_id) {
+    public long createWebCamCategory(long webCam_id, long category_id) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_WEBCAM_ID, webcam_id);
+        values.put(KEY_WEBCAM_ID, webCam_id);
         values.put(KEY_CATEGORY_ID, category_id);
         values.put(KEY_CREATED_AT, getDateTime());
 
@@ -452,10 +452,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Deleting a WebCam category
      */
-    public void deleteWebCamCategory(long webcam_id) {
+    public void deleteWebCamCategory(long webCam_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_WEBCAM_CATEGORY, KEY_WEBCAM_ID + " = ?",
-                new String[] { String.valueOf(webcam_id) });
+                new String[] { String.valueOf(webCam_id) });
     }
 
     // closing database
