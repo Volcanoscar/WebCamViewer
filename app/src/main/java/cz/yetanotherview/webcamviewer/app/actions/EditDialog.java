@@ -43,8 +43,8 @@ import cz.yetanotherview.webcamviewer.app.model.WebCam;
  */
 public class EditDialog extends DialogFragment {
 
-    private EditText mWebcamName;
-    private EditText mWebcamUrl;
+    private EditText mWebCamName;
+    private EditText mWebCamUrl;
     private WebCam webCam;
     private WebCamListener mOnAddListener;
     private View positiveAction;
@@ -53,10 +53,10 @@ public class EditDialog extends DialogFragment {
     private List<Category> allCategories;
     private Category category;
 
-    private Button webcamCategoryButton;
+    private Button webCamCategoryButton;
     private String[] items;
     private long[] category_ids;
-    private long[] webcam_category_ids;
+    private long[] webCam_category_ids;
     private Integer[] checked;
 
     private long id;
@@ -93,7 +93,7 @@ public class EditDialog extends DialogFragment {
         db = new DatabaseHelper(getActivity());
         webCam = db.getWebCam(id);
         allCategories = db.getAllCategories();
-        webcam_category_ids = db.getWebCamCategoriesIds(webCam.getId());
+        webCam_category_ids = db.getWebCamCategoriesIds(webCam.getId());
         db.closeDB();
 
         pos = webCam.getPosition();
@@ -108,11 +108,11 @@ public class EditDialog extends DialogFragment {
             count++;
         }
 
-        checked = new Integer[webcam_category_ids.length];
+        checked = new Integer[webCam_category_ids.length];
         StringBuilder checkedNames = new StringBuilder();
         int count2 = 0;
         for (int i=0; i < ids.length; i++) {
-            for (long webcam_category_id : webcam_category_ids) {
+            for (long webcam_category_id : webCam_category_ids) {
                 if (ids[i] == webcam_category_id) {
                     checkedNames.append("[");
                     checkedNames.append(items[i]);
@@ -136,12 +136,12 @@ public class EditDialog extends DialogFragment {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
 
-                        webCam.setName(mWebcamName.getText().toString().trim());
-                        webCam.setUrl(mWebcamUrl.getText().toString().trim());
+                        webCam.setName(mWebCamName.getText().toString().trim());
+                        webCam.setUrl(mWebCamUrl.getText().toString().trim());
                         webCam.setPosition(pos);
                         webCam.setStatus(status);
                         if (mOnAddListener != null)
-                            mOnAddListener.webcamEdited(position, webCam, category_ids);
+                            mOnAddListener.webCamEdited(position, webCam, category_ids);
                     }
 
                     @Override
@@ -151,28 +151,28 @@ public class EditDialog extends DialogFragment {
                     @Override
                     public void onNeutral(MaterialDialog dialog) {
                         if (mOnAddListener != null)
-                            mOnAddListener.webcamDeleted(id,position);
+                            mOnAddListener.webCamDeleted(id, position);
                     }
                 }).build();
 
-        mWebcamName = (EditText) view.findViewById(R.id.webcam_name);
-        mWebcamName.setText(webCam.getName());
-        mWebcamName.requestFocus();
+        mWebCamName = (EditText) view.findViewById(R.id.webcam_name);
+        mWebCamName.setText(webCam.getName());
+        mWebCamName.requestFocus();
 
-        mWebcamUrl = (EditText) view.findViewById(R.id.webcam_url);
-        mWebcamUrl.setText(webCam.getUrl());
+        mWebCamUrl = (EditText) view.findViewById(R.id.webcam_url);
+        mWebCamUrl.setText(webCam.getUrl());
 
-        webcamCategoryButton = (Button) view.findViewById(R.id.webcam_category_button);
+        webCamCategoryButton = (Button) view.findViewById(R.id.webcam_category_button);
         if (allCategories.size() == 0 ) {
-            webcamCategoryButton.setText(R.string.category_array_empty);
+            webCamCategoryButton.setText(R.string.category_array_empty);
         }
         else {
-            if (webcam_category_ids.length == 0) {
-                webcamCategoryButton.setText(R.string.category_array_choose);
+            if (webCam_category_ids.length == 0) {
+                webCamCategoryButton.setText(R.string.category_array_choose);
             }
-            else webcamCategoryButton.setText(checkedNames);
+            else webCamCategoryButton.setText(checkedNames);
 
-            webcamCategoryButton.setOnClickListener(new View.OnClickListener() {
+            webCamCategoryButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
@@ -207,9 +207,9 @@ public class EditDialog extends DialogFragment {
                                             str.append(category.getcategoryName());
                                             str.append("] ");
                                         }
-                                        webcamCategoryButton.setText(str);
+                                        webCamCategoryButton.setText(str);
                                     } else {
-                                        webcamCategoryButton.setText(R.string.category_array_choose);
+                                        webCamCategoryButton.setText(R.string.category_array_choose);
                                     }
                                     checked = which;
                                     positiveAction.setEnabled(true);
@@ -225,26 +225,30 @@ public class EditDialog extends DialogFragment {
 
         positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
 
-        mWebcamName.addTextChangedListener(new TextWatcher() {
+        mWebCamName.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 positiveAction.setEnabled(s.toString().trim().length() > 0);
             }
+
             @Override
             public void afterTextChanged(Editable s) {
             }
         });
-        mWebcamUrl.addTextChangedListener(new TextWatcher() {
+        mWebCamUrl.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 positiveAction.setEnabled(s.toString().trim().length() > 0);
             }
+
             @Override
             public void afterTextChanged(Editable s) {
             }

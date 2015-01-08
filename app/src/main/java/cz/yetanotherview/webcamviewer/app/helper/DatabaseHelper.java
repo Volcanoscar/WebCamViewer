@@ -218,14 +218,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * getting all WebCams under single category
      * */
-    public List<WebCam> getAllWebCamsByCategory(String category_name, String orderby) {
+    public List<WebCam> getAllWebCamsByCategory(int category_id, String orderBy) {
         List<WebCam> webCams = new ArrayList<WebCam>();
 
         String selectQuery = "SELECT * FROM " + TABLE_WEBCAM + " td, "
                 + TABLE_CATEGORY + " tg, " + TABLE_WEBCAM_CATEGORY + " tt WHERE tg."
-                + KEY_CATEGORY_NAME + " = '" + category_name + "'" + " AND tg." + KEY_ID
+                + KEY_ID + " = " + category_id + " AND tg." + KEY_ID
                 + " = " + "tt." + KEY_CATEGORY_ID + " AND td." + KEY_ID + " = "
-                + "tt." + KEY_WEBCAM_ID + " ORDER BY " + orderby;
+                + "tt." + KEY_WEBCAM_ID + " ORDER BY " + orderBy;
 
         Log.d(LOG, selectQuery);
 
@@ -335,9 +335,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_CREATED_AT, getDateTime());
 
         // insert row
-        long category_id = db.insert(TABLE_CATEGORY, null, values);
-
-        return category_id;
+        return db.insert(TABLE_CATEGORY, null, values);
     }
 
     /**
@@ -390,7 +388,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         // check if WebCams under this category should also be deleted
         if (should_delete_all_category_WebCams) {
             // get all WebCams under this category
-            List<WebCam> allCategoryWebCams = getAllWebCamsByCategory(category.getcategoryName(),"id ASC");
+            List<WebCam> allCategoryWebCams = getAllWebCamsByCategory(category.getId(),"id ASC");
 
             // delete all WebCams
             for (WebCam webCam : allCategoryWebCams) {

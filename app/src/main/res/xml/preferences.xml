@@ -34,18 +34,18 @@
         android:title="@string/pref_auto_refresh"
         android:summary="@string/pref_auto_refresh_summary" />
 
-        <Preference
-            android:dependency="pref_auto_refresh"
-            android:key="pref_auto_refresh_interval"
-            android:title="@string/auto_refresh_interval"
-            android:summary="@string/auto_refresh_interval_summary" />
-
         <CheckBoxPreference
             android:dependency="pref_auto_refresh"
             android:key="pref_auto_refresh_fullscreen"
             android:checked="false"
             android:title="@string/auto_refresh_fullscreen"
             android:summary="@string/auto_refresh_fullscreen_summary" />
+
+        <Preference
+            android:dependency="pref_auto_refresh"
+            android:key="pref_auto_refresh_interval"
+            android:title="@string/auto_refresh_interval"
+            android:summary="@string/auto_refresh_interval_summary" />
 
     <Preference
         android:key="pref_zoom"

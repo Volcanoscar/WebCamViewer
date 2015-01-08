@@ -23,42 +23,68 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.ImageButton;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import cz.yetanotherview.webcamviewer.app.R;
+import cz.yetanotherview.webcamviewer.app.Utils;
 
 public class FullScreenImage extends Activity {
 
     public static final String TAG = "ImmersiveMode";
     private static Context context;
 
+    private TouchImageView image;
+    private String url;
+    private float zoom;
+
+    private boolean autoRefresh;
+    private int autoRefreshInterval;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FullScreenImage.context = getApplicationContext();
 
-        final View decorView = getWindow().getDecorView();
-        decorView.setOnSystemUiVisibilityChangeListener(
-                new View.OnSystemUiVisibilityChangeListener() {
-                    @Override
-                    public void onSystemUiVisibilityChange(int i) {
-                        int height = decorView.getHeight();
-                        Log.i(TAG, "Current height: " + height);
-                    }
-                });
+        setContentView(R.layout.full_screen_layout);
         goFullScreen();
 
         Intent intent = getIntent();
-        String url = intent.getExtras().getString("url");
-        float zoom = intent.getExtras().getFloat("zoom");
+        url = intent.getExtras().getString("url");
+        zoom = intent.getExtras().getFloat("zoom");
+        autoRefresh = intent.getExtras().getBoolean("autoRefresh");
+        autoRefreshInterval = intent.getExtras().getInt("interval");
 
-        TouchImageView imageView = new TouchImageView(this);
-        imageView.setMaxZoom(zoom);
-        imageView.setBackgroundColor(getResources().getColor(R.color.white));
+        image = (TouchImageView) findViewById(R.id.touch_image);
+        image.setMaxZoom(zoom);
 
+        ImageButton backButton = (ImageButton) findViewById(R.id.back_button);
+        backButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        loadImage();
+
+        if (autoRefresh) {
+            autoRefreshTimer(autoRefreshInterval);
+        }
+    }
+
+    public static Context getAppContext() {
+        return FullScreenImage.context;
+    }
+
+    private void loadImage() {
         //Picasso.with(FullScreenImage.getAppContext()).setIndicatorsEnabled(true);
         Picasso.with(FullScreenImage.getAppContext())
                 .load(url)
@@ -67,13 +93,7 @@ public class FullScreenImage extends Activity {
                 //.centerInside()
                 .placeholder(R.drawable.animation)
                 .error(R.drawable.placeholder_error)
-                .into(imageView);
-
-        setContentView(imageView);
-    }
-
-    public static Context getAppContext() {
-        return FullScreenImage.context;
+                .into(image);
     }
 
     private void goFullScreen() {
@@ -113,5 +133,30 @@ public class FullScreenImage extends Activity {
         }
 
         getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
+    }
+
+    private void autoRefreshTimer(int interval) {
+        final Handler handler = new Handler();
+        Timer timer = new Timer();
+        TimerTask doAsynchronousTask = new TimerTask() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    public void run() {
+                        try {
+                            refresh();
+                        } catch (Exception e) {
+                            // Auto-generated catch block
+                        }
+                    }
+                });
+            }
+        };
+        timer.schedule(doAsynchronousTask, 0, interval);
+    }
+
+    private void refresh() {
+        Utils.deletePicassoCache(getApplicationContext().getCacheDir());
+        loadImage();
     }
 }

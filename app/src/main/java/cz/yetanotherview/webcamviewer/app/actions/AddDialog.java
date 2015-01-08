@@ -45,8 +45,8 @@ import cz.yetanotherview.webcamviewer.app.model.WebCam;
  */
 public class AddDialog extends DialogFragment {
 
-    private EditText mWebcamName;
-    private EditText mWebcamUrl;
+    private EditText mWebCamName;
+    private EditText mWebCamUrl;
     private WebCam webCam;
     private WebCamListener mOnAddListener;
     private View positiveAction;
@@ -55,7 +55,7 @@ public class AddDialog extends DialogFragment {
     private List<Category> allCategories;
     private Category category;
 
-    private Button webcamCategoryButton;
+    private Button webCamCategoryButton;
     private String[] items;
     private long[] category_ids;
 
@@ -103,12 +103,12 @@ public class AddDialog extends DialogFragment {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         webCam = new WebCam(
-                                mWebcamName.getText().toString().trim(),
-                                mWebcamUrl.getText().toString().trim(),
+                                mWebCamName.getText().toString().trim(),
+                                mWebCamUrl.getText().toString().trim(),
                                 0,
                                 0);
                         if (mOnAddListener != null)
-                            mOnAddListener.webcamAdded(webCam, category_ids);
+                            mOnAddListener.webCamAdded(webCam, category_ids);
                     }
 
                     @Override
@@ -122,18 +122,18 @@ public class AddDialog extends DialogFragment {
                     }
                 }).build();
 
-        mWebcamName = (EditText) view.findViewById(R.id.webcam_name);
-        mWebcamName.requestFocus();
+        mWebCamName = (EditText) view.findViewById(R.id.webcam_name);
+        mWebCamName.requestFocus();
 
-        mWebcamUrl = (EditText) view.findViewById(R.id.webcam_url);
+        mWebCamUrl = (EditText) view.findViewById(R.id.webcam_url);
 
-        webcamCategoryButton = (Button) view.findViewById(R.id.webcam_category_button);
+        webCamCategoryButton = (Button) view.findViewById(R.id.webcam_category_button);
         if (allCategories.size() == 0 ) {
-            webcamCategoryButton.setText(R.string.category_array_empty);
+            webCamCategoryButton.setText(R.string.category_array_empty);
         }
         else {
-            webcamCategoryButton.setText(R.string.category_array_choose);
-            webcamCategoryButton.setOnClickListener(new View.OnClickListener() {
+            webCamCategoryButton.setText(R.string.category_array_choose);
+            webCamCategoryButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
@@ -168,8 +168,9 @@ public class AddDialog extends DialogFragment {
                                             str.append(category.getcategoryName());
                                             str.append("] ");
                                         }
-                                        webcamCategoryButton.setText(str);
-                                    } else webcamCategoryButton.setText(R.string.category_array_choose);
+                                        webCamCategoryButton.setText(str);
+                                    } else
+                                        webCamCategoryButton.setText(R.string.category_array_choose);
 
                                     multidialog.dismiss();
                                 }
@@ -182,14 +183,16 @@ public class AddDialog extends DialogFragment {
 
         positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
 
-        mWebcamUrl.addTextChangedListener(new TextWatcher() {
+        mWebCamUrl.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
+
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 positiveAction.setEnabled(s.toString().trim().length() > 0);
             }
+
             @Override
             public void afterTextChanged(Editable s) {
             }

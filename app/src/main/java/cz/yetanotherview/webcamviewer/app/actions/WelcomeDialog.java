@@ -26,8 +26,6 @@ import com.afollestad.materialdialogs.MaterialDialog;
 
 public class WelcomeDialog extends DialogFragment {
 
-    private MaterialDialog dialog;
-
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -35,7 +33,7 @@ public class WelcomeDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        dialog = new MaterialDialog.Builder(getActivity())
+        return new MaterialDialog.Builder(getActivity())
                 .title("Welcome")
                 .content("A few words of introduction...")
                 .positiveText("IMPORT WEBCAMS NOW!")
@@ -58,6 +56,5 @@ public class WelcomeDialog extends DialogFragment {
                     }
                 })
                 .show();
-        return dialog;
     }
 }

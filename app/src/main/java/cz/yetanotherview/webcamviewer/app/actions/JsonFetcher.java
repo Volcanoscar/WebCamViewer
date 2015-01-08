@@ -22,6 +22,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.app.backup.BackupManager;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -42,6 +43,7 @@ import java.io.Reader;
 import java.util.Arrays;
 import java.util.List;
 
+import cz.yetanotherview.webcamviewer.app.MainActivity;
 import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
@@ -93,6 +95,14 @@ public class JsonFetcher extends DialogFragment {
         BackupManager backupManager = new BackupManager(getActivity());
         backupManager.dataChanged();
         dialog.dismiss();
+
+        reloadMainActivity();
+    }
+
+    private void reloadMainActivity() {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 
     private class WebCamsFromJsonFetcher extends AsyncTask<Void, Void, String> {

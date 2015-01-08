@@ -127,6 +127,10 @@ public class WebCam {
         return this.longitude;
     }
 
+    public String getCreatedAt() {
+        return this.created_at;
+    }
+
     public List getTags() {
         return tags;
     }

@@ -85,6 +85,7 @@
 <string name="all_webcams">"All WebCams"</string>
 <string name="pref_import_from_server">Import from Server</string>
 <string name="pref_import_from_server_summary">Import WebCams from server database</string>
-<string name="auto_refresh_fullscreen">In Full Screen view</string>
-<string name="auto_refresh_fullscreen_summary">Enable auto refresh also in full screen view</string>
+<string name="auto_refresh_fullscreen">Only in Full Screen view</string>
+<string name="auto_refresh_fullscreen_summary">Enable auto refresh only in full-screen view</string>
+<string name="also_delete_webcams">Delete also WebCams that are in this category?</string>
 </resources>

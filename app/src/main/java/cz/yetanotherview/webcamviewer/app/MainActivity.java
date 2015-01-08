@@ -92,9 +92,10 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private String selectedCategoryName;
     private int selectedCategory;
     private float zoom;
-    private boolean FullScreen;
-    private boolean AutoRefresh;
+    private boolean fullScreen;
+    private boolean autoRefresh;
     private int autoRefreshInterval;
+    private boolean autoRefreshFullScreenOnly;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,12 +109,12 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         mEmptyView = findViewById(R.id.empty);
 
         // Auto Refreshing
-        if (AutoRefresh) {
+        if (autoRefresh && !autoRefreshFullScreenOnly) {
             autoRefreshTimer(autoRefreshInterval);
         }
 
         // Go FullScreen only on KitKat and up
-        if (Build.VERSION.SDK_INT >= 19 && FullScreen) {
+        if (Build.VERSION.SDK_INT >= 19 && fullScreen) {
             goFullScreen();
         }
 
@@ -265,7 +266,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         }
         else {
             Category category = allCategories.get(position - 1);
-            allWebCams = db.getAllWebCamsByCategory(category.getcategoryName(),sortOrder);
+            allWebCams = db.getAllWebCamsByCategory(category.getId(),sortOrder);
             db.closeDB();
             mAdapter.swapData(allWebCams);
             selectedCategoryName = category.getcategoryName();
@@ -392,6 +393,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         Intent fullScreenIntent = new Intent(getApplicationContext(), FullScreenImage.class);
         fullScreenIntent.putExtra("url", webCam.getUrl());
         fullScreenIntent.putExtra("zoom", zoom);
+        fullScreenIntent.putExtra("autoRefresh", autoRefresh);
+        fullScreenIntent.putExtra("interval", autoRefreshInterval);
         startActivity(fullScreenIntent);
     }
 
@@ -413,7 +416,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     }
 
     @Override
-    public void webcamAdded(WebCam wc, long[] category_ids) {
+    public void webCamAdded(WebCam wc, long[] category_ids) {
         synchronized (sDataLock) {
             if (category_ids != null) {
                 wc.setId(db.createWebCam(wc, category_ids));
@@ -435,7 +438,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     }
 
     @Override
-    public void webcamEdited(int position, WebCam wc, long[] category_ids) {
+    public void webCamEdited(int position, WebCam wc, long[] category_ids) {
         synchronized (sDataLock) {
             if (category_ids != null) {
                 db.updateWebCam(wc, category_ids);
@@ -454,7 +457,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     }
 
     @Override
-    public void webcamDeleted(long id, int position) {
+    public void webCamDeleted(long id, int position) {
         synchronized (sDataLock) {
             db.deleteWebCam(id);
             db.closeDB();
@@ -537,7 +540,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus && FullScreen) {
+        if (hasFocus && fullScreen) {
             getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
@@ -557,9 +560,10 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private void loadPref(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         firstRun = preferences.getBoolean("pref_first_run", true);
-        FullScreen = preferences.getBoolean("pref_full_screen", false);
-        AutoRefresh = preferences.getBoolean("pref_auto_refresh", false);
-        autoRefreshInterval = preferences.getInt("pref_auto_refresh_interval", 10000);
+        fullScreen = preferences.getBoolean("pref_full_screen", false);
+        autoRefresh = preferences.getBoolean("pref_auto_refresh", false);
+        autoRefreshInterval = preferences.getInt("pref_auto_refresh_interval", 30000);
+        autoRefreshFullScreenOnly = preferences.getBoolean("pref_auto_refresh_fullscreen", false);
         zoom = preferences.getFloat("pref_zoom", 2);
         selectedCategory = preferences.getInt("pref_selected_category", 0);
         selectedCategoryName = preferences.getString("pref_selectedCategoryName", allWebCamsString);

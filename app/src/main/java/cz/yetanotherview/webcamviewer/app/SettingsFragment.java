@@ -59,6 +59,8 @@ public class SettingsFragment extends PreferenceFragment {
     private List<Category> allCategories;
     private Category category;
 
+    private Integer[] whichDelete;
+
     private DatabaseHelper db;
     private SharedPreferences sharedPref;
 
@@ -98,7 +100,7 @@ public class SettingsFragment extends PreferenceFragment {
             public boolean onPreferenceClick(Preference preference) {
 
                 sharedPref = getPreferenceManager().getSharedPreferences();
-                int auto_refresh_interval_value = sharedPref.getInt("pref_auto_refresh_interval", 10000);
+                int auto_refresh_interval_value = sharedPref.getInt("pref_auto_refresh_interval", 30000);
 
                 View view = getActivity().getLayoutInflater().inflate(R.layout.enter_time_dialog, null);
 
@@ -376,25 +378,8 @@ public class SettingsFragment extends PreferenceFragment {
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog dialog) {
-                                    Integer[] which = dialog.getSelectedIndices();
-                                    if (which != null && which.length != 0) {
-                                        synchronized (SettingsFragment.sDataLock) {
-
-                                            for (Integer aWhich : which) {
-                                                Category deleteCategory = allCategories.get(aWhich);
-                                                db.deleteCategory(deleteCategory, false);
-                                            }
-                                            db.closeDB();
-                                        }
-                                        BackupManager backupManager = new BackupManager(getActivity());
-                                        backupManager.dataChanged();
-
-                                        Snackbar.with(getActivity().getApplicationContext())
-                                                .text(R.string.action_deleted)
-                                                .actionLabel(R.string.dismiss)
-                                                .actionColor(getResources().getColor(R.color.yellow))
-                                                .show(getActivity());
-                                    }
+                                    whichDelete = dialog.getSelectedIndices();
+                                    categoryDeleteAlsoWebCamsDialog();
                                     dialog.dismiss();
                                 }
                             })
@@ -408,6 +393,51 @@ public class SettingsFragment extends PreferenceFragment {
                 return true;
             }
         });
+    }
+
+    private void categoryDeleteAlsoWebCamsDialog (){
+
+            new MaterialDialog.Builder(getActivity())
+                    .title(R.string.action_delete)
+                    .content(R.string.also_delete_webcams)
+                    .positiveText(R.string.Yes)
+                    .negativeText(R.string.No)
+                    .callback(new MaterialDialog.Callback() {
+                        @Override
+                        public void onPositive(MaterialDialog dialog) {
+                            categoryDeleteAlsoWebCams(true);
+                        }
+
+                        @Override
+                        public void onNegative(MaterialDialog dialog) {
+                            categoryDeleteAlsoWebCams(false);
+                        }
+                    })
+                    .show();
+    }
+
+    private void categoryDeleteAlsoWebCams(boolean alsoWebCams){
+
+        if (whichDelete != null && whichDelete.length != 0) {
+            synchronized (SettingsFragment.sDataLock) {
+                for (Integer aWhich : whichDelete) {
+                    Category deleteCategory = allCategories.get(aWhich);
+                    if (alsoWebCams) {
+                        db.deleteCategory(deleteCategory, true);
+                    }
+                    else db.deleteCategory(deleteCategory, false);
+                }
+                db.closeDB();
+            }
+            BackupManager backupManager = new BackupManager(getActivity());
+            backupManager.dataChanged();
+
+            Snackbar.with(getActivity().getApplicationContext())
+                    .text(R.string.action_deleted)
+                    .actionLabel(R.string.dismiss)
+                    .actionColor(getResources().getColor(R.color.yellow))
+                    .show(getActivity());
+        }
     }
 
     private void importFromServer() {
