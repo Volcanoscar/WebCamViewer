@@ -379,7 +379,11 @@ public class SettingsFragment extends PreferenceFragment {
                                 @Override
                                 public void onPositive(MaterialDialog dialog) {
                                     whichDelete = dialog.getSelectedIndices();
-                                    categoryDeleteAlsoWebCamsDialog();
+                                    if (whichDelete != null) {
+                                        if (whichDelete.length != 0) {
+                                            categoryDeleteAlsoWebCamsDialog();
+                                        }
+                                    }
                                     dialog.dismiss();
                                 }
                             })
