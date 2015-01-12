@@ -9,6 +9,7 @@
     <br>
     <b>Many thanks to these open source tools:</b><br>
     <b><a href="https://developer.android.com/tools/support-library/features.html">Support Libraries</a></b><i> by Google, Inc.</i><br>
+    <b><a href="https://github.com/afollestad/material-dialogs">Material Dialogs</a></b><i> by Aidan Follestad.</i><br>
     <b><a href="https://github.com/square/picasso">Picasso</a></b><i> by Square, Inc.</i><br><br>
     <b>Many thanks to these translators:</b><br>
     Chinese (cn + tw) - <b><a href="https://plus.google.com/105827775849570821979/">John Chung</a></b><br>
@@ -45,7 +46,6 @@
 <string name="pref_export_to_ext_summ">"Export WebCam database to External Storage"</string>
 <string name="export_title">"Enter the file name"</string>
 <string name="export_input_sample">"E.g. MyWebCams"</string>
-<string name="import_done">"Import Successful!"</string>
 <string name="import_failed">"Import Failed!"</string>
 <string name="export_done">"Export Successful!"</string>
 <string name="export_failed">"Export Failed!"</string>
@@ -88,4 +88,13 @@
 <string name="auto_refresh_fullscreen">Only in Full Screen view</string>
 <string name="auto_refresh_fullscreen_summary">Enable auto refresh only in full-screen view</string>
 <string name="also_delete_webcams">Delete also WebCams that are in this category?</string>
+<string name="imported">Imported</string>
+<string name="nothing_to_export">Nothing to export</string>
+<string name="old_database_detected">Old database detected</string>
+<string name="old_database_detected_summary">This is an older type of backup database! This file will be automatically converted to the new format and then deleted.</string>
+<string name="nothing_to_import_summary">You must first create some backups.</string>
+<string name="nothing_to_export_summary">You must first create some WebCams in your database.</string>
+<string name="import_summary">Delete all WebCams from the current database before importing?</string>
+<string name="importing_from_server">Importing from server</string>
+<string name="please_wait">Please wait...</string>
 </resources>

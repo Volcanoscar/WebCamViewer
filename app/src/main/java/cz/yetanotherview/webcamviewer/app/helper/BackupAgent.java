@@ -30,6 +30,7 @@ import java.io.IOException;
 
 import cz.yetanotherview.webcamviewer.app.MainActivity;
 import cz.yetanotherview.webcamviewer.app.SettingsFragment;
+import cz.yetanotherview.webcamviewer.app.actions.ImportDialog;
 import cz.yetanotherview.webcamviewer.app.actions.JsonFetcher;
 
 public class BackupAgent extends BackupAgentHelper {
@@ -69,6 +70,10 @@ public class BackupAgent extends BackupAgentHelper {
         synchronized (JsonFetcher.sDataLock) {
             super.onBackup(oldState, data, newState);
         }
+
+        synchronized (ImportDialog.sDataLock) {
+            super.onBackup(oldState, data, newState);
+        }
     }
 
     @Override
@@ -84,6 +89,10 @@ public class BackupAgent extends BackupAgentHelper {
         }
 
         synchronized (JsonFetcher.sDataLock) {
+            super.onRestore(data, appVersionCode, newState);
+        }
+
+        synchronized (ImportDialog.sDataLock) {
             super.onRestore(data, appVersionCode, newState);
         }
     }

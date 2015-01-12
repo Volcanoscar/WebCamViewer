@@ -40,11 +40,15 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import cz.yetanotherview.webcamviewer.app.MainActivity;
+import cz.yetanotherview.webcamviewer.app.R;
 import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.app.model.Category;
 import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
 public class JsonFetcher extends DialogFragment {
@@ -76,8 +80,8 @@ public class JsonFetcher extends DialogFragment {
         fetcher.execute();
 
         dialog = new ProgressDialog(getActivity(), getTheme());
-        dialog.setTitle("Importing from server");
-        dialog.setMessage("Please wait...");
+        dialog.setTitle(R.string.importing_from_server);
+        dialog.setMessage(getString(R.string.please_wait));
         dialog.setIndeterminate(true);
         dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         return dialog;
@@ -86,9 +90,13 @@ public class JsonFetcher extends DialogFragment {
     private void handlePostsList(List<WebCam> webCams) {
         this.webCams = webCams;
 
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("DD.MM.yyyy HH:mm");
+        String formattedDate = df.format(c.getTime());
+        long categoryFromCurrentDate = db.createCategory(new Category(getString(R.string.imported) + " " + formattedDate));
         synchronized (sDataLock) {
             for(WebCam webCam : webCams) {
-                db.createWebCam(webCam, null);
+                db.createWebCam(webCam, new long[] { categoryFromCurrentDate });
             }
         }
         db.closeDB();
@@ -97,12 +105,6 @@ public class JsonFetcher extends DialogFragment {
         dialog.dismiss();
 
         reloadMainActivity();
-    }
-
-    private void reloadMainActivity() {
-        Intent intent = new Intent(getActivity(), MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
     }
 
     private class WebCamsFromJsonFetcher extends AsyncTask<Void, Void, String> {
@@ -144,5 +146,11 @@ public class JsonFetcher extends DialogFragment {
             }
             return null;
         }
+    }
+
+    private void reloadMainActivity() {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
     }
 }

@@ -22,23 +22,49 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.util.ArrayList;
 
 public class Utils {
 
-    public static String folderWCV = "/WebCamViewer";
+    public static String folderWCVPath = Environment.getExternalStorageDirectory() + "/WebCamViewer/";
+    public static String extension = ".wcv";
+    public static String oldExtension = ".db";
 
-    public static boolean checkIfExist(String filePath) {
-        Log.d("", "Check is running...");
-        Log.d("", filePath);
-        File dbFile = new File(filePath);
-        return dbFile.exists();
+    /**
+     * Get All files from given Directory
+     * @param DirectoryPath Directory patch
+     * @return An array of files
+     */
+    public static File[] GetFiles(String DirectoryPath) {
+        File f = new File(DirectoryPath);
+        f.mkdirs();
+        return f.listFiles();
     }
 
-    public static boolean removeDB(String filePath) {
+    /**
+     * Get file names
+     * @param file An array list of files
+     * @return An array list of strings file names
+     */
+    public static ArrayList<String> getFileNames(File[] file){
+        ArrayList<String> arrayFiles = new ArrayList<String>();
+        if (file.length == 0)
+            return null;
+        else {
+            for (File aFile : file) arrayFiles.add(aFile.getName());
+        }
+        return arrayFiles;
+    }
+
+    /**
+     * Remove old database file
+     * @param fileDB old file
+     * @return statement
+     */
+    public static boolean removeDB(File fileDB) {
         Log.d("", "Delete is running...");
-        Log.d("", filePath);
-        File file = new File(filePath);
-        return file.delete();
+        Log.d("", String.valueOf(fileDB));
+        return fileDB.delete();
     }
 
     /**
@@ -59,7 +85,7 @@ public class Utils {
      * Clean backup folder.
      */
     public static void cleanBackupFolder() {
-        File backupFolder = new File(Environment.getExternalStorageDirectory().toString() + folderWCV);
+        File backupFolder = new File(folderWCVPath);
         if (backupFolder.isDirectory()) {
             String[] children = backupFolder.list();
             for (String aChildren : children) {
@@ -67,5 +93,4 @@ public class Utils {
             }
         }
     }
-
 }

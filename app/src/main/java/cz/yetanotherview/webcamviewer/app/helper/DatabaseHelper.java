@@ -201,10 +201,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 WebCam wc = new WebCam();
-                wc.setId(c.getInt((c.getColumnIndex(KEY_ID))));
-                wc.setName((c.getString(c.getColumnIndex(KEY_WEBCAM))));
-                wc.setUrl((c.getString(c.getColumnIndex(KEY_WEBCAM_URL))));
-                wc.setPosition((c.getInt(c.getColumnIndex(KEY_POSITION))));
+                wc.setId(c.getLong(c.getColumnIndex(KEY_ID)));
+                wc.setName(c.getString(c.getColumnIndex(KEY_WEBCAM)));
+                wc.setUrl(c.getString(c.getColumnIndex(KEY_WEBCAM_URL)));
+                wc.setPosition(c.getInt(c.getColumnIndex(KEY_POSITION)));
+                wc.setStatus(c.getInt(c.getColumnIndex(KEY_STATUS)));
+                wc.setLatitude(c.getDouble(c.getColumnIndex(KEY_LATITUDE)));
+                wc.setLongitude(c.getDouble(c.getColumnIndex(KEY_LONGITUDE)));
                 wc.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
                 // adding to WebCam list

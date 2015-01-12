@@ -33,6 +33,8 @@ public class WelcomeDialog extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         return new MaterialDialog.Builder(getActivity())
                 .title("Welcome")
                 .content("A few words of introduction...")
