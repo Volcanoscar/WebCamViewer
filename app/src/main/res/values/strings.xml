@@ -97,4 +97,6 @@
 <string name="import_summary">Delete all WebCams from the current database before importing?</string>
 <string name="importing_from_server">Importing from server</string>
 <string name="please_wait">Please wait...</string>
+<string name="server_unavailable">Server is unavailable</string>
+<string name="server_unavailable_summary">You are not connected to the Internet or the server is temporarily unavailable...</string>
 </resources>

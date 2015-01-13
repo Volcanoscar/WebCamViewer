@@ -22,7 +22,9 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class Utils {
 
@@ -31,11 +33,23 @@ public class Utils {
     public static String oldExtension = ".db";
 
     /**
+     * Get current formatted date based on location
+     * @return Formatted date
+     */
+    public static String getFormattedDate() {
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat();
+        String formattedDate = df.format(c.getTime());
+        Log.d("Time", formattedDate);
+        return formattedDate;
+    }
+
+    /**
      * Get All files from given Directory
      * @param DirectoryPath Directory patch
      * @return An array of files
      */
-    public static File[] GetFiles(String DirectoryPath) {
+    public static File[] getFiles(String DirectoryPath) {
         File f = new File(DirectoryPath);
         f.mkdirs();
         return f.listFiles();

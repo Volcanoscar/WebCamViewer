@@ -39,10 +39,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 import cz.yetanotherview.webcamviewer.app.MainActivity;
@@ -94,16 +92,12 @@ public class ImportDialog extends DialogFragment {
         extRootDirectory = Environment.getExternalStorageDirectory();
         actionColor = getResources().getColor(R.color.yellow);
 
-        Calendar c = Calendar.getInstance();
-        SimpleDateFormat df = new SimpleDateFormat("DD.MM.yyyy HH:mm");
-        String formattedDate = df.format(c.getTime());
-        categoryFromCurrentDate = db.createCategory(new Category(getString(R.string.imported) + " " + formattedDate));
-
-        File[] filesList = Utils.GetFiles(Utils.folderWCVPath);
+        File[] filesList = Utils.getFiles(Utils.folderWCVPath);
         ArrayList<String> fileNames = Utils.getFileNames(filesList);
 
         if (fileNames != null) {
             items = fileNames.toArray(new String[fileNames.size()]);
+            categoryFromCurrentDate = db.createCategory(new Category(getString(R.string.imported) + " " + Utils.getFormattedDate()));
 
             importDialog = new MaterialDialog.Builder(mActivity)
                     .title(R.string.choose_title)
