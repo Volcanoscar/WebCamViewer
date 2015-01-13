@@ -172,15 +172,13 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(selectedCategoryName);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                invalidateOptionsMenu();
             }
 
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                //getSupportActionBar().setTitle("mDrawerTitle");
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+                invalidateOptionsMenu();
             }
         };
 
@@ -252,6 +250,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
             reInitializeAdapter(position);
             selectedCategory = position;
 
+            getSupportActionBar().setTitle(selectedCategoryName);
             mDrawerLayout.closeDrawers();
         }
     }
