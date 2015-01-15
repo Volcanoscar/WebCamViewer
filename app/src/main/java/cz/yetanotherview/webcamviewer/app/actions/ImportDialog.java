@@ -22,7 +22,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.backup.BackupManager;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
@@ -43,7 +42,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import cz.yetanotherview.webcamviewer.app.MainActivity;
 import cz.yetanotherview.webcamviewer.app.R;
 import cz.yetanotherview.webcamviewer.app.Utils;
 import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
@@ -97,15 +95,14 @@ public class ImportDialog extends DialogFragment {
 
         if (fileNames != null) {
             items = fileNames.toArray(new String[fileNames.size()]);
-            categoryFromCurrentDate = db.createCategory(new Category(getString(R.string.imported) + " " + Utils.getFormattedDate()));
-
             importDialog = new MaterialDialog.Builder(mActivity)
-                    .title(R.string.choose_title)
+                    .title(R.string.external_files)
                     .items(items)
                     .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallback() {
                         @Override
                         public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
 
+                            categoryFromCurrentDate = db.createCategory(new Category(getString(R.string.imported) + " " + Utils.getDateString()));
                             inputName = (items[which]);
                             if (inputName.contains(Utils.extension)) {
                                 importDialog = new MaterialDialog.Builder(mActivity)
@@ -147,13 +144,14 @@ public class ImportDialog extends DialogFragment {
                             }
                         }
                     })
-                    .show();
+                    .positiveText(R.string.choose)
+                    .build();
         }
         else importDialog = new MaterialDialog.Builder(mActivity)
                 .title(R.string.nothing_to_import)
                 .content(R.string.nothing_to_import_summary)
                 .positiveText(android.R.string.ok)
-                .show();
+                .build();
 
         return importDialog;
     }
@@ -177,8 +175,7 @@ public class ImportDialog extends DialogFragment {
                 db.closeDB();
                 BackupManager backupManager = new BackupManager(mActivity);
                 backupManager.dataChanged();
-
-                reloadMainActivity();
+                snackBarImportDone();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -202,7 +199,6 @@ public class ImportDialog extends DialogFragment {
                 BackupManager backupManager = new BackupManager(mActivity);
                 backupManager.dataChanged();
 
-                reloadMainActivity();
                 db = new DatabaseHelper(mActivity);
                 allWebCams = db.getAllWebCams("id ASC");
                 db.closeDB();
@@ -227,6 +223,7 @@ public class ImportDialog extends DialogFragment {
                 writer.close();
 
                 Utils.removeDB(inputDB);
+                snackBarImportDone();
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -241,9 +238,11 @@ public class ImportDialog extends DialogFragment {
                 .show(mActivity);
     }
 
-    private void reloadMainActivity() {
-        Intent intent = new Intent(mActivity, MainActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        mActivity.startActivity(intent);
+    private void snackBarImportDone() {
+        Snackbar.with(mActivity)
+                .text(R.string.import_done)
+                .actionLabel(R.string.dismiss)
+                .actionColor(actionColor)
+                .show(mActivity);
     }
 }

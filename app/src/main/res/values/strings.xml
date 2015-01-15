@@ -60,9 +60,8 @@
 <string name="action_sort_def">"Default"</string>
 <string name="action_sort_name">"Ascending"</string>
 <string name="action_sort_name_desc">"Descending"</string>
-<string name="choose_title">"Choose item"</string>
 <string name="add_new_category_summary">"Add new category to the database"</string>
-<string name="edit_category_summary">"Edit category in database"</string>
+<string name="edit_category_summary">"Edit category name in database"</string>
 <string name="delete_category_summary">"Delete category from database"</string>
 <string name="new_category_name">"Category Name"</string>
 <string name="new_category_hint">"New list"</string>
@@ -84,7 +83,6 @@
 <string name="category_array_choose">"Choose categories"</string>
 <string name="all_webcams">"All WebCams"</string>
 <string name="pref_import_from_server">Import from Server</string>
-<string name="pref_import_from_server_summary">Import WebCams from server database</string>
 <string name="auto_refresh_fullscreen">Only in Full Screen view</string>
 <string name="auto_refresh_fullscreen_summary">Enable auto refresh only in full-screen view</string>
 <string name="also_delete_webcams">Delete also WebCams that are in this category?</string>
@@ -99,4 +97,19 @@
 <string name="please_wait">Please wait...</string>
 <string name="server_unavailable">Server is unavailable</string>
 <string name="server_unavailable_summary">You are not connected to the Internet or the server is temporarily unavailable...</string>
+<string name="choose">CHOOSE</string>
+<string name="available_options">Available options</string>
+<string name="external_files">External files</string>
+<string name="popular_webcams">Popular WebCams</string>
+<string name="selecting_by_country">Selecting by Country</string>
+<string name="latest_webcams">Latest WebCams</string>
+<string name="popular">Popular</string>
+<string name="latest">Latest</string>
+<string name="no_new_webcams">No new WebCams</string>
+<string name="no_new_webcams_summary">No new WebCams since the last download.</string>
+<string name="countries">Countries</string>
+<string name="country">Country</string>
+<string name="add_options">Add options</string>
+<string name="add_manually">Add manually</string>
+<string name="import_done">"Import Successful!"</string>
 </resources>

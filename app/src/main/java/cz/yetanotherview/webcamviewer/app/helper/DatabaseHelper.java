@@ -55,6 +55,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String KEY_CREATED_AT = "created_at";
 
     // WEBCAM Table - column nmaes
+    private static final String KEY_UNI_ID = "uni_id";
     private static final String KEY_WEBCAM = "webcam_name";
     private static final String KEY_WEBCAM_URL = "webcam_url";
     private static final String KEY_POSITION = "position";
@@ -72,7 +73,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // Table Create Statements
     // WebCam table create statement
     private static final String CREATE_TABLE_WEBCAM = "CREATE TABLE IF NOT EXISTS "
-            + TABLE_WEBCAM + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_WEBCAM
+            + TABLE_WEBCAM + "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_UNI_ID + " INTEGER," + KEY_WEBCAM
             + " TEXT," + KEY_WEBCAM_URL + " TEXT," + KEY_POSITION + " INTEGER," + KEY_STATUS + " INTEGER,"
             + KEY_LATITUDE + " REAL,"  + KEY_LONGITUDE + " REAL," + KEY_CREATED_AT + " DATETIME" + ")";
 
@@ -138,6 +139,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(KEY_UNI_ID, webCam.getUniId());
         values.put(KEY_WEBCAM, webCam.getName());
         values.put(KEY_WEBCAM_URL, webCam.getUrl());
         values.put(KEY_POSITION, webCam.getPosition());
@@ -172,14 +174,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         Cursor c = db.rawQuery(selectQuery, null);
 
-        if (c != null)
+        if (c != null) {
             c.moveToFirst();
-
+        }
         WebCam wc = new WebCam();
         wc.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-        wc.setName((c.getString(c.getColumnIndex(KEY_WEBCAM))));
-        wc.setUrl((c.getString(c.getColumnIndex(KEY_WEBCAM_URL))));
-        wc.setPosition((c.getInt(c.getColumnIndex(KEY_POSITION))));
+        wc.setUniId(c.getInt(c.getColumnIndex(KEY_UNI_ID)));
+        wc.setName(c.getString(c.getColumnIndex(KEY_WEBCAM)));
+        wc.setUrl(c.getString(c.getColumnIndex(KEY_WEBCAM_URL)));
+        wc.setPosition(c.getInt(c.getColumnIndex(KEY_POSITION)));
         wc.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
 
         return wc;
@@ -202,6 +205,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 WebCam wc = new WebCam();
                 wc.setId(c.getLong(c.getColumnIndex(KEY_ID)));
+                wc.setUniId(c.getLong(c.getColumnIndex(KEY_UNI_ID)));
                 wc.setName(c.getString(c.getColumnIndex(KEY_WEBCAM)));
                 wc.setUrl(c.getString(c.getColumnIndex(KEY_WEBCAM_URL)));
                 wc.setPosition(c.getInt(c.getColumnIndex(KEY_POSITION)));
@@ -221,7 +225,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * getting all WebCams under single category
      * */
-    public List<WebCam> getAllWebCamsByCategory(int category_id, String orderBy) {
+    public List<WebCam> getAllWebCamsByCategory(long category_id, String orderBy) {
         List<WebCam> webCams = new ArrayList<WebCam>();
 
         String selectQuery = "SELECT * FROM " + TABLE_WEBCAM + " td, "
@@ -384,14 +388,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Deleting a category
      */
-    public void deleteCategory(Category category, boolean should_delete_all_category_WebCams) {
+    public void deleteCategory(long categoryId, boolean should_delete_all_category_WebCams) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         // before deleting category
         // check if WebCams under this category should also be deleted
         if (should_delete_all_category_WebCams) {
             // get all WebCams under this category
-            List<WebCam> allCategoryWebCams = getAllWebCamsByCategory(category.getId(),"id ASC");
+            List<WebCam> allCategoryWebCams = getAllWebCamsByCategory(categoryId,"id ASC");
 
             // delete all WebCams
             for (WebCam webCam : allCategoryWebCams) {
@@ -402,11 +406,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         // now delete the category
         db.delete(TABLE_CATEGORY, KEY_ID + " = ?",
-                new String[] { String.valueOf(category.getId()) });
+                new String[] { String.valueOf(categoryId) });
 
         // and WebCam categories table
         db.delete(TABLE_WEBCAM_CATEGORY, KEY_CATEGORY_ID + " = ?",
-                new String[] { String.valueOf(category.getId()) });
+                new String[] { String.valueOf(categoryId) });
     }
 
     // ------------------------ "WebCam_categories" table methods ----------------//

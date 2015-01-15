@@ -40,7 +40,6 @@ import java.util.List;
 
 import cz.yetanotherview.webcamviewer.app.actions.ExportDialog;
 import cz.yetanotherview.webcamviewer.app.actions.ImportDialog;
-import cz.yetanotherview.webcamviewer.app.actions.JsonFetcher;
 import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.app.model.Category;
 
@@ -83,7 +82,6 @@ public class SettingsFragment extends PreferenceFragment {
         categoryEdit();
         categoryDelete();
 
-        importFromServer();
         importFromExt();
         exportToExt();
         deleteAllWebCams();
@@ -167,18 +165,19 @@ public class SettingsFragment extends PreferenceFragment {
                     int selected = Math.round(zoom);
 
                     new MaterialDialog.Builder(getActivity())
-                            .title(R.string.choose_title)
+                            .title(R.string.available_options)
                             .items(new CharSequence[]{
-                                    String.valueOf(getString(R.string.no_zoom)),
-                                    String.valueOf(getString(R.string.zoom_2x)),
-                                    String.valueOf(getString(R.string.zoom_3x)),
-                                    String.valueOf(getString(R.string.zoom_4x))})
+                                    getString(R.string.no_zoom),
+                                    getString(R.string.zoom_2x),
+                                    getString(R.string.zoom_3x),
+                                    getString(R.string.zoom_4x)})
                             .itemsCallbackSingleChoice(selected - 1, new MaterialDialog.ListCallback() {
                                 @Override
                                 public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
                                     sharedPref.edit().putFloat("pref_zoom", which + 1).apply();
                                 }
                             })
+                            .positiveText(R.string.choose)
                             .show();
 
                 return true;
@@ -267,7 +266,7 @@ public class SettingsFragment extends PreferenceFragment {
 
                 if (allCategories.size() > 0) {
                     new MaterialDialog.Builder(getActivity())
-                            .title(R.string.choose_title)
+                            .title(R.string.webcam_category)
                             .items(items)
                             .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallback() {
                                 @Override
@@ -278,6 +277,7 @@ public class SettingsFragment extends PreferenceFragment {
 
                                 }
                             })
+                            .positiveText(R.string.choose)
                             .show();
                 } else Snackbar.with(getActivity().getApplicationContext())
                         .text("No categories found")
@@ -364,7 +364,7 @@ public class SettingsFragment extends PreferenceFragment {
 
                 if (allCategories.size() > 0) {
                     new MaterialDialog.Builder(getActivity())
-                            .title(R.string.choose_title)
+                            .title(R.string.webcam_category)
                             .items(items)
                             .autoDismiss(false)
                             .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMulti() {
@@ -372,7 +372,7 @@ public class SettingsFragment extends PreferenceFragment {
                                 public void onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
                                 }
                             })
-                            .positiveText(android.R.string.ok)
+                            .positiveText(R.string.choose)
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog dialog) {
@@ -425,9 +425,9 @@ public class SettingsFragment extends PreferenceFragment {
                 for (Integer aWhich : whichDelete) {
                     Category deleteCategory = allCategories.get(aWhich);
                     if (alsoWebCams) {
-                        db.deleteCategory(deleteCategory, true);
+                        db.deleteCategory(deleteCategory.getId(), true);
                     }
-                    else db.deleteCategory(deleteCategory, false);
+                    else db.deleteCategory(deleteCategory.getId(), false);
                 }
                 db.closeDB();
             }
@@ -440,18 +440,6 @@ public class SettingsFragment extends PreferenceFragment {
                     .actionColor(actionColor)
                     .show(getActivity());
         }
-    }
-
-    private void importFromServer() {
-        // Import from Server OnPreferenceClickListener
-        Preference pref_import_from_server = findPreference("pref_import_from_server");
-        pref_import_from_server.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                    DialogFragment fetcher = new JsonFetcher();
-                    fetcher.show(getFragmentManager(), "JsonFetcher");
-                return true;
-            }
-        });
     }
 
     private void exportToExt() {

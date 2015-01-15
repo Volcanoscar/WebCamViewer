@@ -20,7 +20,7 @@ package cz.yetanotherview.webcamviewer.app.model;
 
 public class Category {
 
-    private int id;
+    private long id;
     private String category_name;
 
     // constructors
@@ -32,13 +32,13 @@ public class Category {
         this.category_name = category_name;
     }
 
-    public Category(int id, String category_name) {
+    public Category(long id, String category_name) {
         this.id = id;
         this.category_name = category_name;
     }
 
     // setter
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -47,7 +47,7 @@ public class Category {
     }
 
     // getter
-    public int getId() {
+    public long getId() {
         return this.id;
     }
 

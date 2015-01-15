@@ -18,45 +18,47 @@
 
 package cz.yetanotherview.webcamviewer.app.model;
 
-import java.util.List;
+import java.util.Date;
 
 public class WebCam {
 
     private long id;
-    private String webcamName;
-    private String webcamUrl;
+    private long uniId;
+    private String webCamName;
+    private String webCamUrl;
     private int position;
     private int status;
     private double latitude;
     private double longitude;
+    private String country;
+    private boolean popular;
+    private Date dateAdded;
     private String created_at;
-
-    private List tags;
 
     // constructors
     public WebCam() {
     }
 
-    public WebCam(String webcamName, String webcamUrl, int position, int status) {
-        this.webcamName = webcamName;
-        this.webcamUrl = webcamUrl;
+    public WebCam(String webCamName, String webCamUrl, int position, int status) {
+        this.webCamName = webCamName;
+        this.webCamUrl = webCamUrl;
         this.position = position;
         this.status = status;
     }
 
-    public WebCam(String webcamName, String webcamUrl, int position, int status, double latitude, double longitude) {
-        this.webcamName = webcamName;
-        this.webcamUrl = webcamUrl;
+    public WebCam(String webCamName, String webCamUrl, int position, int status, double latitude, double longitude) {
+        this.webCamName = webCamName;
+        this.webCamUrl = webCamUrl;
         this.position = position;
         this.status = status;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
-    public WebCam(long id, String webcamName, String webcamUrl, int position, int status) {
+    public WebCam(long id, String webCamName, String webCamUrl, int position, int status) {
         this.id = id;
-        this.webcamName = webcamName;
-        this.webcamUrl = webcamUrl;
+        this.webCamName = webCamName;
+        this.webCamUrl = webCamUrl;
         this.position = position;
         this.status = status;
     }
@@ -66,12 +68,16 @@ public class WebCam {
         this.id = id;
     }
 
+    public void setUniId(long uniId) {
+        this.uniId = uniId;
+    }
+
     public void setName(String webcamName) {
-        this.webcamName = webcamName;
+        this.webCamName = webcamName;
     }
 
     public void setUrl(String webcamUrl) {
-        this.webcamUrl = webcamUrl;
+        this.webCamUrl = webcamUrl;
     }
 
     public void setPosition(int position) {
@@ -90,12 +96,20 @@ public class WebCam {
         this.longitude = longitude;
     }
 
-    public void setCreatedAt(String created_at){
-        this.created_at = created_at;
+    public void setCountry(String country) {
+        this.country = country;
     }
 
-    public void setTags(List tags) {
-        this.tags = tags;
+    public void setPopular(boolean popular) {
+        this.popular = popular;
+    }
+
+    public void setDateAdded(Date dateAdded) {
+        this.dateAdded = dateAdded;
+    }
+
+    public void setCreatedAt(String created_at){
+        this.created_at = created_at;
     }
 
     // getters
@@ -103,12 +117,16 @@ public class WebCam {
         return this.id;
     }
 
+    public long getUniId() {
+        return this.uniId;
+    }
+
     public String getName() {
-        return this.webcamName;
+        return this.webCamName;
     }
 
     public String getUrl() {
-        return this.webcamUrl;
+        return this.webCamUrl;
     }
 
     public int getPosition() {
@@ -127,12 +145,19 @@ public class WebCam {
         return this.longitude;
     }
 
+    public String getCountry() {
+        return this.country;
+    }
+
+    public boolean isPopular() {
+        return this.popular;
+    }
+
+    public Date getDateAdded() {
+        return this.dateAdded;
+    }
+
     public String getCreatedAt() {
         return this.created_at;
     }
-
-    public List getTags() {
-        return tags;
-    }
-
 }

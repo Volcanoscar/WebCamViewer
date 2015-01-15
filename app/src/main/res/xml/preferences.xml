@@ -75,11 +75,6 @@
         android:key="pref_key_database_settings">
 
         <Preference
-            android:key="pref_import_from_server"
-            android:title="@string/pref_import_from_server"
-            android:summary="@string/pref_import_from_server_summary" />
-
-        <Preference
             android:key="pref_import_from_ext"
             android:title="@string/pref_import_from_ext"
             android:summary="@string/pref_import_from_ext_summ" />

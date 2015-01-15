@@ -21,10 +21,18 @@ package cz.yetanotherview.webcamviewer.app.actions;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
+import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
-public class WelcomeDialog extends DialogFragment {
+import cz.yetanotherview.webcamviewer.app.R;
+
+public class SelectionDialog extends DialogFragment {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -35,30 +43,24 @@ public class WelcomeDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        String[] items = {getString(R.string.popular_webcams),getString(R.string.selecting_by_country),getString(R.string.latest_webcams)};
+
         return new MaterialDialog.Builder(getActivity())
-                // ToDo: !!!!!
-                .title("Welcome")
-                .content("A few words of introduction...")
-                .positiveText("IMPORT WEBCAMS NOW!")
-                .neutralText("SHOW ME HELP")
-                .negativeText("NO THANKS")
-                // ToDo: !!!!!
-                .forceStacking(true)
-                .callback(new MaterialDialog.ButtonCallback() {
+                .title(R.string.available_options)
+                .items(items)
+                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
                     @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        DialogFragment selection = new SelectionDialog();
-                        selection.show(getFragmentManager(), "SelectionDialog");
-                    }
+                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
 
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                    }
+                        DialogFragment fetcher = new JsonFetcherDialog();
+                        Bundle bundle = new Bundle();
+                        bundle.putInt("selection", which);
+                        fetcher.setArguments(bundle);
+                        fetcher.show(getFragmentManager(), "JsonFetcherDialog");
 
-                    @Override
-                    public void onNeutral(MaterialDialog dialog) {
                     }
                 })
+                .positiveText(R.string.choose)
                 .build();
     }
 }

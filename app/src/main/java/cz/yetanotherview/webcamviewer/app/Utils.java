@@ -33,15 +33,22 @@ public class Utils {
     public static String oldExtension = ".db";
 
     /**
-     * Get current formatted date based on location
-     * @return Formatted date
+     * Get current date
+     * @return Date
      */
-    public static String getFormattedDate() {
+    public static long getDate() {
+        Calendar c = Calendar.getInstance();
+        return c.getTimeInMillis();
+    }
+
+    /**
+     * Get current date based on location
+     * @return Date based on location
+     */
+    public static String getDateString() {
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat();
-        String formattedDate = df.format(c.getTime());
-        Log.d("Time", formattedDate);
-        return formattedDate;
+        return df.format(c.getTime());
     }
 
     /**

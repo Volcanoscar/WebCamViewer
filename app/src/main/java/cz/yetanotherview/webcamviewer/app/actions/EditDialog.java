@@ -99,7 +99,7 @@ public class EditDialog extends DialogFragment {
         pos = webCam.getPosition();
         status = webCam.getStatus();
 
-        int[] ids = new int[allCategories.size()];
+        long[] ids = new long[allCategories.size()];
         items = new String[allCategories.size()];
         int count = 0;
         for (Category category : allCategories) {
@@ -177,7 +177,7 @@ public class EditDialog extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     new MaterialDialog.Builder(getActivity())
-                            .title(R.string.category_array_choose)
+                            .title(R.string.webcam_category)
                             .autoDismiss(false)
                             .items(items)
                             .itemsCallbackMultiChoice(checked, new MaterialDialog.ListCallbackMulti() {
@@ -185,7 +185,7 @@ public class EditDialog extends DialogFragment {
                                 public void onSelection(MaterialDialog multidialog, Integer[] which, CharSequence[] text) {
                                 }
                             })
-                            .positiveText(android.R.string.ok)
+                            .positiveText(R.string.choose)
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog multidialog) {
@@ -254,7 +254,6 @@ public class EditDialog extends DialogFragment {
             }
         });
 
-        dialog.show();
         positiveAction.setEnabled(false);
 
         return dialog;

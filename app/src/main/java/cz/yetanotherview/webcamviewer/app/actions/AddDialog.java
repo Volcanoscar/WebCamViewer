@@ -18,6 +18,7 @@
 
 package cz.yetanotherview.webcamviewer.app.actions;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Intent;
@@ -59,6 +60,8 @@ public class AddDialog extends DialogFragment {
     private String[] items;
     private long[] category_ids;
 
+    private Activity mActivity;
+
     public AddDialog() {
     }
 
@@ -73,6 +76,12 @@ public class AddDialog extends DialogFragment {
     }
 
     @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mActivity = activity;
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
@@ -80,9 +89,30 @@ public class AddDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        View view = getActivity().getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
+        String[] items = {getString(R.string.pref_import_from_server),getString(R.string.add_manually)};
+        return new MaterialDialog.Builder(mActivity)
+                .title(R.string.add_options)
+                .items(items)
+                .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        if (which == 0) {
+                            DialogFragment selection = new SelectionDialog();
+                            selection.show(getFragmentManager(), "SelectionDialog");
+                        }
+                        else {
+                            addManuallyDialog();
+                        }
+                    }
+                })
+                .positiveText(R.string.choose)
+                .build();
+    }
 
-        db = new DatabaseHelper(getActivity());
+    private void addManuallyDialog() {
+        View view = mActivity.getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
+
+        db = new DatabaseHelper(mActivity);
         allCategories = db.getAllCategories();
         db.closeDB();
 
@@ -93,7 +123,7 @@ public class AddDialog extends DialogFragment {
             count++;
         }
 
-        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+        MaterialDialog dialog = new MaterialDialog.Builder(mActivity)
                 .title(R.string.input_dialog_title)
                 .customView(view, true)
                 .positiveText(R.string.dialog_positive_text)
@@ -137,8 +167,8 @@ public class AddDialog extends DialogFragment {
 
                 @Override
                 public void onClick(View v) {
-                    new MaterialDialog.Builder(getActivity())
-                            .title(R.string.category_array_choose)
+                    new MaterialDialog.Builder(mActivity)
+                            .title(R.string.webcam_category)
                             .autoDismiss(false)
                             .items(items)
                             .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMulti() {
@@ -146,7 +176,7 @@ public class AddDialog extends DialogFragment {
                                 public void onSelection(MaterialDialog multidialog, Integer[] which, CharSequence[] text) {
                                 }
                             })
-                            .positiveText(android.R.string.ok)
+                            .positiveText(R.string.choose)
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
                                 public void onPositive(MaterialDialog multidialog) {
@@ -200,7 +230,5 @@ public class AddDialog extends DialogFragment {
 
         dialog.show();
         positiveAction.setEnabled(false);
-
-        return dialog;
     }
 }

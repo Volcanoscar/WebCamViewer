@@ -57,6 +57,7 @@ import java.util.TimerTask;
 
 import cz.yetanotherview.webcamviewer.app.actions.AddDialog;
 import cz.yetanotherview.webcamviewer.app.actions.EditDialog;
+import cz.yetanotherview.webcamviewer.app.actions.JsonFetcherDialog;
 import cz.yetanotherview.webcamviewer.app.actions.WelcomeDialog;
 import cz.yetanotherview.webcamviewer.app.fullscreen.FullScreenImage;
 import cz.yetanotherview.webcamviewer.app.adapter.WebCamAdapter;
@@ -65,7 +66,7 @@ import cz.yetanotherview.webcamviewer.app.helper.WebCamListener;
 import cz.yetanotherview.webcamviewer.app.model.Category;
 import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
-public class MainActivity extends ActionBarActivity implements WebCamListener, SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends ActionBarActivity implements WebCamListener, JsonFetcherDialog.ReloadInterface, SwipeRefreshLayout.OnRefreshListener {
 
     // Object for intrinsic lock
     public static final Object sDataLock = new Object();
@@ -74,7 +75,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
     private WebCam webCam;
     private List<WebCam> allWebCams;
     private List<Category> allCategories;
-    private String[] items;
+    private String[] drawerItems;
     private RecyclerView mRecyclerView;
     private View mEmptyView;
     private WebCamAdapter mAdapter;
@@ -149,11 +150,11 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
         allCategories = db.getAllCategories();
-        items = new String[allCategories.size() + 1];
-        items [0] = allWebCamsString;
+        drawerItems = new String[allCategories.size() + 1];
+        drawerItems[0] = allWebCamsString;
         int count = 1;
         for (Category category : allCategories) {
-            items[count] = category.getcategoryName();
+            drawerItems[count] = category.getcategoryName();
             count++;
         }
 
@@ -161,7 +162,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
             ArrayAdapter<String> mArrayAdapter = new ArrayAdapter<String>(
                     this,
                     android.R.layout.simple_list_item_1,
-                    items);
+                    drawerItems);
             mDrawerList.setAdapter(mArrayAdapter);
             mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         }
@@ -297,10 +298,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        /*
-         * The action bar home/up should open or close the drawer.
-         * ActionBarDrawerToggle will take care of this.
-         */
+
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
@@ -344,8 +342,6 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
             default:
                 break;
         }
-
-        // Handle your other action bar items...
         return super.onOptionsItemSelected(item);
     }
 
@@ -471,6 +467,12 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, S
         checkAdapterIsEmpty();
 
         delDone();
+    }
+
+    @Override
+    public void invokeReload() {
+        reInitializeAdapter(0);
+        initDrawer();
     }
 
     private void saveDone() {
