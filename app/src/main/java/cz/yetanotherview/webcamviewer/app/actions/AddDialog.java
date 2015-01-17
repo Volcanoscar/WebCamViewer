@@ -100,7 +100,7 @@ public class AddDialog extends DialogFragment {
                             DialogFragment selection = new SelectionDialog();
                             selection.show(getFragmentManager(), "SelectionDialog");
                         }
-                        else {
+                        else if (which == 1){
                             addManuallyDialog();
                         }
                     }

@@ -112,4 +112,14 @@
 <string name="add_options">Add options</string>
 <string name="add_manually">Add manually</string>
 <string name="import_done">"Import Successful!"</string>
+<string name="import_progress">"Importing in progress, also searching for possible duplicates."</string>
+<string name="report">Report</string>
+<string name="import_successfully">Import was successfully completed! Check Navigation Drawer on the left side.</string>
+<string name="new_webcams">New WebCams:</string>
+<string name="reassigned">Reassigned:</string>
+<string name="other">Other</string>
+<string name="pref_reset_last_check">Reset last check</string>
+<string name="pref_reset_last_check_summary">Reset last check count for Popular and Latest WebCams</string>
+<string name="reset_last_check_message">Do you want reset last check count for Popular and Latest WebCams?</string>
+<string name="cleared">Cleared!</string>
 </resources>

@@ -8,8 +8,8 @@ android {
         applicationId "cz.yetanotherview.webcamviewer.app"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 32
-        versionName "2.0 beta5"
+        versionCode 33
+        versionName "2.0 beta6"
     }
     buildTypes {
         release {

@@ -61,8 +61,9 @@ public class JsonFetcherDialog extends DialogFragment {
     // Object for intrinsic lock
     public static final Object sDataLock = new Object();
     private DatabaseHelper db;
-    private List<WebCam> webCams;
-    private ProgressDialog dialog;
+    private List<WebCam> importWebCams;
+    private List<WebCam> allWebCams;
+    private ProgressDialog progressDialog;
 
     private int selection;
     private boolean noNewWebCams = true;
@@ -72,7 +73,8 @@ public class JsonFetcherDialog extends DialogFragment {
     private static final String JSON_FILE_URL = "http://api." + SERVER_URL + "/webcams";
     private static final int latest = 14;
 
-    private String country;
+    private String plsWait;
+    private String importProgress;
     private Activity mActivity;
 
     private ReloadInterface mListener;
@@ -114,111 +116,18 @@ public class JsonFetcherDialog extends DialogFragment {
         Bundle bundle = this.getArguments();
         selection = bundle.getInt("selection", 0);
 
-        dialog = new ProgressDialog(mActivity, getTheme());
-        dialog.setTitle(R.string.importing_from_server);
-        dialog.setMessage(getString(R.string.please_wait));
-        dialog.setIndeterminate(true);
-        dialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        plsWait = getString(R.string.please_wait);
+
+        progressDialog = new ProgressDialog(mActivity, getTheme());
+        progressDialog.setTitle(R.string.importing_from_server);
+        progressDialog.setMessage(plsWait);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 
         WebCamsFromJsonFetcher fetcher = new WebCamsFromJsonFetcher();
         fetcher.execute();
 
-        return dialog;
-    }
-
-    private void handleWebCamList() {
-
-        dialog.dismiss();
-        mActivity.runOnUiThread(new Runnable() {
-            public void run() {
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
-                SharedPreferences.Editor editor = preferences.edit();
-                long now = Utils.getDate();
-
-                synchronized (sDataLock) {
-                    if (selection == 0) {
-                        long lastFetchPopular = preferences.getLong("pref_last_fetch_popular", 0);
-                        long categoryPopular = db.createCategory(new Category(getString(R.string.popular) + " " + Utils.getDateString()));
-                            for (WebCam webCam : webCams) {
-                                long webCamDateAdded = webCam.getDateAdded().getTime();
-                                long differenceBetweenLastFetch = lastFetchPopular - webCamDateAdded;
-
-                                if (webCam.isPopular() && differenceBetweenLastFetch < 0) {
-                                    db.createWebCam(webCam, new long[] {categoryPopular});
-                                    noNewWebCams = false;
-                                }
-                            }
-                        editor.putLong("pref_last_fetch_popular", now);
-                        db.closeDB();
-                        if (noNewWebCams) {
-                            db.deleteCategory(categoryPopular, false);
-                            noNewWebCamsDialog();
-                        }
-                        else mListener.invokeReload();
-                    }
-                    else if (selection == 1) {
-
-                        List<String> list = new ArrayList<>();
-                        for (WebCam webCam : webCams) {
-                            String country = webCam.getCountry();
-                            if (!list.contains(country))
-                                list.add(country);
-                        }
-                        Collections.sort(list);
-                        String[] items = list.toArray(new String[list.size()]);
-
-                        country = getString(R.string.country);
-
-                        new MaterialDialog.Builder(mActivity)
-                                .title(R.string.countries)
-                                .items(items)
-                                .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallback() {
-                                    @Override
-                                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-
-                                        long categoryCountry = db.createCategory(new Category(country + " " + Utils.getDateString()));
-                                        for (WebCam webCam : webCams) {
-                                            if (webCam.getCountry().equals(text)) {
-                                                db.createWebCam(webCam, new long[] {categoryCountry});
-                                            }
-                                        }
-                                        db.closeDB();
-                                        mListener = (ReloadInterface) mActivity;
-                                        mListener.invokeReload();
-                                    }
-                                })
-                                .positiveText(R.string.choose)
-                                .show();
-
-                    }
-                    else if (selection == 2) {
-                        long lastFetchLatest = preferences.getLong("pref_last_fetch_latest", 0);
-                        long categoryLatest = db.createCategory(new Category(getString(R.string.latest) + " " + Utils.getDateString()));
-                            for (WebCam webCam : webCams) {
-                                long webCamDateAdded = webCam.getDateAdded().getTime();
-                                long differenceBetweenLastFetch = lastFetchLatest - webCamDateAdded;
-                                int differenceBetweenDates = (int) ((now - webCamDateAdded)/86400000);
-
-                                if (differenceBetweenDates < latest && differenceBetweenLastFetch < 0) {
-                                    db.createWebCam(webCam, new long[] {categoryLatest});
-                                    noNewWebCams = false;
-                                }
-                            }
-                        editor.putLong("pref_last_fetch_latest", now);
-                        db.closeDB();
-                        if (noNewWebCams) {
-                            db.deleteCategory(categoryLatest, false);
-                            noNewWebCamsDialog();
-                        }
-                        else mListener.invokeReload();
-                    }
-                }
-                BackupManager backupManager = new BackupManager(mActivity);
-                backupManager.dataChanged();
-
-                editor.apply();
-            }
-        });
+        return progressDialog;
     }
 
     private class WebCamsFromJsonFetcher extends AsyncTask<Void, Void, String> {
@@ -249,7 +158,7 @@ public class JsonFetcherDialog extends DialogFragment {
                                 Reader reader = new InputStreamReader(content);
 
                                 Gson gson = new GsonBuilder().setDateFormat("dd.MM.yyyy HH:mm:ss, zzzz").create();
-                                webCams = Arrays.asList(gson.fromJson(reader, WebCam[].class));
+                                importWebCams = Arrays.asList(gson.fromJson(reader, WebCam[].class));
                                 content.close();
 
                                 handleWebCamList();
@@ -263,7 +172,7 @@ public class JsonFetcherDialog extends DialogFragment {
                         Log.e(TAG, "Failed to send HTTP POST request due to: " + ex);
                     }
                 } else {
-                    dialog.dismiss();
+                    progressDialog.dismiss();
                     this.publishProgress();
                 }
             } catch (IOException | InterruptedException e) {
@@ -277,6 +186,194 @@ public class JsonFetcherDialog extends DialogFragment {
             super.onProgressUpdate(values);
             dialogUnavailable();
         }
+    }
+
+    private void handleWebCamList() {
+
+        mActivity.runOnUiThread(new Runnable() {
+            public void run() {
+
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
+                SharedPreferences.Editor editor = preferences.edit();
+
+                long now = Utils.getDate();
+                importProgress = getString(R.string.import_progress);
+
+                allWebCams = db.getAllWebCams("id ASC");
+
+                synchronized (sDataLock) {
+                    if (selection == 0) {
+                        progressDialog.setMessage(importProgress + " " + plsWait);
+
+                        int newWebCams = 0;
+                        int duplicityWebCams = 0;
+                        long lastFetchPopular = preferences.getLong("pref_last_fetch_popular", 0);
+                        long categoryPopular = db.createCategory(new Category(getString(R.string.popular) + " " + Utils.getDateString()));
+
+                        for (WebCam webCam : importWebCams) {
+                            long webCamDateAdded = webCam.getDateAdded().getTime();
+                            long differenceBetweenLastFetch = lastFetchPopular - webCamDateAdded;
+
+                            if (webCam.isPopular() && differenceBetweenLastFetch < 0) {
+                                if (allWebCams.size() != 0) {
+                                    boolean notFound = false;
+                                    for (WebCam allWebCam : allWebCams) {
+                                        if (webCam.getUniId() == allWebCam.getUniId()) {
+                                            db.createWebCamCategory(allWebCam.getId(), categoryPopular);
+                                            noNewWebCams = false;
+                                            notFound = false;
+                                            duplicityWebCams++;
+                                            break;
+                                        }
+                                        else notFound = true;
+                                    }
+                                    if (notFound) {
+                                        db.createWebCam(webCam, new long[]{categoryPopular});
+                                        noNewWebCams = false;
+                                        newWebCams++;
+                                    }
+                                }
+                                else {
+                                    db.createWebCam(webCam, new long[]{categoryPopular});
+                                    noNewWebCams = false;
+                                    newWebCams++;
+                                }
+                            }
+                        }
+                        editor.putLong("pref_last_fetch_popular", now);
+                        if (noNewWebCams) {
+                            db.deleteCategory(categoryPopular, false);
+                            noNewWebCamsDialog();
+                        }
+                        else {
+                            mListener.invokeReload();
+                            reportDialog(newWebCams, duplicityWebCams);
+                        }
+                    }
+                    else if (selection == 1) {
+
+                        List<String> list = new ArrayList<>();
+                        for (WebCam webCam : importWebCams) {
+                            String country = webCam.getCountry();
+                            if (!list.contains(country))
+                                list.add(country);
+                        }
+                        Collections.sort(list);
+                        String[] items = list.toArray(new String[list.size()]);
+
+                        new MaterialDialog.Builder(mActivity)
+                                .title(R.string.countries)
+                                .items(items)
+                                .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallback() {
+                                    @Override
+                                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                        progressDialog.setMessage(importProgress + " " + plsWait);
+
+                                        int newWebCams = 0;
+                                        int duplicityWebCams = 0;
+                                        long categoryCountry = db.createCategory(new Category(text + " " + Utils.getDateString()));
+
+                                        for (WebCam webCam : importWebCams) {
+                                            if (webCam.getCountry().equals(text)) {
+                                                if (allWebCams.size() != 0) {
+                                                    boolean notFound = false;
+                                                    for (WebCam allWebCam : allWebCams) {
+                                                        if (webCam.getUniId() == allWebCam.getUniId()) {
+                                                            db.createWebCamCategory(allWebCam.getId(), categoryCountry);
+                                                            notFound = false;
+                                                            duplicityWebCams++;
+                                                            break;
+                                                        }
+                                                        else notFound = true;
+                                                    }
+                                                    if (notFound) {
+                                                        db.createWebCam(webCam, new long[]{categoryCountry});
+                                                        newWebCams++;
+                                                    }
+                                                }
+                                                else {
+                                                    db.createWebCam(webCam, new long[]{categoryCountry});
+                                                    newWebCams++;
+                                                }
+                                            }
+                                        }
+
+                                        mListener = (ReloadInterface) mActivity;
+                                        mListener.invokeReload();
+                                        reportDialog(newWebCams, duplicityWebCams);
+                                    }
+                                })
+                                .positiveText(R.string.choose)
+                                .show();
+                    }
+                    else if (selection == 2) {
+                        progressDialog.setMessage(importProgress + " " + plsWait);
+
+                        int newWebCams = 0;
+                        int duplicityWebCams = 0;
+                        long lastFetchLatest = preferences.getLong("pref_last_fetch_latest", 0);
+                        long categoryLatest = db.createCategory(new Category(getString(R.string.latest) + " " + Utils.getDateString()));
+
+                        for (WebCam webCam : importWebCams) {
+                            long webCamDateAdded = webCam.getDateAdded().getTime();
+                            long differenceBetweenLastFetch = lastFetchLatest - webCamDateAdded;
+                            int differenceBetweenDates = (int) ((now - webCamDateAdded)/86400000);
+
+                            if (differenceBetweenDates < latest && differenceBetweenLastFetch < 0) {
+                                if (allWebCams.size() != 0) {
+                                    boolean notFound = false;
+                                    for (WebCam allWebCam : allWebCams) {
+                                        if (webCam.getUniId() == allWebCam.getUniId()) {
+                                            db.createWebCamCategory(allWebCam.getId(), categoryLatest);
+                                            noNewWebCams = false;
+                                            notFound = false;
+                                            duplicityWebCams++;
+                                            break;
+                                        }
+                                        else notFound = true;
+                                    }
+                                    if (notFound) {
+                                        db.createWebCam(webCam, new long[]{categoryLatest});
+                                        noNewWebCams = false;
+                                        newWebCams++;
+                                    }
+                                }
+                                else {
+                                    db.createWebCam(webCam, new long[]{categoryLatest});
+                                    noNewWebCams = false;
+                                    newWebCams++;
+                                }
+                            }
+                        }
+                        editor.putLong("pref_last_fetch_latest", now);
+                        if (noNewWebCams) {
+                            db.deleteCategory(categoryLatest, false);
+                            noNewWebCamsDialog();
+                        }
+                        else {
+                            mListener.invokeReload();
+                            reportDialog(newWebCams,duplicityWebCams);
+                        }
+                    }
+                }
+                db.closeDB();
+                BackupManager backupManager = new BackupManager(mActivity);
+                backupManager.dataChanged();
+
+                editor.apply();
+                progressDialog.dismiss();
+            }
+        });
+    }
+
+    private void reportDialog(int newWebCams, int duplicityWebCams) {
+        new MaterialDialog.Builder(mActivity)
+                .title(R.string.report)
+                .content(mActivity.getString(R.string.import_successfully) + "\n\n"
+                        + mActivity.getString(R.string.new_webcams) + " " + newWebCams
+                        + "\n" + mActivity.getString(R.string.reassigned) + " " + duplicityWebCams)
+                .positiveText(android.R.string.ok)
+                .show();
     }
 
     private void noNewWebCamsDialog() {

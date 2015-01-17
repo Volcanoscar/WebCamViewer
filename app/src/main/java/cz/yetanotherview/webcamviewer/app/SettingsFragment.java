@@ -87,6 +87,7 @@ public class SettingsFragment extends PreferenceFragment {
         deleteAllWebCams();
         cleanExtFolder();
 
+        resetLastCheck();
     }
 
     private void setAutoRefreshInterval() {
@@ -515,8 +516,45 @@ public class SettingsFragment extends PreferenceFragment {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 Utils.cleanBackupFolder();
+
                                 Snackbar.with(getActivity().getApplicationContext())
                                         .text(R.string.action_deleted)
+                                        .actionLabel(R.string.dismiss)
+                                        .actionColor(actionColor)
+                                        .show(getActivity());
+                            }
+
+                            @Override
+                            public void onNegative(MaterialDialog dialog) {
+                            }
+                        })
+                        .show();
+
+                return true;
+            }
+        });
+    }
+
+    private void resetLastCheck() {
+        // Reset last check OnPreferenceClickListener
+        Preference pref_reset_last_check = findPreference("pref_reset_last_check");
+        pref_reset_last_check.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+
+                new MaterialDialog.Builder(getActivity())
+                        .title(R.string.pref_reset_last_check)
+                        .content(R.string.reset_last_check_message)
+                        .positiveText(R.string.Yes)
+                        .negativeText(R.string.No)
+                        .callback(new MaterialDialog.Callback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                sharedPref = getPreferenceManager().getSharedPreferences();
+                                sharedPref.edit().putLong("pref_last_fetch_popular", 0).apply();
+                                sharedPref.edit().putLong("pref_last_fetch_latest", 0).apply();
+
+                                Snackbar.with(getActivity().getApplicationContext())
+                                        .text(R.string.cleared)
                                         .actionLabel(R.string.dismiss)
                                         .actionColor(actionColor)
                                         .show(getActivity());

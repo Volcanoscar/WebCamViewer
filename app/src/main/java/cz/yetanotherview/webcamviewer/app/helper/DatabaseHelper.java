@@ -416,7 +416,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // ------------------------ "WebCam_categories" table methods ----------------//
 
     /**
-     * Creating WebCam_category
+     * Getting WebCam categories Ids
      */
     public long[] getWebCamCategoriesIds(long webCam_id) {
 
