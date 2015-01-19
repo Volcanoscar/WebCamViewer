@@ -64,6 +64,7 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
                 .load(webCam.getUrl())
                 .skipMemoryCache()
                 .fit()
+                .transform(new SizeAndRoundTransform(6, 0))
                 .placeholder(R.drawable.animation)
                 .error(R.drawable.placeholder_error)
                 .into(webcamViewHolder.vImage);

@@ -122,4 +122,16 @@
 <string name="pref_reset_last_check_summary">Reset last check count for Popular and Latest WebCams</string>
 <string name="reset_last_check_message">Do you want reset last check count for Popular and Latest WebCams?</string>
 <string name="cleared">Cleared!</string>
+<string name="community_list">Community list</string>
+<string name="submit_for_approval">Submit this WebCam for approval</string>
+<string name="send_via_email">Send via email...</string>
+<string name="oh_no">Oh no!</string>
+<string name="no_email_clients_installed">There are no email clients installed.</string>
+<string name="welcome">Welcome</string>
+<string name="import_webcams_now">IMPORT WEBCAMS NOW!</string>
+<string name="show_me_help">SHOW ME HELP</string>
+<string name="no_thanks">NO THANKS</string>
+    <!--ToDo:-->
+    <string name="welcome_content">A few words of introduction...</string>
+    <!--ToDo:-->
 </resources>

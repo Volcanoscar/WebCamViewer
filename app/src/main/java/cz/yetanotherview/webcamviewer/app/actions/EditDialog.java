@@ -25,6 +25,8 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -52,6 +54,8 @@ public class EditDialog extends DialogFragment {
     private DatabaseHelper db;
     private List<Category> allCategories;
     private Category category;
+
+    private CheckBox shareCheckBox;
 
     private Button webCamCategoryButton;
     private String[] items;
@@ -126,6 +130,8 @@ public class EditDialog extends DialogFragment {
 
         View view = getActivity().getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
 
+        shareCheckBox = (CheckBox) view.findViewById(R.id.shareCheckBox);
+
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.action_edit)
                 .customView(view, true)
@@ -135,13 +141,19 @@ public class EditDialog extends DialogFragment {
                 .callback(new MaterialDialog.FullCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
+                        boolean shareIsChecked = false;
 
                         webCam.setName(mWebCamName.getText().toString().trim());
                         webCam.setUrl(mWebCamUrl.getText().toString().trim());
                         webCam.setPosition(pos);
                         webCam.setStatus(status);
+
+                        if (shareCheckBox.isChecked()) {
+                            shareIsChecked = true;
+                        }
+
                         if (mOnAddListener != null)
-                            mOnAddListener.webCamEdited(position, webCam, category_ids);
+                            mOnAddListener.webCamEdited(position, webCam, category_ids, shareIsChecked);
                     }
 
                     @Override
@@ -252,6 +264,16 @@ public class EditDialog extends DialogFragment {
             @Override
             public void afterTextChanged(Editable s) {
             }
+        });
+        shareCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+           @Override
+           public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+               if (isChecked) {
+                   positiveAction.setEnabled(true);
+               }
+               else positiveAction.setEnabled(false);
+           }
         });
 
         positiveAction.setEnabled(false);

@@ -21,6 +21,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     card_view:cardCornerRadius="@dimen/card_corner_radius"
+    card_view:contentPadding="0dp"
+    card_view:cardUseCompatPadding="true"
+    card_view:cardPreventCornerOverlap="false"
     android:orientation="vertical"
     style="@style/MainCardView">
 
@@ -30,7 +33,7 @@
 
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/image_height"
+                android:layout_height="wrap_content"
                 android:adjustViewBounds="true"
                 android:layout_centerHorizontal="true"
                 android:layout_alignParentTop="true"

@@ -63,8 +63,24 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dip"
+            android:layout_marginBottom="17dip"
             android:layout_marginLeft="5dip"
             android:layout_marginStart="5dip"
             android:singleLine="true"/>
+
+    <TextView
+        android:id="@+id/shareCheckBoxTextView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/community_list" />
+
+        <CheckBox
+            android:id="@+id/shareCheckBox"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/submit_for_approval"
+            android:layout_marginTop="5dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginStart="5dip"/>
 
 </LinearLayout>

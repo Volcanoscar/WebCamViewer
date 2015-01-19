@@ -34,6 +34,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import junit.framework.Assert;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -45,6 +47,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -69,8 +73,7 @@ public class JsonFetcherDialog extends DialogFragment {
     private boolean noNewWebCams = true;
 
     private static final String TAG = "JsonFetcherDialog";
-    private static final String SERVER_URL = "yetanotherview.cz";
-    private static final String JSON_FILE_URL = "http://api." + SERVER_URL + "/webcams";
+    private static final String JSON_FILE_URL = "http://api.yetanotherview.cz/webcams";
     private static final int latest = 14;
 
     private String plsWait;
@@ -134,49 +137,49 @@ public class JsonFetcherDialog extends DialogFragment {
 
         @Override
         protected String doInBackground(Void... params) {
-            Runtime runtime = Runtime.getRuntime();
-            Process proc;
+
             try {
-                proc = runtime.exec("ping -c 1 " + SERVER_URL);
-                proc.waitFor();
-                int exit = proc.exitValue();
-                if (exit == 0) {
-                    try {
-                        //Create an HTTP client
-                        HttpClient client = new DefaultHttpClient();
-                        HttpPost post = new HttpPost(JSON_FILE_URL);
+                URL url = new URL(JSON_FILE_URL);
+                HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
+                urlConn.connect();
 
-                        //Perform the request and check the status code
-                        HttpResponse response = client.execute(post);
-                        StatusLine statusLine = response.getStatusLine();
-                        if(statusLine.getStatusCode() == 200) {
-                            HttpEntity entity = response.getEntity();
-                            InputStream content = entity.getContent();
+                Assert.assertEquals(HttpURLConnection.HTTP_OK, urlConn.getResponseCode());
 
-                            try {
-                                //Read the server response and attempt to parse it as JSON
-                                Reader reader = new InputStreamReader(content);
+                try {
+                    //Create an HTTP client
+                    HttpClient client = new DefaultHttpClient();
+                    HttpPost post = new HttpPost(JSON_FILE_URL);
 
-                                Gson gson = new GsonBuilder().setDateFormat("dd.MM.yyyy HH:mm:ss, zzzz").create();
-                                importWebCams = Arrays.asList(gson.fromJson(reader, WebCam[].class));
-                                content.close();
+                    //Perform the request and check the status code
+                    HttpResponse response = client.execute(post);
+                    StatusLine statusLine = response.getStatusLine();
+                    if(statusLine.getStatusCode() == 200) {
+                        HttpEntity entity = response.getEntity();
+                        InputStream content = entity.getContent();
 
-                                handleWebCamList();
-                            } catch (Exception ex) {
-                                Log.e(TAG, "Failed to parse JSON due to: " + ex);
-                            }
-                        } else {
-                            Log.e(TAG, "Server responded with status code: " + statusLine.getStatusCode());
+                        try {
+                            //Read the server response and attempt to parse it as JSON
+                            Reader reader = new InputStreamReader(content);
+
+                            Gson gson = new GsonBuilder().setDateFormat("dd.MM.yyyy HH:mm:ss, zzzz").create();
+                            importWebCams = Arrays.asList(gson.fromJson(reader, WebCam[].class));
+                            content.close();
+
+                            handleWebCamList();
+                        } catch (Exception ex) {
+                            Log.e(TAG, "Failed to parse JSON due to: " + ex);
                         }
-                    } catch(Exception ex) {
-                        Log.e(TAG, "Failed to send HTTP POST request due to: " + ex);
+                    } else {
+                        Log.e(TAG, "Server responded with status code: " + statusLine.getStatusCode());
                     }
-                } else {
-                    progressDialog.dismiss();
-                    this.publishProgress();
+                } catch(Exception ex) {
+                    Log.e(TAG, "Failed to send HTTP POST request due to: " + ex);
                 }
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
+            } catch (IOException e) {
+                System.err.println("Error creating HTTP connection");
+
+                progressDialog.dismiss();
+                this.publishProgress();
             }
             return null;
         }

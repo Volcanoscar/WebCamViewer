@@ -21,7 +21,7 @@ package cz.yetanotherview.webcamviewer.app.helper;
 import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
 public interface WebCamListener {
-    void webCamAdded(WebCam webCam, long[] category_ids);
-    void webCamEdited(int position, WebCam webCam, long[] category_ids);
+    void webCamAdded(WebCam webCam, long[] category_ids, boolean share);
+    void webCamEdited(int position, WebCam webCam, long[] category_ids, boolean share);
     void webCamDeleted(long id, int position);
 }

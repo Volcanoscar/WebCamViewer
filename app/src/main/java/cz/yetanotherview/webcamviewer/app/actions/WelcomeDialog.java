@@ -24,6 +24,8 @@ import android.os.Bundle;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import cz.yetanotherview.webcamviewer.app.R;
+
 public class WelcomeDialog extends DialogFragment {
 
     @Override
@@ -36,13 +38,11 @@ public class WelcomeDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
 
         return new MaterialDialog.Builder(getActivity())
-                // ToDo: !!!!!
-                .title("Welcome")
-                .content("A few words of introduction...")
-                .positiveText("IMPORT WEBCAMS NOW!")
-                .neutralText("SHOW ME HELP")
-                .negativeText("NO THANKS")
-                // ToDo: !!!!!
+                .title(R.string.welcome)
+                .content(R.string.welcome_content)
+                .positiveText(R.string.import_webcams_now)
+                .neutralText(R.string.show_me_help)
+                .negativeText(R.string.no_thanks)
                 .forceStacking(true)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override

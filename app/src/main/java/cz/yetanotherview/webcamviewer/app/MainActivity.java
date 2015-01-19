@@ -24,7 +24,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -374,11 +376,6 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 .content(Html.fromHtml(getString(R.string.about_body)))
                 .contentLineSpacing(1)
                 .positiveText(android.R.string.ok)
-                .callback(new MaterialDialog.SimpleCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                    }
-                })
                 .iconRes(R.drawable.ic_launcher)
                 .show();
     }
@@ -411,7 +408,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     }
 
     @Override
-    public void webCamAdded(WebCam wc, long[] category_ids) {
+    public void webCamAdded(WebCam wc, long[] category_ids, boolean share) {
         synchronized (sDataLock) {
             if (category_ids != null) {
                 wc.setId(db.createWebCam(wc, category_ids));
@@ -429,11 +426,14 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
         checkAdapterIsEmpty();
 
-        saveDone();
+        if (share) {
+            sendEmail(wc);
+        }
+        else saveDone();
     }
 
     @Override
-    public void webCamEdited(int position, WebCam wc, long[] category_ids) {
+    public void webCamEdited(int position, WebCam wc, long[] category_ids, boolean share) {
         synchronized (sDataLock) {
             if (category_ids != null) {
                 db.updateWebCam(wc, category_ids);
@@ -448,7 +448,10 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
         mAdapter.modifyItem(position,wc);
 
-        saveDone();
+        if (share) {
+            sendEmail(wc);
+        }
+        else saveDone();
     }
 
     @Override
@@ -536,6 +539,34 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
             }
         };
         timer.schedule(doAsynchronousTask, 0, interval);
+    }
+
+    private void sendEmail(WebCam webCam) {
+        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                "mailto","cz840311@gmail.com", null));
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "New WebCam for approval");
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "WebCam Name: " + webCam.getName()
+                + "\n" + "WebCam URL: " + webCam.getUrl());
+
+        List<ResolveInfo> list = getPackageManager().queryIntentActivities(emailIntent, 0);
+        if(list.isEmpty()) {
+            noEmailClientsFound();
+        }
+        else {
+            try {
+                startActivity(Intent.createChooser(emailIntent, getString(R.string.send_via_email)));
+            } catch (android.content.ActivityNotFoundException ex) {
+                noEmailClientsFound();
+            }
+        }
+    }
+
+    private void noEmailClientsFound() {
+        new MaterialDialog.Builder(this)
+                .title(R.string.oh_no)
+                .content(getString(R.string.no_email_clients_installed))
+                .positiveText(android.R.string.ok)
+                .show();
     }
 
     @Override

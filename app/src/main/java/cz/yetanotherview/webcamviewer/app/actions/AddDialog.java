@@ -28,7 +28,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -59,6 +61,8 @@ public class AddDialog extends DialogFragment {
     private Button webCamCategoryButton;
     private String[] items;
     private long[] category_ids;
+
+    private CheckBox shareCheckBox;
 
     private Activity mActivity;
 
@@ -112,6 +116,8 @@ public class AddDialog extends DialogFragment {
     private void addManuallyDialog() {
         View view = mActivity.getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
 
+        shareCheckBox = (CheckBox) view.findViewById(R.id.shareCheckBox);
+
         db = new DatabaseHelper(mActivity);
         allCategories = db.getAllCategories();
         db.closeDB();
@@ -132,13 +138,22 @@ public class AddDialog extends DialogFragment {
                 .callback(new MaterialDialog.FullCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
+                        boolean shareIsChecked = false;
+
                         webCam = new WebCam(
                                 mWebCamName.getText().toString().trim(),
                                 mWebCamUrl.getText().toString().trim(),
                                 0,
                                 0);
-                        if (mOnAddListener != null)
-                            mOnAddListener.webCamAdded(webCam, category_ids);
+
+                        if (shareCheckBox.isChecked()) {
+                            shareIsChecked = true;
+                        }
+
+                        if (mOnAddListener != null) {
+                            mOnAddListener.webCamAdded(webCam, category_ids, shareIsChecked);
+                        }
+
                     }
 
                     @Override
