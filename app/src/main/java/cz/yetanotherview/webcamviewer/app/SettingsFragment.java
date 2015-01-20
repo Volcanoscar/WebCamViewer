@@ -481,13 +481,7 @@ public class SettingsFragment extends PreferenceFragment {
                         .callback(new MaterialDialog.Callback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
-                                db.deleteAllWebCams();
-                                db.closeDB();
-                                Snackbar.with(getActivity().getApplicationContext())
-                                        .text(R.string.action_deleted)
-                                        .actionLabel(R.string.dismiss)
-                                        .actionColor(actionColor)
-                                        .show(getActivity());
+                                deleteAlsoCategoriesDialog();
                             }
 
                             @Override
@@ -499,6 +493,48 @@ public class SettingsFragment extends PreferenceFragment {
                 return true;
             }
         });
+    }
+
+    private void deleteAlsoCategoriesDialog (){
+
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.pref_delete_all)
+                .content(R.string.also_delete_all_categories)
+                .positiveText(R.string.Yes)
+                .negativeText(R.string.No)
+                .callback(new MaterialDialog.Callback() {
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        deleteAlsoCategories(true);
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        deleteAlsoCategories(false);
+                    }
+                })
+                .show();
+    }
+
+    private void deleteAlsoCategories(boolean alsoCategories){
+
+            synchronized (SettingsFragment.sDataLock) {
+                if (alsoCategories) {
+                    db.deleteAllWebCams(true);
+                }
+                else {
+                    db.deleteAllWebCams(false);
+                }
+                db.closeDB();
+            }
+            BackupManager backupManager = new BackupManager(getActivity());
+            backupManager.dataChanged();
+
+            Snackbar.with(getActivity().getApplicationContext())
+                    .text(R.string.action_deleted)
+                    .actionLabel(R.string.dismiss)
+                    .actionColor(actionColor)
+                    .show(getActivity());
     }
 
     private void cleanExtFolder() {

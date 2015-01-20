@@ -563,7 +563,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
     private void noEmailClientsFound() {
         new MaterialDialog.Builder(this)
-                .title(R.string.oh_no)
+                .title(R.string.oops)
                 .content(getString(R.string.no_email_clients_installed))
                 .positiveText(android.R.string.ok)
                 .show();

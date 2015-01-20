@@ -319,7 +319,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Delete all WebCams
      */
-    public void deleteAllWebCams() {
+    public void deleteAllWebCams(boolean should_delete_all_categories) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         //WebCams table
@@ -327,6 +327,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         //WebCam categories table
         db.delete(TABLE_WEBCAM_CATEGORY, null, null);
+
+        //Category table
+        if (should_delete_all_categories) {
+            db.delete(TABLE_CATEGORY, null, null);
+        }
     }
 
     // ------------------------ "categories" table methods ----------------//

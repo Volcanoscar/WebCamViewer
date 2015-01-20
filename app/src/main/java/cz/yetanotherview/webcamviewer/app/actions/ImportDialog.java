@@ -113,7 +113,7 @@ public class ImportDialog extends DialogFragment {
                                         .callback(new MaterialDialog.Callback() {
                                             @Override
                                             public void onPositive(MaterialDialog dialog) {
-                                                db.deleteAllWebCams();
+                                                db.deleteAllWebCams(false);
                                                 db.closeDB();
                                                 importJson(inputName);
                                             }
