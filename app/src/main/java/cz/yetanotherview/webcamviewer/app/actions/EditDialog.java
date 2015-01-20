@@ -100,6 +100,7 @@ public class EditDialog extends DialogFragment {
         webCam_category_ids = db.getWebCamCategoriesIds(webCam.getId());
         db.closeDB();
 
+        long uniId = webCam.getUniId();
         pos = webCam.getPosition();
         status = webCam.getStatus();
 
@@ -131,6 +132,9 @@ public class EditDialog extends DialogFragment {
         View view = getActivity().getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
 
         shareCheckBox = (CheckBox) view.findViewById(R.id.shareCheckBox);
+        if (uniId != 0) {
+            shareCheckBox.setEnabled(false);
+        }
 
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.action_edit)

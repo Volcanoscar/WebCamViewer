@@ -154,10 +154,12 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         allCategories = db.getAllCategories();
         drawerItems = new String[allCategories.size() + 1];
         drawerItems[0] = allWebCamsString;
-        int count = 1;
-        for (Category category : allCategories) {
-            drawerItems[count] = category.getcategoryName();
-            count++;
+        if (allCategories.size() != 0) {
+            int count = 1;
+            for (Category category : allCategories) {
+                drawerItems[count] = category.getcategoryName();
+                count++;
+            }
         }
 
         if (mDrawerList != null) {
