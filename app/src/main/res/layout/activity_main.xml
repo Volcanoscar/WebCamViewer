@@ -1,6 +1,6 @@
 <!--
 ~ *******************************************************************************
-~ Copyright (c) 2013-2014 Tomas Valenta
+~ Copyright (c) 2013-2015 Tomas Valenta
 ~
 ~ Licensed under the Apache License, Version 2.0 (the "License");
 ~ you may not use this file except in compliance with the License.
@@ -49,8 +49,8 @@
 
                     <android.support.v7.widget.RecyclerView
                         android:id="@+id/cardList"
-                        android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
 
                 </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -67,8 +67,8 @@
 
                 <TextView
                     android:id="@+id/empty"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:gravity="center"
                     android:padding="@dimen/empty_textview_padding"
                     android:textSize="@dimen/text_size_medium"

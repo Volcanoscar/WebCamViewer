@@ -1,6 +1,6 @@
 /*
 * ******************************************************************************
-* Copyright (c) 2013-2014 Tomas Valenta.
+* Copyright (c) 2013-2015 Tomas Valenta.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 
 import com.squareup.picasso.Picasso;
@@ -48,6 +49,7 @@ public class FullScreenImage extends Activity {
 
     private boolean autoRefresh;
     private int autoRefreshInterval;
+    private boolean screenAlwaysOn;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +64,15 @@ public class FullScreenImage extends Activity {
         zoom = intent.getExtras().getFloat("zoom");
         autoRefresh = intent.getExtras().getBoolean("autoRefresh");
         autoRefreshInterval = intent.getExtras().getInt("interval");
+        screenAlwaysOn = intent.getExtras().getBoolean("screenAlwaysOn");
+
+        // Screen Always on
+        if (screenAlwaysOn){
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+        else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
 
         image = (TouchImageView) findViewById(R.id.touch_image);
         image.setMaxZoom(zoom);

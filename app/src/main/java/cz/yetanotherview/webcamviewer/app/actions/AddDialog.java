@@ -1,6 +1,6 @@
 /*
 * ******************************************************************************
-* Copyright (c) 2013-2014 Tomas Valenta.
+* Copyright (c) 2013-2015 Tomas Valenta.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;

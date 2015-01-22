@@ -1,6 +1,6 @@
 <!--
 ~ *******************************************************************************
-~ Copyright (c) 2013-2014 Tomas Valenta
+~ Copyright (c) 2013-2015 Tomas Valenta
 ~
 ~ Licensed under the Apache License, Version 2.0 (the "License");
 ~ you may not use this file except in compliance with the License.
@@ -26,6 +26,12 @@
         android:checked="false"
         android:title="@string/pref_full_screen"
         android:summary="@string/pref_full_screen_summ" />
+
+    <CheckBoxPreference
+        android:key="pref_screen_always_on"
+        android:checked="false"
+        android:title="@string/pref_screen_always_on"
+        android:summary="@string/pref_screen_always_on_summary" />
 
     <CheckBoxPreference
         android:key="pref_auto_refresh"

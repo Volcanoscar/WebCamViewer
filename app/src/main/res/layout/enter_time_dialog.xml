@@ -1,6 +1,6 @@
 <!--
 ~ *******************************************************************************
-~ Copyright (c) 2013-2014 Tomas Valenta
+~ Copyright (c) 2013-2015 Tomas Valenta
 ~
 ~ Licensed under the Apache License, Version 2.0 (the "License");
 ~ you may not use this file except in compliance with the License.
@@ -23,13 +23,13 @@
 
     <TextView
         android:id="@+id/time_message"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dip"/>
 
     <EditText
         android:id="@+id/input_name"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
         android:singleLine="true"

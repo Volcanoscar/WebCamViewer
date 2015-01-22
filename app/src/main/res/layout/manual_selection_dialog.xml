@@ -16,12 +16,31 @@
 ~ *****************************************************************************
 -->
 
-<android.support.v7.widget.Toolbar
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/toolbar"
+    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/primary"
-    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/ms_filter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+        android:inputType="text"
+        android:singleLine="true"
+        android:imeOptions="actionDone"
+        android:hint="@string/enter_name">
+
+        <requestFocus />
+    </EditText>
+
+    <ListView
+        android:id="@+id/filtered_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ms_filter" />
+</RelativeLayout>

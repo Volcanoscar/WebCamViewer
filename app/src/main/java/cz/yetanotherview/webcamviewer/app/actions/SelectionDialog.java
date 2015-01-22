@@ -1,6 +1,6 @@
 /*
 * ******************************************************************************
-* Copyright (c) 2013-2014 Tomas Valenta.
+* Copyright (c) 2013-2015 Tomas Valenta.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class SelectionDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String[] items = {getString(R.string.popular_webcams),getString(R.string.selecting_by_country),getString(R.string.latest_webcams)};
+        String[] items = {getString(R.string.popular_webcams),getString(R.string.manual_selection),getString(R.string.selecting_by_country),getString(R.string.latest_webcams)};
 
         return new MaterialDialog.Builder(getActivity())
                 .title(R.string.available_options)

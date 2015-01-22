@@ -1,6 +1,6 @@
 /*
 * ******************************************************************************
-* Copyright (c) 2013-2014 Tomas Valenta.
+* Copyright (c) 2013-2015 Tomas Valenta.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -27,8 +27,12 @@ import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
@@ -53,10 +57,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import cz.yetanotherview.webcamviewer.app.R;
 import cz.yetanotherview.webcamviewer.app.Utils;
+import cz.yetanotherview.webcamviewer.app.adapter.ManualSelectionAdapter;
 import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.app.helper.NameComparator;
 import cz.yetanotherview.webcamviewer.app.model.Category;
 import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
@@ -79,6 +86,9 @@ public class JsonFetcherDialog extends DialogFragment {
     private String plsWait;
     private String importProgress;
     private Activity mActivity;
+
+    private EditText filterBox;
+    private ManualSelectionAdapter manualSelectionAdapter;
 
     private ReloadInterface mListener;
 
@@ -255,6 +265,87 @@ public class JsonFetcherDialog extends DialogFragment {
                     }
                     else if (selection == 1) {
 
+                        View view = mActivity.getLayoutInflater().inflate(R.layout.manual_selection_dialog, null);
+                        ListView manualSelectionList = (ListView) view.findViewById(R.id.filtered_list_view);
+
+                        Collections.sort(importWebCams, new NameComparator());
+
+                        manualSelectionAdapter = new ManualSelectionAdapter(mActivity, importWebCams);
+                        manualSelectionList.setAdapter(manualSelectionAdapter);
+
+                        filterBox = (EditText) view.findViewById(R.id.ms_filter);
+                        filterBox.addTextChangedListener(new TextWatcher() {
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                String text = s.toString().trim().toLowerCase(Locale.getDefault());
+                                manualSelectionAdapter.getFilter().filter(text);
+                            }
+
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count,
+                                                          int after) {
+
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                            }
+                        });
+
+                        new MaterialDialog.Builder(mActivity)
+                                .title(R.string.manual_selection)
+                                .customView(view, false)
+                                .callback(new MaterialDialog.SimpleCallback() {
+                                    @Override
+                                    public void onPositive(MaterialDialog dialog) {
+                                        progressDialog.setMessage(importProgress + " " + plsWait);
+
+                                        String selected = mActivity.getString(R.string.selected);
+                                        int newWebCams = 0;
+                                        int duplicityWebCams = 0;
+                                        long categorySelected = db.createCategory(new Category(selected + " " + Utils.getDateString()));
+
+                                        for (WebCam webCam : importWebCams) {
+                                            if (webCam.isSelected()) {
+                                                if (allWebCams.size() != 0) {
+                                                    boolean notFound = false;
+                                                    for (WebCam allWebCam : allWebCams) {
+                                                        if (webCam.getUniId() == allWebCam.getUniId()) {
+                                                            db.createWebCamCategory(allWebCam.getId(), categorySelected);
+                                                            notFound = false;
+                                                            duplicityWebCams++;
+                                                            break;
+                                                        }
+                                                        else notFound = true;
+                                                    }
+                                                    if (notFound) {
+                                                        db.createWebCam(webCam, new long[]{categorySelected});
+                                                        newWebCams++;
+                                                    }
+                                                }
+                                                else {
+                                                    db.createWebCam(webCam, new long[]{categorySelected});
+                                                    newWebCams++;
+                                                }
+                                            }
+                                        }
+
+                                        if (newWebCams + duplicityWebCams == 0) {
+                                            db.deleteCategory(categorySelected, false);
+                                        }
+
+                                        mListener = (ReloadInterface) mActivity;
+                                        mListener.invokeReload();
+                                        reportDialog(newWebCams, duplicityWebCams);
+                                    }
+
+                                })
+                                .positiveText(R.string.import_selected)
+                                .show();
+                    }
+                    else if (selection == 2) {
+
                         List<String> list = new ArrayList<>();
                         for (WebCam webCam : importWebCams) {
                             String country = webCam.getCountry();
@@ -309,7 +400,7 @@ public class JsonFetcherDialog extends DialogFragment {
                                 .positiveText(R.string.choose)
                                 .show();
                     }
-                    else if (selection == 2) {
+                    else if (selection == 3) {
                         progressDialog.setMessage(importProgress + " " + plsWait);
 
                         int newWebCams = 0;

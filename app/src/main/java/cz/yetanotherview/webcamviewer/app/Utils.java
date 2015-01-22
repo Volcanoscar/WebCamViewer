@@ -1,6 +1,6 @@
 /*
 * ******************************************************************************
-* Copyright (c) 2013-2014 Tomas Valenta.
+* Copyright (c) 2013-2015 Tomas Valenta.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,6 +50,18 @@ public class Utils {
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat();
         return df.format(c.getTime());
+    }
+
+    /**
+     * Return String with Stripped Accents
+     * @param name Input String
+     * @return Stripped String
+     */
+    public static String getNameStrippedAccents(String name) {
+        String normalizedName = name;
+        normalizedName = Normalizer.normalize(normalizedName, Normalizer.Form.NFD);
+        normalizedName = normalizedName.replaceAll("[^\\p{ASCII}]", "");
+        return normalizedName;
     }
 
     /**

@@ -1,6 +1,6 @@
 /*
 * ******************************************************************************
-* Copyright (c) 2013-2014 Tomas Valenta.
+* Copyright (c) 2013-2015 Tomas Valenta.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -45,6 +45,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -99,6 +100,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private boolean autoRefresh;
     private int autoRefreshInterval;
     private boolean autoRefreshFullScreenOnly;
+    private boolean screenAlwaysOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +129,14 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
             // Save the state
             firstRun = false;
             saveToPref();
+        }
+
+        // Screen Always on
+        if (screenAlwaysOn){
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+        else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
         db = new DatabaseHelper(getApplicationContext());
@@ -389,6 +399,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         fullScreenIntent.putExtra("zoom", zoom);
         fullScreenIntent.putExtra("autoRefresh", autoRefresh);
         fullScreenIntent.putExtra("interval", autoRefreshInterval);
+        fullScreenIntent.putExtra("screenAlwaysOn", screenAlwaysOn);
         startActivity(fullScreenIntent);
     }
 
@@ -601,6 +612,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         zoom = preferences.getFloat("pref_zoom", 2);
         selectedCategory = preferences.getInt("pref_selected_category", 0);
         selectedCategoryName = preferences.getString("pref_selectedCategoryName", allWebCamsString);
+        screenAlwaysOn = preferences.getBoolean("pref_screen_always_on", false);
     }
 
     private void saveToPref(){

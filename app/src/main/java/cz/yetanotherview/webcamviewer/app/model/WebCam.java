@@ -1,6 +1,6 @@
 /*
 * ******************************************************************************
-* Copyright (c) 2013-2014 Tomas Valenta.
+* Copyright (c) 2013-2015 Tomas Valenta.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ public class WebCam {
     private boolean popular;
     private Date dateAdded;
     private String created_at;
+    private boolean selected;
 
     // constructors
     public WebCam() {
@@ -112,6 +113,11 @@ public class WebCam {
         this.created_at = created_at;
     }
 
+    public void setSelected(boolean selected)
+    {
+        this.selected = selected;
+    }
+
     // getters
     public long getId() {
         return this.id;
@@ -159,5 +165,10 @@ public class WebCam {
 
     public String getCreatedAt() {
         return this.created_at;
+    }
+
+    public boolean isSelected()
+    {
+        return this.selected;
     }
 }

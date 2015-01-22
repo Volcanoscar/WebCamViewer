@@ -132,6 +132,12 @@
 <string name="no_thanks">NO THANKS</string>
 <string name="oops">Oops!</string>
 <string name="also_delete_all_categories">Also delete all created categories?</string>
+<string name="manual_selection">By manual selection</string>
+<string name="import_selected">IMPORT SELECTED</string>
+<string name="selected">Selected</string>
+<string name="enter_name">Enter WebCam name</string>
+<string name="pref_screen_always_on">Keep Screen On</string>
+<string name="pref_screen_always_on_summary">Prevents screen from turning off when the application is in the foreground</string>
     <!--ToDo:-->
     <string name="welcome_content">A few words of introduction...</string>
     <!--ToDo:-->

@@ -18,10 +18,17 @@
 
 package cz.yetanotherview.webcamviewer.app.helper;
 
+import java.util.Comparator;
+
+import cz.yetanotherview.webcamviewer.app.Utils;
 import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
-public interface WebCamListener {
-    void webCamAdded(WebCam webCam, long[] category_ids, boolean share);
-    void webCamEdited(int position, WebCam webCam, long[] category_ids, boolean share);
-    void webCamDeleted(long id, int position);
+public class NameComparator implements Comparator<WebCam> {
+    @Override
+    public int compare(WebCam webCam1, WebCam webCam2) {
+        String strippedName1 = Utils.getNameStrippedAccents(webCam1.getName());
+        String strippedName2 = Utils.getNameStrippedAccents(webCam2.getName());
+
+        return strippedName1.compareToIgnoreCase(strippedName2);
+    }
 }
