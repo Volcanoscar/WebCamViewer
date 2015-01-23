@@ -570,7 +570,7 @@ public class SettingsFragment extends PreferenceFragment {
                                 sharedPref.edit().putLong("pref_last_fetch_latest", 0).apply();
 
                                 Snackbar.with(getActivity().getApplicationContext())
-                                        .text(R.string.cleared)
+                                        .text(R.string.done)
                                         .actionLabel(R.string.dismiss)
                                         .actionColor(actionColor)
                                         .show(getActivity());
