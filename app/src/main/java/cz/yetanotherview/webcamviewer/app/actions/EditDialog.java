@@ -142,7 +142,7 @@ public class EditDialog extends DialogFragment {
                 .positiveText(R.string.dialog_positive_text)
                 .negativeText(android.R.string.cancel)
                 .neutralText(R.string.action_delete)
-                .callback(new MaterialDialog.FullCallback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         boolean shareIsChecked = false;
@@ -158,10 +158,6 @@ public class EditDialog extends DialogFragment {
 
                         if (mOnAddListener != null)
                             mOnAddListener.webCamEdited(position, webCam, category_ids, shareIsChecked);
-                    }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
                     }
 
                     @Override

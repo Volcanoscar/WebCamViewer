@@ -106,7 +106,7 @@ public class SettingsFragment extends PreferenceFragment {
                         .customView(view, true)
                         .positiveText(R.string.dialog_positive_text)
                         .negativeText(android.R.string.cancel)
-                        .callback(new MaterialDialog.Callback() {
+                        .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 int inputTime = Integer.parseInt(input.getText().toString().trim());
@@ -118,10 +118,6 @@ public class SettingsFragment extends PreferenceFragment {
                                         .actionLabel(R.string.dismiss)
                                         .actionColor(actionColor)
                                         .show(getActivity());
-                            }
-
-                            @Override
-                            public void onNegative(MaterialDialog dialog) {
                             }
                         }).build();
 
@@ -199,7 +195,7 @@ public class SettingsFragment extends PreferenceFragment {
                         .customView(view, true)
                         .positiveText(R.string.dialog_positive_text)
                         .negativeText(android.R.string.cancel)
-                        .callback(new MaterialDialog.Callback() {
+                        .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 inputName = input.getText().toString().trim();
@@ -216,10 +212,6 @@ public class SettingsFragment extends PreferenceFragment {
                                         .actionLabel(R.string.dismiss)
                                         .actionColor(actionColor)
                                         .show(getActivity());
-                            }
-
-                            @Override
-                            public void onNegative(MaterialDialog dialog) {
                             }
                         }).build();
 
@@ -301,7 +293,7 @@ public class SettingsFragment extends PreferenceFragment {
                 .customView(view, true)
                 .positiveText(R.string.dialog_positive_text)
                 .negativeText(android.R.string.cancel)
-                .callback(new MaterialDialog.Callback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         inputName = input.getText().toString().trim();
@@ -318,10 +310,6 @@ public class SettingsFragment extends PreferenceFragment {
                                 .actionLabel(R.string.dismiss)
                                 .actionColor(actionColor)
                                 .show(getActivity());
-                    }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
                     }
                 }).build();
 
@@ -405,7 +393,7 @@ public class SettingsFragment extends PreferenceFragment {
                     .content(R.string.also_delete_webcams)
                     .positiveText(R.string.Yes)
                     .negativeText(R.string.No)
-                    .callback(new MaterialDialog.Callback() {
+                    .callback(new MaterialDialog.ButtonCallback() {
                         @Override
                         public void onPositive(MaterialDialog dialog) {
                             categoryDeleteAlsoWebCams(true);
@@ -478,14 +466,10 @@ public class SettingsFragment extends PreferenceFragment {
                         .content(R.string.are_you_sure)
                         .positiveText(R.string.Yes)
                         .negativeText(R.string.No)
-                        .callback(new MaterialDialog.Callback() {
+                        .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 deleteAlsoCategoriesDialog();
-                            }
-
-                            @Override
-                            public void onNegative(MaterialDialog dialog) {
                             }
                         })
                         .show();
@@ -502,7 +486,7 @@ public class SettingsFragment extends PreferenceFragment {
                 .content(R.string.also_delete_all_categories)
                 .positiveText(R.string.Yes)
                 .negativeText(R.string.No)
-                .callback(new MaterialDialog.Callback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         deleteAlsoCategories(true);
@@ -548,7 +532,7 @@ public class SettingsFragment extends PreferenceFragment {
                         .content(R.string.are_you_sure)
                         .positiveText(R.string.Yes)
                         .negativeText(R.string.No)
-                        .callback(new MaterialDialog.Callback() {
+                        .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 Utils.cleanBackupFolder();
@@ -558,10 +542,6 @@ public class SettingsFragment extends PreferenceFragment {
                                         .actionLabel(R.string.dismiss)
                                         .actionColor(actionColor)
                                         .show(getActivity());
-                            }
-
-                            @Override
-                            public void onNegative(MaterialDialog dialog) {
                             }
                         })
                         .show();
@@ -582,7 +562,7 @@ public class SettingsFragment extends PreferenceFragment {
                         .content(R.string.reset_last_check_message)
                         .positiveText(R.string.Yes)
                         .negativeText(R.string.No)
-                        .callback(new MaterialDialog.Callback() {
+                        .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 sharedPref = getPreferenceManager().getSharedPreferences();
@@ -594,10 +574,6 @@ public class SettingsFragment extends PreferenceFragment {
                                         .actionLabel(R.string.dismiss)
                                         .actionColor(actionColor)
                                         .show(getActivity());
-                            }
-
-                            @Override
-                            public void onNegative(MaterialDialog dialog) {
                             }
                         })
                         .show();

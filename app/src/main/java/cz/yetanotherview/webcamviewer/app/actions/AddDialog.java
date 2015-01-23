@@ -134,7 +134,7 @@ public class AddDialog extends DialogFragment {
                 .positiveText(R.string.dialog_positive_text)
                 .negativeText(android.R.string.cancel)
                 .neutralText(R.string.how_to)
-                .callback(new MaterialDialog.FullCallback() {
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         boolean shareIsChecked = false;
@@ -153,10 +153,6 @@ public class AddDialog extends DialogFragment {
                             mOnAddListener.webCamAdded(webCam, category_ids, shareIsChecked);
                         }
 
-                    }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
                     }
 
                     @Override

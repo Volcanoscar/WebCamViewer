@@ -75,15 +75,11 @@ public class ExportDialog extends DialogFragment {
                     .customView(view, true)
                     .positiveText(android.R.string.ok)
                     .negativeText(android.R.string.cancel)
-                    .callback(new MaterialDialog.Callback() {
+                    .callback(new MaterialDialog.ButtonCallback() {
                         @Override
                         public void onPositive(MaterialDialog dialog) {
                             inputName = input.getText().toString().trim();
                             exportJson(inputName);
-                        }
-
-                        @Override
-                        public void onNegative(MaterialDialog dialog) {
                         }
                     }).build();
 

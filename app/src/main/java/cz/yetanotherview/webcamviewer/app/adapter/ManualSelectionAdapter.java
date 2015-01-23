@@ -52,8 +52,6 @@ public class ManualSelectionAdapter extends BaseAdapter implements Filterable {
     public class ViewHolder
     {
         CheckBox selCheckBox;
-        TextView name;
-        TextView country;
     }
 
     public Filter getFilter() {
@@ -68,7 +66,7 @@ public class ManualSelectionAdapter extends BaseAdapter implements Filterable {
                 if (constraint != null) {
                     if (origList != null && origList.size() > 0) {
                         for (final WebCam g : origList) {
-                            String strippedName = Utils.getNameStrippedAccents(g.getName());
+                            String strippedName = Utils.getNameStrippedAccents(g.getName() + " " + g.getCountry());
                             if (strippedName.toLowerCase()
                                     .contains(constraint.toString()))
                                 results.add(g);
@@ -117,8 +115,6 @@ public class ManualSelectionAdapter extends BaseAdapter implements Filterable {
             convertView = LayoutInflater.from(context).inflate(R.layout.filtered_list_view_item, parent, false);
             holder = new ViewHolder();
             holder.selCheckBox = (CheckBox) convertView.findViewById(R.id.sel_checkbox);
-            holder.name = (TextView) convertView.findViewById(R.id.sel_name);
-            holder.country = (TextView) convertView.findViewById(R.id.sel_country);
             convertView.setTag(holder);
 
             holder.selCheckBox.setOnClickListener( new OnClickListener()
@@ -140,8 +136,7 @@ public class ManualSelectionAdapter extends BaseAdapter implements Filterable {
 
         WebCam webCam = webCamList.get(position);
 
-        holder.name.setText(webCamList.get(position).getName());
-        holder.country.setText("(" + webCamList.get(position).getCountry() + ")");
+        holder.selCheckBox.setText(webCamList.get(position).getName() + " (" + webCamList.get(position).getCountry() + ")");
         holder.selCheckBox.setChecked(webCam.isSelected());
         holder.selCheckBox.setTag(webCam);
 

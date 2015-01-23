@@ -296,7 +296,7 @@ public class JsonFetcherDialog extends DialogFragment {
                         new MaterialDialog.Builder(mActivity)
                                 .title(R.string.manual_selection)
                                 .customView(view, false)
-                                .callback(new MaterialDialog.SimpleCallback() {
+                                .callback(new MaterialDialog.ButtonCallback() {
                                     @Override
                                     public void onPositive(MaterialDialog dialog) {
                                         progressDialog.setMessage(importProgress + " " + plsWait);

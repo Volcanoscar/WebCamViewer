@@ -110,7 +110,7 @@ public class ImportDialog extends DialogFragment {
                                         .content(R.string.import_summary)
                                         .positiveText(R.string.Yes)
                                         .negativeText(R.string.No)
-                                        .callback(new MaterialDialog.Callback() {
+                                        .callback(new MaterialDialog.ButtonCallback() {
                                             @Override
                                             public void onPositive(MaterialDialog dialog) {
                                                 db.deleteAllWebCams(false);
@@ -129,16 +129,12 @@ public class ImportDialog extends DialogFragment {
                                         .title(R.string.old_database_detected)
                                         .content(R.string.old_database_detected_summary)
                                         .positiveText(android.R.string.ok)
-                                        .callback(new MaterialDialog.Callback() {
+                                        .callback(new MaterialDialog.ButtonCallback() {
                                             @Override
                                             public void onPositive(MaterialDialog dialog) {
                                                 importOldDb(inputName);
                                             }
 
-                                            @Override
-                                            public void onNegative(MaterialDialog materialDialog) {
-
-                                            }
                                         })
                                         .show();
                             }
