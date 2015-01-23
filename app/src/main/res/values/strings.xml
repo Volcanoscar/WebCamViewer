@@ -21,7 +21,6 @@
 <string name="action_settings">"Settings"</string>
 <string name="pref_general">"General"</string>
 <string name="action_new">"Add"</string>
-<string name="refresh_done">"Update completed"</string>
 <string name="action_delete">"Delete"</string>
 <string name="action_deleted">"Deleted"</string>
 <string name="pref_delete_all">"Clean the current database"</string>
@@ -73,7 +72,7 @@
 <string name="zoom_2x">"2x zoom"</string>
 <string name="zoom_3x">"3x zoom"</string>
 <string name="zoom_4x">"4x zoom"</string>
-<string name="action_menu_help">"Help and feedback"</string>
+<string name="action_menu_help">"Help"</string>
 <string name="pref_auto_refresh">"Auto Refresh"</string>
 <string name="pref_auto_refresh_summary">"Enable or disable WebCam auto refreshing"</string>
 <string name="auto_refresh_interval">"Auto Refresh interval"</string>
@@ -129,7 +128,6 @@
 <string name="welcome">Welcome</string>
 <string name="import_webcams_now">IMPORT WEBCAMS NOW!</string>
 <string name="show_me_help">SHOW ME HELP</string>
-<string name="no_thanks">NO THANKS</string>
 <string name="oops">Oops!</string>
 <string name="also_delete_all_categories">Also delete all created categories?</string>
 <string name="manual_selection">By manual selection</string>
@@ -138,7 +136,8 @@
 <string name="enter_name">Enter WebCam name</string>
 <string name="pref_screen_always_on">Keep Screen On</string>
 <string name="pref_screen_always_on_summary">Prevents screen from turning off when the application is in the foreground</string>
-    <!--ToDo:-->
-    <string name="welcome_content">A few words of introduction...</string>
-    <!--ToDo:-->
+<string name="welcome_content">Thanks for installing this app! If you have any suggestions for improvement or have found an error, please leave a comment in the Google Play Store or GitHub. Select from the following options:</string>
+<string name="nothing_to_refresh">Nothing to refresh</string>
+<string name="refresh_is_running">Refresh is running...</string>
+<string name="close">CLOSE</string>
 </resources>

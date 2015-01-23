@@ -136,7 +136,8 @@ public class ManualSelectionAdapter extends BaseAdapter implements Filterable {
 
         WebCam webCam = webCamList.get(position);
 
-        holder.selCheckBox.setText(webCamList.get(position).getName() + " (" + webCamList.get(position).getCountry() + ")");
+        holder.selCheckBox.setText(webCamList.get(position).getName()
+                + " (" + webCamList.get(position).getCountry() + ")");
         holder.selCheckBox.setChecked(webCam.isSelected());
         holder.selCheckBox.setTag(webCam);
 

@@ -323,8 +323,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
             //Refresh
             case R.id.action_refresh:
-                refresh();
-                refreshDone();
+                refresh(false);
                 break;
 
             //Sort view
@@ -355,6 +354,13 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
             case R.id.menu_about:
                 showAbout();
                 break;
+
+            //Help
+            case R.id.menu_help:
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://youtu.be/ogypQGBQ66w"));
+                startActivity(browserIntent);
+                break;
+
             default:
                 break;
         }
@@ -509,9 +515,18 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 .show(this);
     }
 
-    private void refreshDone() {
+    private void refreshIsRunning() {
         Snackbar.with(getApplicationContext())
-                .text(R.string.refresh_done)
+                .text(R.string.refresh_is_running)
+                .actionLabel(R.string.dismiss)
+                .actionColor(getResources().getColor(R.color.yellow))
+                .duration(Snackbar.SnackbarDuration.LENGTH_SHORT)
+                .show(this);
+    }
+
+    private void nothingToRefresh() {
+        Snackbar.with(getApplicationContext())
+                .text(R.string.nothing_to_refresh)
                 .actionLabel(R.string.dismiss)
                 .actionColor(getResources().getColor(R.color.yellow))
                 .duration(Snackbar.SnackbarDuration.LENGTH_SHORT)
@@ -525,15 +540,20 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
             @Override
             public void run() {
                 swipeLayout.setRefreshing(false);
-                refresh();
-                refreshDone();
+                refresh(false);
             }
         }, 600);
     }
 
-    private void refresh() {
+    private void refresh(boolean fromAutoRefresh) {
         PicassoTools.clearCache(Picasso.with(getApplicationContext()));
         mAdapter.notifyDataSetChanged();
+        if (!fromAutoRefresh) {
+            if (mAdapter.getItemCount() != 0) {
+                refreshIsRunning();
+            }
+            else nothingToRefresh();
+        }
     }
 
     private void autoRefreshTimer(int interval) {
@@ -545,7 +565,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 handler.post(new Runnable() {
                     public void run() {
                         try {
-                            refresh();
+                            refresh(true);
                         } catch (Exception e) {
                             // Auto-generated catch block
                         }

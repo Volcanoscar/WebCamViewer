@@ -20,6 +20,8 @@ package cz.yetanotherview.webcamviewer.app.actions;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -41,8 +43,8 @@ public class WelcomeDialog extends DialogFragment {
                 .title(R.string.welcome)
                 .content(R.string.welcome_content)
                 .positiveText(R.string.import_webcams_now)
-                .neutralText(R.string.show_me_help)
-                .negativeText(R.string.no_thanks)
+                .neutralText(R.string.close)
+                .negativeText(R.string.show_me_help)
                 .forceStacking(true)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
@@ -53,11 +55,10 @@ public class WelcomeDialog extends DialogFragment {
 
                     @Override
                     public void onNegative(MaterialDialog dialog) {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://youtu.be/ogypQGBQ66w"));
+                        startActivity(browserIntent);
                     }
 
-                    @Override
-                    public void onNeutral(MaterialDialog dialog) {
-                    }
                 })
                 .build();
     }
