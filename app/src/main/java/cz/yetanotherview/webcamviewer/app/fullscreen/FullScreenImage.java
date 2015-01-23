@@ -88,6 +88,14 @@ public class FullScreenImage extends Activity {
             }
         });
 
+        ImageButton refreshButton = (ImageButton) findViewById(R.id.refresh_button);
+        refreshButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                refresh();
+            }
+        });
+
         progressBar = (ProgressBar) findViewById(R.id.loadingProgressBarFull);
 
         loadImage();
