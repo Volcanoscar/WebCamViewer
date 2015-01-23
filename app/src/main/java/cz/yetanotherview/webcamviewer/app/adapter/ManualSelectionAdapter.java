@@ -146,7 +146,5 @@ public class ManualSelectionAdapter extends BaseAdapter implements Filterable {
         holder.selCheckBox.setTag(webCam);
 
         return convertView;
-
     }
-
 }

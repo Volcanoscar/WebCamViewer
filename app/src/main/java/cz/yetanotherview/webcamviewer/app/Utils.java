@@ -102,20 +102,6 @@ public class Utils {
     }
 
     /**
-     * Delete Picasso Cache.
-     */
-    public static void deletePicassoCache(File cache) {
-        String folderPicassoCache = "/picasso-cache";
-        File picassoCache = new File (cache + folderPicassoCache);
-        if (picassoCache.isDirectory()) {
-            String[] children = picassoCache.list();
-            for (String aChildren : children) {
-                new File(picassoCache, aChildren).delete();
-            }
-        }
-    }
-
-    /**
      * Clean backup folder.
      */
     public static void cleanBackupFolder() {

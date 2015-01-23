@@ -31,12 +31,12 @@ import android.view.WindowManager;
 import android.widget.ImageButton;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.PicassoTools;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 import cz.yetanotherview.webcamviewer.app.R;
-import cz.yetanotherview.webcamviewer.app.Utils;
 
 public class FullScreenImage extends Activity {
 
@@ -100,8 +100,6 @@ public class FullScreenImage extends Activity {
         Picasso.with(FullScreenImage.getAppContext())
                 .load(url)
                 .fit()
-                .skipMemoryCache()
-                //.centerInside()
                 .placeholder(R.drawable.animation)
                 .error(R.drawable.placeholder_error)
                 .into(image);
@@ -167,7 +165,7 @@ public class FullScreenImage extends Activity {
     }
 
     private void refresh() {
-        Utils.deletePicassoCache(getApplicationContext().getCacheDir());
+        PicassoTools.clearCache(Picasso.with(getApplicationContext()));
         loadImage();
     }
 }

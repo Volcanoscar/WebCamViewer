@@ -53,6 +53,8 @@ import android.widget.ListView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.melnykov.fab.FloatingActionButton;
 import com.nispok.snackbar.Snackbar;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.PicassoTools;
 
 import java.util.List;
 import java.util.Timer;
@@ -530,7 +532,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     }
 
     private void refresh() {
-        Utils.deletePicassoCache(getApplicationContext().getCacheDir());
+        PicassoTools.clearCache(Picasso.with(getApplicationContext()));
         mAdapter.notifyDataSetChanged();
     }
 
