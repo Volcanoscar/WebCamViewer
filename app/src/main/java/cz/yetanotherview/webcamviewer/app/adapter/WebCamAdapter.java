@@ -25,8 +25,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -55,18 +57,29 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
     }
 
     @Override
-    public void onBindViewHolder(WebCamViewHolder webcamViewHolder, int i) {
+    public void onBindViewHolder(final WebCamViewHolder webcamViewHolder, int i) {
         WebCam webCam = webCamItems.get(i);
         webcamViewHolder.vName.setText(webCam.getName());
+        webcamViewHolder.vProgress.setVisibility(View.VISIBLE);
 
         //Picasso.with(webcamViewHolder.itemView.getContext()).setIndicatorsEnabled(true);
         Picasso.with(webcamViewHolder.itemView.getContext())
                 .load(webCam.getUrl())
                 .fit()
                 .transform(new SizeAndRoundTransform(6, 0))
-                .placeholder(R.drawable.animation)
+                .placeholder(R.drawable.placeholder)
                 .error(R.drawable.placeholder_error)
-                .into(webcamViewHolder.vImage);
+                .into(webcamViewHolder.vImage, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        webcamViewHolder.vProgress.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        webcamViewHolder.vProgress.setVisibility(View.GONE);
+                    }
+                });
     }
 
     public class WebCamViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
@@ -75,11 +88,15 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
         protected ImageView vImage;
         protected ImageButton vButton;
 
+        protected ProgressBar vProgress;
+
         public WebCamViewHolder(View itemLayoutView) {
             super(itemLayoutView);
             vName = (TextView) itemLayoutView.findViewById(R.id.titleTextView);
             vImage = (ImageView) itemLayoutView.findViewById(R.id.imageView);
             vButton = (ImageButton) itemLayoutView.findViewById(R.id.action_edit);
+
+            vProgress = (ProgressBar) itemLayoutView.findViewById(R.id.loadingProgressBar);
 
             vImage.setOnClickListener(this);
             vButton.setOnClickListener(this);

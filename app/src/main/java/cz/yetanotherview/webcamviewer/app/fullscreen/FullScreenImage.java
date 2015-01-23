@@ -29,7 +29,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.PicassoTools;
 
@@ -44,6 +46,7 @@ public class FullScreenImage extends Activity {
     private static Context context;
 
     private TouchImageView image;
+    private ProgressBar progressBar;
     private String url;
     private float zoom;
 
@@ -84,6 +87,9 @@ public class FullScreenImage extends Activity {
                 finish();
             }
         });
+
+        progressBar = (ProgressBar) findViewById(R.id.loadingProgressBarFull);
+
         loadImage();
 
         if (autoRefresh) {
@@ -100,9 +106,19 @@ public class FullScreenImage extends Activity {
         Picasso.with(FullScreenImage.getAppContext())
                 .load(url)
                 .fit()
-                .placeholder(R.drawable.animation)
+                .placeholder(R.drawable.placeholder)
                 .error(R.drawable.placeholder_error)
-                .into(image);
+                .into(image, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        progressBar.setVisibility(View.GONE);
+                    }
+                });
     }
 
     private void goFullScreen() {
@@ -166,6 +182,7 @@ public class FullScreenImage extends Activity {
 
     private void refresh() {
         PicassoTools.clearCache(Picasso.with(getApplicationContext()));
+        progressBar.setVisibility(View.VISIBLE);
         loadImage();
     }
 }
