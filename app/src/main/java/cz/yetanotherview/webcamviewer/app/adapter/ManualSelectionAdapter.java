@@ -66,9 +66,10 @@ public class ManualSelectionAdapter extends BaseAdapter implements Filterable {
                 if (constraint != null) {
                     if (origList != null && origList.size() > 0) {
                         for (final WebCam g : origList) {
-                            String strippedName = Utils.getNameStrippedAccents(g.getName() + " " + g.getCountry());
-                            if (strippedName.toLowerCase()
-                                    .contains(constraint.toString()))
+                            String strippedNameAndCountry = Utils.getNameStrippedAccents(g.getName() + " " + g.getCountry());
+                            String strippedInput = Utils.getNameStrippedAccents(constraint.toString().trim());
+                            if (strippedNameAndCountry.toLowerCase()
+                                    .contains(strippedInput))
                                 results.add(g);
                         }
                     }

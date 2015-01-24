@@ -33,7 +33,7 @@
         android:inputType="text"
         android:singleLine="true"
         android:imeOptions="actionDone"
-        android:hint="@string/enter_name">
+        android:hint="@string/enter_place_or_country">
 
         <requestFocus />
     </EditText>

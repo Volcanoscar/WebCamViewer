@@ -21,6 +21,8 @@ package cz.yetanotherview.webcamviewer.app.actions;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -39,8 +41,21 @@ public class WelcomeDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final String VERSION_UNAVAILABLE = "N/A";
+
+        // Get app version
+        PackageManager pm = getActivity().getPackageManager();
+        String packageName = getActivity().getPackageName();
+        String versionName;
+        try {
+            PackageInfo info = pm.getPackageInfo(packageName, 0);
+            versionName = info.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            versionName = VERSION_UNAVAILABLE;
+        }
+
         return new MaterialDialog.Builder(getActivity())
-                .title(R.string.welcome)
+                .title(getString(R.string.welcome_to_version) + " " + versionName + "!")
                 .content(R.string.welcome_content)
                 .positiveText(R.string.import_webcams_now)
                 .neutralText(R.string.close)

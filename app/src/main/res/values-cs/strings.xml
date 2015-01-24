@@ -124,7 +124,6 @@
 <string name="submit_for_approval">"Odeslat tuto WebKameru ke schválení"</string>
 <string name="send_via_email">"Odeslat e-mailem ..."</string>
 <string name="no_email_clients_installed">"Není nainstalováný žádný e-mailový klient."</string>
-<string name="welcome">"Vítejte"</string>
 <string name="import_webcams_now">"IMPORTOVAT WEBKAMERY NYNÍ!"</string>
 <string name="show_me_help">"ZOBRAZIT NÁPOVĚDU"</string>
 <string name="oops">"Jejda!"</string>
@@ -132,7 +131,6 @@
 <string name="manual_selection">"Ručním výběrem"</string>
 <string name="import_selected">"IMPORTOVAT VYBRANÉ"</string>
 <string name="selected">"Vybrané"</string>
-<string name="enter_name">"Zadejte název WebKamery"</string>
 <string name="pref_screen_always_on">"Ponechat obrazovku zapnutou"</string>
 <string name="pref_screen_always_on_summary">"Zabránit vypnutí obrazovky, když je aplikace v popředí"</string>
 <string name="welcome_content">"Díky za instalaci této aplikace! Pokud máte nějaké návrhy na zlepšení nebo jste našli chybu, prosím zanechte komentář v obchodu Google Play nebo na GitHubu. Pokračujte výběrem z následujících možností:"</string>
@@ -140,4 +138,6 @@
 <string name="refresh_is_running">"Obnovení bylo spuštěno..."</string>
 <string name="close">"ZAVŘÍT"</string>
 <string name="done">"Hotovo"</string>
+<string name="enter_place_or_country">"Zadejte místo nebo zemi"</string>
+<string name="welcome_to_version">"Vítejte v nové verzi"</string>
 </resources>
