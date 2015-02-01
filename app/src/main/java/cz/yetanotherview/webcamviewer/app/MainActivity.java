@@ -22,8 +22,6 @@ import android.app.DialogFragment;
 import android.app.backup.BackupManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -40,7 +38,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -60,6 +57,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import cz.yetanotherview.webcamviewer.app.actions.AboutDialog;
 import cz.yetanotherview.webcamviewer.app.actions.AddDialog;
 import cz.yetanotherview.webcamviewer.app.actions.EditDialog;
 import cz.yetanotherview.webcamviewer.app.actions.JsonFetcherDialog;
@@ -273,22 +271,24 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     }
 
     private void reInitializeAdapter(int position) {
-        allWebCams.clear();
-        if (position == 0) {
-            allWebCams = db.getAllWebCams(sortOrder);
-            db.closeDB();
-            mAdapter.swapData(allWebCams);
-            selectedCategoryName = allWebCamsString;
+        if (db.getWebCamCount() != 0) {
+            allWebCams.clear();
+            if (position == 0) {
+                allWebCams = db.getAllWebCams(sortOrder);
+                db.closeDB();
+                mAdapter.swapData(allWebCams);
+                selectedCategoryName = allWebCamsString;
+            }
+            else {
+                Category category = allCategories.get(position - 1);
+                allWebCams = db.getAllWebCamsByCategory(category.getId(),sortOrder);
+                db.closeDB();
+                mAdapter.swapData(allWebCams);
+                selectedCategoryName = category.getcategoryName();
+            }
+            saveToPref();
+            checkAdapterIsEmpty();
         }
-        else {
-            Category category = allCategories.get(position - 1);
-            allWebCams = db.getAllWebCamsByCategory(category.getId(),sortOrder);
-            db.closeDB();
-            mAdapter.swapData(allWebCams);
-            selectedCategoryName = category.getcategoryName();
-        }
-        saveToPref();
-        checkAdapterIsEmpty();
     }
 
     @Override
@@ -378,26 +378,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     }
 
     private void showAbout() {
-        final String VERSION_UNAVAILABLE = "N/A";
-
-        // Get app version
-        PackageManager pm = getPackageManager();
-        String packageName = getPackageName();
-        String versionName;
-        try {
-            PackageInfo info = pm.getPackageInfo(packageName, 0);
-            versionName = info.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            versionName = VERSION_UNAVAILABLE;
-        }
-
-        new MaterialDialog.Builder(this)
-                .title(getString(R.string.app_name) + " " + versionName)
-                .content(Html.fromHtml(getString(R.string.about_body)))
-                .contentLineSpacing(1)
-                .positiveText(android.R.string.ok)
-                .iconRes(R.drawable.ic_launcher)
-                .show();
+        DialogFragment newFragment = new AboutDialog();
+        newFragment.show(getFragmentManager(), "AboutDialog");
     }
 
     private void showImageFullscreen(int position) {

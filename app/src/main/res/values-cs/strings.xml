@@ -2,7 +2,6 @@
 <resources>
 <string name="app_name">"Web Kamery"</string>
 <string name="about_body"><![CDATA[
-        <b>Tato aplikace</b><br>
         Autor: <a href="http://www.yetanotherview.cz">Tomáš Valenta</a><br>
         Zapojit se: Zdrojové kódy jsou na <a href="https://github.com/TomasValenta/WebCamViewer">GitHubu</a><br>
         Pro pomoc s překladem do vašeho jazyka použijte <a href="http://goo.gl/MUJqYZ">tento online nástroj</a>.<br>
@@ -15,7 +14,7 @@
     Čínština (cn + tw) - <b><a href="https://plus.google.com/105827775849570821979/">John Chung</a></b><br>
     Japonština - <b><a href="mailto:naofum@gmail.com">Naofumi</a></b><br>
     <br>
-        <b>Mé velké poděkování patří <a href="https://plus.google.com/104896455725487013630/">Radku Matouchovi</a></b> za pomoc + užitečné tipy.
+        <b>Mé velké poděkování patří <a href="http://upload.wikimedia.org/wikipedia/commons/b/b3/Shield-Trinity-Scutum-Fidei-English.svg">Bohu, Ježíši i Duchu Svatému!</a> A také <a href="https://plus.google.com/104896455725487013630/">Radku Matouchovi</a></b> za pomoc + užitečné tipy.
     ]]></string>
 <string name="action_menu_about">"O aplikaci"</string>
 <string name="action_settings">"Nastavení"</string>
@@ -140,4 +139,5 @@
 <string name="done">"Hotovo"</string>
 <string name="enter_place_or_country">"Zadejte místo nebo zemi"</string>
 <string name="welcome_to_version">"Vítejte v nové verzi"</string>
+<string name="no_categories_found">"Nebyly nalezeny žádné kategorie"</string>
 </resources>

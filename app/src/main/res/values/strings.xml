@@ -2,7 +2,6 @@
 <resources>
 <string name="app_name">"WebCam Viewer"</string>
 <string name="about_body"><![CDATA[
-    <b>This application</b><br>
     Author: <a href="http://www.yetanotherview.cz">Tomas Valenta</a><br>
     Contribute: Source code on <a href="https://github.com/TomasValenta/WebCamViewer">GitHub</a><br>
     For help with the translation into your language <a href="http://goo.gl/MUJqYZ">use this online tool</a>.<br>
@@ -15,7 +14,7 @@
     Chinese (cn + tw) - <b><a href="https://plus.google.com/105827775849570821979/">John Chung</a></b><br>
     Japanese - <b><a href="mailto:naofum@gmail.com">Naofumi</a></b><br>
     <br>
-    <b>Also big thanks to <a href="https://plus.google.com/104896455725487013630/">Radek Matouch</a></b> for some help + useful tips.
+    <b>Also my big thanks to <a href="http://upload.wikimedia.org/wikipedia/commons/b/b3/Shield-Trinity-Scutum-Fidei-English.svg">God, Jesus and Holy Spirit!</a> And also <a href="https://plus.google.com/104896455725487013630/">Radek Matouch</a></b> for some help + useful tips.
 ]]></string>
 <string name="action_menu_about">"About"</string>
 <string name="action_settings">"Settings"</string>
@@ -140,4 +139,5 @@
 <string name="done">"Done"</string>
 <string name="enter_place_or_country">"Enter a place or country"</string>
 <string name="welcome_to_version">"Welcome to the new version"</string>
+<string name="no_categories_found">"No categories found"</string>
 </resources>

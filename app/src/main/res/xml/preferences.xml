@@ -78,6 +78,11 @@
         android:title="@string/pref_database">
 
         <Preference
+            android:key="pref_delete_all"
+            android:title="@string/pref_delete_all"
+            android:summary="@string/pref_delete_all_summ" />
+
+        <Preference
             android:key="pref_import_from_ext"
             android:title="@string/pref_import_from_ext"
             android:summary="@string/pref_import_from_ext_summ" />
@@ -86,11 +91,6 @@
             android:key="pref_export_to_ext"
             android:title="@string/pref_export_to_ext"
             android:summary="@string/pref_export_to_ext_summ" />
-
-        <Preference
-            android:key="pref_delete_all"
-            android:title="@string/pref_delete_all"
-            android:summary="@string/pref_delete_all_summ" />
 
         <Preference
             android:key="pref_clean_folder"

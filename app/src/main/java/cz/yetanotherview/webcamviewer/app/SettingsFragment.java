@@ -82,9 +82,9 @@ public class SettingsFragment extends PreferenceFragment {
         categoryEdit();
         categoryDelete();
 
+        deleteAllWebCams();
         importFromExt();
         exportToExt();
-        deleteAllWebCams();
         cleanExtFolder();
 
         resetLastCheck();
@@ -111,6 +111,9 @@ public class SettingsFragment extends PreferenceFragment {
                             public void onPositive(MaterialDialog dialog) {
                                 int inputTime = Integer.parseInt(input.getText().toString().trim());
 
+                                if (inputTime == 0) {
+                                    inputTime = 1;
+                                }
                                 sharedPref.edit().putInt("pref_auto_refresh_interval", inputTime * 1000).apply();
 
                                 Snackbar.with(getActivity().getApplicationContext())
@@ -273,7 +276,7 @@ public class SettingsFragment extends PreferenceFragment {
                             .positiveText(R.string.choose)
                             .show();
                 } else Snackbar.with(getActivity().getApplicationContext())
-                        .text("No categories found")
+                        .text(R.string.no_categories_found)
                         .actionLabel(R.string.dismiss)
                         .actionColor(actionColor)
                         .show(getActivity());
@@ -377,7 +380,7 @@ public class SettingsFragment extends PreferenceFragment {
                             .show();
                 }
                 else Snackbar.with(getActivity().getApplicationContext())
-                        .text("No categories found")
+                        .text(R.string.no_categories_found)
                         .actionLabel(R.string.dismiss)
                         .actionColor(actionColor)
                         .show(getActivity());
@@ -431,30 +434,6 @@ public class SettingsFragment extends PreferenceFragment {
         }
     }
 
-    private void exportToExt() {
-        // Export to Ext OnPreferenceClickListener
-        Preference pref_export_to_ext = findPreference("pref_export_to_ext");
-        pref_export_to_ext.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                DialogFragment exportDialog = new ExportDialog();
-                exportDialog.show(getFragmentManager(), "ExportDialog");
-                return true;
-            }
-        });
-    }
-
-    private void importFromExt() {
-        // Import from Ext OnPreferenceClickListener
-        Preference pref_import_from_ext = findPreference("pref_import_from_ext");
-        pref_import_from_ext.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            public boolean onPreferenceClick(Preference preference) {
-                DialogFragment importDialog = new ImportDialog();
-                importDialog.show(getFragmentManager(), "ImportDialog");
-                return true;
-            }
-        });
-    }
-
     private void deleteAllWebCams() {
         // Delete all OnPreferenceClickListener
         Preference pref_delete_all = findPreference("pref_delete_all");
@@ -502,23 +481,47 @@ public class SettingsFragment extends PreferenceFragment {
 
     private void deleteAlsoCategories(boolean alsoCategories){
 
-            synchronized (SettingsFragment.sDataLock) {
-                if (alsoCategories) {
-                    db.deleteAllWebCams(true);
-                }
-                else {
-                    db.deleteAllWebCams(false);
-                }
-                db.closeDB();
+        synchronized (SettingsFragment.sDataLock) {
+            if (alsoCategories) {
+                db.deleteAllWebCams(true);
             }
-            BackupManager backupManager = new BackupManager(getActivity());
-            backupManager.dataChanged();
+            else {
+                db.deleteAllWebCams(false);
+            }
+            db.closeDB();
+        }
+        BackupManager backupManager = new BackupManager(getActivity());
+        backupManager.dataChanged();
 
-            Snackbar.with(getActivity().getApplicationContext())
-                    .text(R.string.action_deleted)
-                    .actionLabel(R.string.dismiss)
-                    .actionColor(actionColor)
-                    .show(getActivity());
+        Snackbar.with(getActivity().getApplicationContext())
+                .text(R.string.action_deleted)
+                .actionLabel(R.string.dismiss)
+                .actionColor(actionColor)
+                .show(getActivity());
+    }
+
+    private void exportToExt() {
+        // Export to Ext OnPreferenceClickListener
+        Preference pref_export_to_ext = findPreference("pref_export_to_ext");
+        pref_export_to_ext.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                DialogFragment exportDialog = new ExportDialog();
+                exportDialog.show(getFragmentManager(), "ExportDialog");
+                return true;
+            }
+        });
+    }
+
+    private void importFromExt() {
+        // Import from Ext OnPreferenceClickListener
+        Preference pref_import_from_ext = findPreference("pref_import_from_ext");
+        pref_import_from_ext.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+                DialogFragment importDialog = new ImportDialog();
+                importDialog.show(getFragmentManager(), "ImportDialog");
+                return true;
+            }
+        });
     }
 
     private void cleanExtFolder() {

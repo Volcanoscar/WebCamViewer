@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 <string name="app_name">"Web Kamery"</string>
-
-<!-- Fuzzy -->
 <string name="about_body"><![CDATA[
-        <b>Táto aplikácia</b><br>
         Autor: <a href="http://www.yetanotherview.cz">Tomáš Valenta</a><br>
         Zapojiť sa: Zdrojové kódy sú na <a href="https://github.com/TomasValenta/WebCamViewer">GitHubu</a><br>
         Pre pomoc s prekladom do vášho jazyka použite <a href="http://goo.gl/MUJqYZ">tento online nástroj</a>.<br>
@@ -17,7 +14,7 @@
     Čínština (cn + tw) - <b><a href="https://plus.google.com/105827775849570821979/">John Chung</a></b><br>
     Japončina - <b><a href="mailto:naofum@gmail.com">Naofumi</a></b><br>
     <br>
-        <b>Moje veľké poďakovanie patrí <a href="https://plus.google.com/104896455725487013630/">Radku Matouchovi</a></b> za pomoc + užitočné tipy.
+        <b>Moje veľké poďakovanie patrí <a href="http://upload.wikimedia.org/wikipedia/commons/b/b3/Shield-Trinity-Scutum-Fidei-English.svg">Bohu, Ježišovi i Duchu Svätému!</a> A tiež <a href="https://plus.google.com/104896455725487013630/">Radku Matouchovi</a></b> za pomoc + užitočné tipy.
     ]]></string>
 <string name="action_menu_about">"O aplikácii"</string>
 <string name="action_settings">"Nastavenia"</string>
@@ -142,4 +139,5 @@
 <string name="done">"Hotovo"</string>
 <string name="enter_place_or_country">"Zadajte miesto alebo krajinu"</string>
 <string name="welcome_to_version">"Vitajte v novej verzii"</string>
+<string name="no_categories_found">"Neboli nájdené žiadne kategórie"</string>
 </resources>
