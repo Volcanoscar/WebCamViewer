@@ -1,6 +1,6 @@
 # WebCam Viewer
 
-![WebCamViewer](https://lh5.ggpht.com/k96AcaKgan1E4jTnnvcSe0JEz-IjJx2OqBUOWGM-DKox5TGQ5N17b-mQY2dbCyzsJAc0=w300) [![Presentation video](http://img.youtube.com/vi/Xcp0j2vwbxI/0.jpg)](http://www.youtube.com/watch?v=Xcp0j2vwbxI)
+[![Presentation video](http://img.youtube.com/vi/Xcp0j2vwbxI/0.jpg)](http://www.youtube.com/watch?v=Xcp0j2vwbxI)
 
 With this fast, simple and modern application you can quickly create a list of all your favorite WebCams.
 
@@ -29,12 +29,14 @@ This application has a community based database and also allows you to manually 
 * English, Czech, Slovak, German, Japanese (I would be grateful, if you can help me with the translation into your language at this address: http://goo.gl/MUJqYZ)
 
 **Bug reports:**
+
 https://github.com/TomasValenta/WebCamViewer/issues
 
 **Note:**
+
 This application currently do not support video sequences.
 
-	 [![Get it on Google Play](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=cz.yetanotherview.WebCamviewer.app)
+[![Get it on Google Play](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=cz.yetanotherview.WebCamviewer.app)
 	 
 License
 --------
