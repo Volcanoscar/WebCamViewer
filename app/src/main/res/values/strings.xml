@@ -2,19 +2,19 @@
 <resources>
 <string name="app_name">"WebCam Viewer"</string>
 <string name="about_body"><![CDATA[
-    Author: <a href="http://www.yetanotherview.cz">Tomas Valenta</a><br>
-    Contribute: Source code on <a href="https://github.com/TomasValenta/WebCamViewer">GitHub</a><br>
-    For help with the translation into your language <a href="http://goo.gl/MUJqYZ">use this online tool</a>.<br>
+    <b>Author: <a href="http://www.yetanotherview.cz">Tomas Valenta</a></b><br>
+    <b>Contribute:</b> Source code on <b><a href="https://github.com/TomasValenta/WebCamViewer">GitHub</a></b><br>
+    For help translating into your language <b><a href="http://goo.gl/MUJqYZ">use this online tool</a></b>.<br>
     <br>
-    <b>Many thanks to these open source tools:</b><br>
+    <b>Special thanks to these open source tools:</b><br>
     <b><a href="https://developer.android.com/tools/support-library/features.html">Support Libraries</a></b><i> by Google, Inc.</i><br>
     <b><a href="https://github.com/afollestad/material-dialogs">Material Dialogs</a></b><i> by Aidan Follestad.</i><br>
     <b><a href="https://github.com/square/picasso">Picasso</a></b><i> by Square, Inc.</i><br><br>
-    <b>Many thanks to these translators:</b><br>
+    <b>Special thanks to these translators:</b><br>
     Chinese (cn + tw) - <b><a href="https://plus.google.com/105827775849570821979/">John Chung</a></b><br>
     Japanese - <b><a href="mailto:naofum@gmail.com">Naofumi</a></b><br>
     <br>
-    <b>Also my big thanks to <a href="http://upload.wikimedia.org/wikipedia/commons/b/b3/Shield-Trinity-Scutum-Fidei-English.svg">God, Jesus and Holy Spirit!</a> And also <a href="https://plus.google.com/104896455725487013630/">Radek Matouch</a></b> for some help + useful tips.
+    <b>Also a huge thanks to <a href="http://upload.wikimedia.org/wikipedia/commons/b/b3/Shield-Trinity-Scutum-Fidei-English.svg">God, Jesus and Holy Spirit!</a> As well as, <a href="https://plus.google.com/104896455725487013630/">Radek Matouch</a></b> for all of his help + useful tips.
 ]]></string>
 <string name="action_menu_about">"About"</string>
 <string name="action_settings">"Settings"</string>
@@ -23,7 +23,7 @@
 <string name="action_delete">"Delete"</string>
 <string name="action_deleted">"Deleted"</string>
 <string name="pref_delete_all">"Clean the current database"</string>
-<string name="pref_delete_all_summ">"Deletes all webcams from the current database"</string>
+<string name="pref_delete_all_summ">"Delete all WebCams from the current database"</string>
 <string name="are_you_sure">"Are you sure?"</string>
 <string name="Yes">"Yes"</string>
 <string name="No">"No"</string>
@@ -36,7 +36,7 @@
 <string name="how_to">"How to"</string>
 <string name="dialog_positive_text">"Save"</string>
 <string name="dialog_positive_toast_message">"Saved!"</string>
-<string name="empty_list_view">"No WebCams found. Use the FAB button to add new or import some WebCams from server …"</string>
+<string name="empty_list_view">"No WebCams found. Use the FAB button to manually add or import new WebCams from server …"</string>
 <string name="pref_database">"Database"</string>
 <string name="pref_import_from_ext">"Import from External Storage"</string>
 <string name="pref_import_from_ext_summ">"Import WebCam database from External Storage"</string>
@@ -47,12 +47,12 @@
 <string name="import_failed">"Import Failed!"</string>
 <string name="export_done">"Export Successful!"</string>
 <string name="export_failed">"Export Failed!"</string>
-<string name="export_message">"This will create a new file in this directory:"</string>
+<string name="export_message">"This will create a new file in this folder:"</string>
 <string name="pref_clean_folder">"Delete backups"</string>
 <string name="pref_clean_folder_summ">"Delete all files from the backup folder"</string>
 <string name="nothing_to_import">"Nothing to import"</string>
 <string name="pref_full_screen">"Immersive mode"</string>
-<string name="pref_full_screen_summ">"Run application in immersive full-screen mode (only KitKat and up)"</string>
+<string name="pref_full_screen_summ">"Run application in immersive full-screen mode (only KitKat or higher)"</string>
 <string name="action_edit">"Edit"</string>
 <string name="action_sort">"Sort"</string>
 <string name="action_sort_def">"Default"</string>
@@ -83,7 +83,7 @@
 <string name="pref_import_from_server">"Import from Server"</string>
 <string name="auto_refresh_fullscreen">"Only in Full Screen view"</string>
 <string name="auto_refresh_fullscreen_summary">"Enable auto refresh only in full-screen view"</string>
-<string name="also_delete_webcams">"Delete also WebCams that are in this category?"</string>
+<string name="also_delete_webcams">"Also delete WebCams that are in this category?"</string>
 <string name="imported">"Imported"</string>
 <string name="nothing_to_export">"Nothing to export"</string>
 <string name="old_database_detected">"Old database detected"</string>
@@ -104,21 +104,20 @@
 <string name="popular">"Popular"</string>
 <string name="latest">"Latest"</string>
 <string name="no_new_webcams">"No new WebCams"</string>
-<string name="no_new_webcams_summary">"No new WebCams since the last download."</string>
+<string name="no_new_webcams_summary">"There are no new WebCams since the last download."</string>
 <string name="countries">"Countries"</string>
-<string name="country">"Country"</string>
 <string name="add_options">"Add options"</string>
 <string name="add_manually">"Add manually"</string>
 <string name="import_done">"Import Successful!"</string>
-<string name="import_progress">"Importing in progress, also searching for possible duplicates."</string>
+<string name="import_progress">"Importing in progress and searching for possible duplicates."</string>
 <string name="report">"Report"</string>
 <string name="import_successfully">"Import was successfully completed! Check Navigation Drawer on the left side."</string>
 <string name="new_webcams">"New WebCams:"</string>
 <string name="reassigned">"Reassigned:"</string>
 <string name="other">"Other"</string>
-<string name="pref_reset_last_check">"Reset last check"</string>
-<string name="pref_reset_last_check_summary">"Reset last check count for Popular and Latest WebCams"</string>
-<string name="reset_last_check_message">"Do you want reset last check count for Popular and Latest WebCams?"</string>
+<string name="pref_reset_last_check">"Reset last checkpoint"</string>
+<string name="pref_reset_last_check_summary">"Reset last checkpoint for Popular and Latest WebCams"</string>
+<string name="reset_last_check_message">"Are you sure you want to reset last checkpoint for Popular and Latest WebCams?"</string>
 <string name="community_list">"Community list"</string>
 <string name="submit_for_approval">"Submit this WebCam for approval"</string>
 <string name="send_via_email">"Send via email..."</string>
@@ -132,12 +131,12 @@
 <string name="selected">"Selected"</string>
 <string name="pref_screen_always_on">"Keep Screen On"</string>
 <string name="pref_screen_always_on_summary">"Prevents screen from turning off when the application is in the foreground"</string>
-<string name="welcome_content">"Thanks for installing this app! If you have any suggestions for improvement or have found an error, please leave a comment in the Google Play Store or GitHub. Select from the following options:"</string>
+<string name="welcome_content">"Thank you for installing this app! If you have any suggestions for improvement or have found an error, please leave a comment in the Google Play Store or GitHub. Select from the following options:"</string>
 <string name="nothing_to_refresh">"Nothing to refresh"</string>
 <string name="refresh_is_running">"Refresh is running..."</string>
 <string name="close">"CLOSE"</string>
 <string name="done">"Done"</string>
-<string name="enter_place_or_country">"Enter a place or country"</string>
+<string name="enter_place_or_country">"Enter a place or a country"</string>
 <string name="welcome_to_version">"Welcome to the new version"</string>
 <string name="no_categories_found">"No categories found"</string>
 </resources>

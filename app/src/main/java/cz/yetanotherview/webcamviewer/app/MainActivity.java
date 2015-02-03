@@ -357,7 +357,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
             //Help
             case R.id.menu_help:
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://youtu.be/ogypQGBQ66w"));
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://youtu.be/Xcp0j2vwbxI"));
                 startActivity(browserIntent);
                 break;
 

@@ -2,9 +2,9 @@
 <resources>
 <string name="app_name">"Web Kamery"</string>
 <string name="about_body"><![CDATA[
-        Autor: <a href="http://www.yetanotherview.cz">Tomáš Valenta</a><br>
-        Zapojiť sa: Zdrojové kódy sú na <a href="https://github.com/TomasValenta/WebCamViewer">GitHubu</a><br>
-        Pre pomoc s prekladom do vášho jazyka použite <a href="http://goo.gl/MUJqYZ">tento online nástroj</a>.<br>
+        <b>Autor: <a href="http://www.yetanotherview.cz">Tomáš Valenta</a></b><br>
+        <b>Zapojiť sa:</b> Zdrojové kódy sú na <b><a href="https://github.com/TomasValenta/WebCamViewer">GitHubu</a></b><br>
+        Pre pomoc s prekladom do vášho jazyka použite <b><a href="http://goo.gl/MUJqYZ">tento online nástroj</a></b>.<br>
         <br>
         <b>Veľké vďaka patrí týmto open source projektom:</b><br>
     <b><a href="https://developer.android.com/tools/support-library/features.html">Support knižnice</a></b><i> od Google.</i><br>
@@ -106,7 +106,6 @@
 <string name="no_new_webcams">"Žiadne nové WebKamery"</string>
 <string name="no_new_webcams_summary">"Od posledného sťahovania neboli nájdené žiadne nové WebKamery."</string>
 <string name="countries">"Krajiny"</string>
-<string name="country">"Krajina"</string>
 <string name="add_options">"Možnosti pridania"</string>
 <string name="add_manually">"Pridať ručne"</string>
 <string name="import_done">"Import bol úspešný!"</string>

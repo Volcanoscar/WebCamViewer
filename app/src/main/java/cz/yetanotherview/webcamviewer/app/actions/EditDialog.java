@@ -51,7 +51,6 @@ public class EditDialog extends DialogFragment {
     private WebCamListener mOnAddListener;
     private View positiveAction;
 
-    private DatabaseHelper db;
     private List<Category> allCategories;
     private Category category;
 
@@ -78,7 +77,7 @@ public class EditDialog extends DialogFragment {
         return frag;
     }
 
-    public void setOnAddListener(WebCamListener onAddListener) {
+    private void setOnAddListener(WebCamListener onAddListener) {
         mOnAddListener = onAddListener;
     }
 
@@ -94,7 +93,7 @@ public class EditDialog extends DialogFragment {
         id = bundle.getLong("id", 0);
         position = bundle.getInt("position", 0);
 
-        db = new DatabaseHelper(getActivity());
+        DatabaseHelper db = new DatabaseHelper(getActivity());
         webCam = db.getWebCam(id);
         allCategories = db.getAllCategories();
         webCam_category_ids = db.getWebCamCategoriesIds(webCam.getId());

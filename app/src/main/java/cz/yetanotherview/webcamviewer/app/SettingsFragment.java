@@ -27,6 +27,7 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.text.Editable;
+import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
@@ -41,6 +42,7 @@ import java.util.List;
 import cz.yetanotherview.webcamviewer.app.actions.ExportDialog;
 import cz.yetanotherview.webcamviewer.app.actions.ImportDialog;
 import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
+import cz.yetanotherview.webcamviewer.app.helper.InputFilterMinMax;
 import cz.yetanotherview.webcamviewer.app.model.Category;
 
 public class SettingsFragment extends PreferenceFragment {
@@ -110,10 +112,6 @@ public class SettingsFragment extends PreferenceFragment {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
                                 int inputTime = Integer.parseInt(input.getText().toString().trim());
-
-                                if (inputTime == 0) {
-                                    inputTime = 1;
-                                }
                                 sharedPref.edit().putInt("pref_auto_refresh_interval", inputTime * 1000).apply();
 
                                 Snackbar.with(getActivity().getApplicationContext())
@@ -127,6 +125,7 @@ public class SettingsFragment extends PreferenceFragment {
                 input = (EditText) view.findViewById(R.id.input_name);
                 input.requestFocus();
                 input.setText(String.valueOf(auto_refresh_interval_value / 1000));
+                input.setFilters(new InputFilter[]{new InputFilterMinMax("1", "99999")});
 
                 TextView info = (TextView) view.findViewById(R.id.time_message);
                 info.setText(getString(R.string.auto_refresh_interval_summary) + ".");
@@ -267,10 +266,10 @@ public class SettingsFragment extends PreferenceFragment {
                             .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallback() {
                                 @Override
                                 public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-
-                                    Category editCategory = allCategories.get(which);
-                                    categoryEditDialog(editCategory);
-
+                                    if (which >= 0) {
+                                        Category editCategory = allCategories.get(which);
+                                        categoryEditDialog(editCategory);
+                                    }
                                 }
                             })
                             .positiveText(R.string.choose)

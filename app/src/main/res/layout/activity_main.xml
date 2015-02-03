@@ -91,7 +91,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/navdrawer_image_height">
 
-                <ImageView android:layout_width="match_parent"
+                <ImageView
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
                     android:src="@drawable/navdrawer_cover"
@@ -111,6 +112,7 @@
                     android:layout_gravity="start"
                     android:background="#F3F3F4"
                     android:padding="5dp"
+                    android:fastScrollEnabled="false"
                     android:choiceMode="singleChoice"/>
             </FrameLayout>
 

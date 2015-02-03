@@ -42,7 +42,7 @@ import cz.yetanotherview.webcamviewer.app.R;
 
 public class FullScreenImage extends Activity {
 
-    public static final String TAG = "ImmersiveMode";
+    private static final String TAG = "ImmersiveMode";
     private static Context context;
 
     private TouchImageView image;
@@ -105,7 +105,7 @@ public class FullScreenImage extends Activity {
         }
     }
 
-    public static Context getAppContext() {
+    private static Context getAppContext() {
         return FullScreenImage.context;
     }
 

@@ -1,35 +1,40 @@
-# WebCamViewer
+# WebCam Viewer
 
-![WebCamViewer](https://lh5.ggpht.com/k96AcaKgan1E4jTnnvcSe0JEz-IjJx2OqBUOWGM-DKox5TGQ5N17b-mQY2dbCyzsJAc0=w300)
+![WebCamViewer](https://lh5.ggpht.com/k96AcaKgan1E4jTnnvcSe0JEz-IjJx2OqBUOWGM-DKox5TGQ5N17b-mQY2dbCyzsJAc0=w300) [![Presentation video](http://img.youtube.com/vi/Xcp0j2vwbxI/0.jpg)](http://www.youtube.com/watch?v=Xcp0j2vwbxI)
 
-With this fast, simple and modern application you can quickly create a list of all your favorite webcams.
+With this fast, simple and modern application you can quickly create a list of all your favorite WebCams.
 
-This application has no central database, unlike other applications of this type, but on the other hand, allows you to add any webcam. For example, your own personal webcam.
+This application has a community based database and also allows you to manually add any WebCam. For example, your own personal WebCam.
 
 **Features:**
-- Adding webcams in its own database
-- Naming webcams
-- Editing webcams
-- Removal of webcams from database
-- Removing all of the webcams from database
-- Import and export webcams database
-- View each webcam in full screen
-- Intelligent caching images
-- The "PullToRefresh" function
-- Immersive Full-Screen Mode (KitKat and up)
-- Modern Material Design on Lollipop devices and up
+- Importing WebCams from community database
+- Adding your own WebCams (Naming, Editing, Removal)
+- Fully administration of the categories
+- Sorting function
+- "Keep screen on" function
+- Refresh and Auto Refresh function (whole list or only full screen view)
+- Ability to set preferred Zoom level
+- Import and export WebCams list to external storage
+- View each WebCam in full screen mode (pinch to zoom, move and double tap)
+- Intelligent images caching
+- Modern Material Design on all devices
+- The Lollipop "PullToRefresh" function
+- Immersive Full-Screen Mode (only KitKat or higher)
 - Full compatibility with Android 5.0 Lollipop
 - Support for native Backup and Restore feature, which is part of Android system
-
-**Planned features:**
-- Administration of the categories
-- Sharing webcams
-- Motion video support
+- Rewritten from scratch using new native RecyclerView and CardView
+- Completely free, open source and no Ads!
 
 **Supported languages:**
-* English, Czech, Slovak, German, Russian, Chinese (I would be grateful, if you can help me with the translation into your language at this address: http://goo.gl/MUJqYZ)
+* English, Czech, Slovak, German, Japanese (I would be grateful, if you can help me with the translation into your language at this address: http://goo.gl/MUJqYZ)
 
-	 [![Get it on Google Play](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=cz.yetanotherview.webcamviewer.app)
+**Bug reports:**
+https://github.com/TomasValenta/WebCamViewer/issues
+
+**Note:**
+This application currently do not support video sequences.
+
+	 [![Get it on Google Play](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=cz.yetanotherview.WebCamviewer.app)
 	 
 License
 --------

@@ -2,9 +2,9 @@
 <resources>
 <string name="app_name">"Web Cams"</string>
 <string name="about_body"><![CDATA[
-    Autor: <a href="http://www.yetanotherview.cz">Tomas Valenta</a><br>
-    Beitragen: Quellcode ist auf dem<a href="https://github.com/TomasValenta/WebCamViewer">GitHub</a><br>
-    Für Hilfe bei der Übersetzung in Ihre Sprache <a href="http://goo.gl/MUJqYZ">verwenden Sie dieses Online-Tool</a>.<br>
+    <b>Autor: <a href="http://www.yetanotherview.cz">Tomas Valenta</a></b><br>
+    <b>Beitragen:</b> Quellcode ist auf dem <b><a href="https://github.com/TomasValenta/WebCamViewer">GitHub</a></b><br>
+    Für Hilfe bei der Übersetzung in Ihre Sprache <b><a href="http://goo.gl/MUJqYZ">verwenden Sie dieses Online-Tool</a></b>.<br>
     <br>
     <b>Vielen Dank an dieses Open-Source-Projekte:</b><br>
     <b><a href="https://developer.android.com/tools/support-library/features.html">Unterstützung Bibliotheken</a></b><i> von Google, Inc.</i><br>
@@ -106,7 +106,6 @@
 <string name="no_new_webcams">"Keine neuen WebCams"</string>
 <string name="no_new_webcams_summary">"Keine neuen WebCam seit dem letzten download."</string>
 <string name="countries">"Die Länder"</string>
-<string name="country">"Land"</string>
 <string name="add_options">"Hinzufügen optionen"</string>
 <string name="add_manually">"Manuell hinzufügen"</string>
 <string name="import_done">"Import erfolgreich!"</string>

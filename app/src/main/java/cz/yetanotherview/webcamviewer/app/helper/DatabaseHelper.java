@@ -119,7 +119,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void migrateOldTables(SQLiteDatabase db) {
+    private void migrateOldTables(SQLiteDatabase db) {
         db.execSQL("DROP TABLE IF EXISTS " + "CardCursorTableCategory");
 
         onCreate(db);
@@ -462,7 +462,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     /**
      * Deleting a WebCam category
      */
-    public void deleteWebCamCategory(long webCam_id) {
+    private void deleteWebCamCategory(long webCam_id) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_WEBCAM_CATEGORY, KEY_WEBCAM_ID + " = ?",
                 new String[] { String.valueOf(webCam_id) });

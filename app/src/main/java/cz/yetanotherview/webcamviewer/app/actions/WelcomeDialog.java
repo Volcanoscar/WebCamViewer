@@ -70,7 +70,7 @@ public class WelcomeDialog extends DialogFragment {
 
                     @Override
                     public void onNegative(MaterialDialog dialog) {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://youtu.be/ogypQGBQ66w"));
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://youtu.be/Xcp0j2vwbxI"));
                         startActivity(browserIntent);
                     }
 

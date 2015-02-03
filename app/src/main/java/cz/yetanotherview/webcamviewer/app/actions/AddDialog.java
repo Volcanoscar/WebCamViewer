@@ -53,7 +53,6 @@ public class AddDialog extends DialogFragment {
     private WebCamListener mOnAddListener;
     private View positiveAction;
 
-    private DatabaseHelper db;
     private List<Category> allCategories;
     private Category category;
 
@@ -74,7 +73,7 @@ public class AddDialog extends DialogFragment {
         return frag;
     }
 
-    public void setOnAddListener(WebCamListener onAddListener) {
+    private void setOnAddListener(WebCamListener onAddListener) {
         mOnAddListener = onAddListener;
     }
 
@@ -117,7 +116,7 @@ public class AddDialog extends DialogFragment {
 
         shareCheckBox = (CheckBox) view.findViewById(R.id.shareCheckBox);
 
-        db = new DatabaseHelper(mActivity);
+        DatabaseHelper db = new DatabaseHelper(mActivity);
         allCategories = db.getAllCategories();
         db.closeDB();
 
@@ -157,8 +156,8 @@ public class AddDialog extends DialogFragment {
 
                     @Override
                     public void onNeutral(MaterialDialog dialog) {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://youtu.be/ogypQGBQ66w"));
-                        startActivity(browserIntent);
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://youtu.be/liYtvXE0JTI"));
+                        mActivity.startActivity(browserIntent);
                     }
                 }).build();
 
