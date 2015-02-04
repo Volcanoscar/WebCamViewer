@@ -36,7 +36,7 @@ https://github.com/TomasValenta/WebCamViewer/issues
 
 This application currently do not support video sequences.
 
-[![Get it on Google Play](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=cz.yetanotherview.WebCamviewer.app)
+[![Get it on Google Play](http://developer.android.com/images/brand/en_generic_rgb_wo_60.png)](https://play.google.com/store/apps/details?id=cz.yetanotherview.webcamviewer.app)
 	 
 License
 --------
