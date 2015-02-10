@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string name="app_name">"Web Kamery"</string>
+<string name="app_name">"WebKamery"</string>
 <string name="about_body"><![CDATA[
         <b>Autor: <a href="http://www.yetanotherview.cz">Tomáš Valenta</a></b><br>
         <b>Zapojiť sa:</b> Zdrojové kódy sú na <b><a href="https://github.com/TomasValenta/WebCamViewer">GitHubu</a></b><br>
@@ -55,9 +55,6 @@
 <string name="pref_full_screen_summ">"Spúšťať aplikáciu v immersive móde (iba KitKat a vyššie)"</string>
 <string name="action_edit">"Upraviť"</string>
 <string name="action_sort">"Zoradiť"</string>
-<string name="action_sort_def">"Predvolené"</string>
-<string name="action_sort_name">"Vzostupne"</string>
-<string name="action_sort_name_desc">"Zostupne"</string>
 <string name="add_new_category_summary">"Pridať novú kategóriu do databázy"</string>
 <string name="edit_category_summary">"Upraviť názov kategórie v databáze"</string>
 <string name="delete_category_summary">"Zmazať kategóriu z databázy"</string>
@@ -83,7 +80,7 @@
 <string name="pref_import_from_server">"Import zo servera"</string>
 <string name="auto_refresh_fullscreen">"Iba v zobrazení na celú obrazovku"</string>
 <string name="auto_refresh_fullscreen_summary">"Povoliť automatické obnovenie iba v režime zobrazenia WebKamery na celú obrazovku"</string>
-<string name="also_delete_webcams">"Zmazať tiež WebKamery, ktoré sa nachádza v tejto kategórii?"</string>
+<string name="also_delete_webcams">"Zmazať tiež WebKamery, ktoré sa nachádza iba v tejto kategórii?"</string>
 <string name="imported">"Importované"</string>
 <string name="nothing_to_export">"Niet čo exportovať"</string>
 <string name="old_database_detected">"Zistená stará verzia zálohy databázy"</string>
@@ -139,4 +136,8 @@
 <string name="enter_place_or_country">"Zadajte miesto alebo krajinu"</string>
 <string name="welcome_to_version">"Vitajte v novej verzii"</string>
 <string name="no_categories_found">"Neboli nájdené žiadne kategórie"</string>
+<string name="action_sort_date">"Radiť podľa dáta ↓"</string>
+<string name="action_sort_date_desc">"Radiť podľa dáta ↑"</string>
+<string name="action_sort_name">"Radiť podľa názvu ↓"</string>
+<string name="action_sort_name_desc">"Radiť podľa názvu ↑"</string>
 </resources>

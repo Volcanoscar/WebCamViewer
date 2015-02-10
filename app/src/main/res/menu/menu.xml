@@ -17,20 +17,26 @@
         <menu>
             <group android:checkableBehavior="single">
                 <item
-                    android:id="@+id/sort_def"
+                    android:id="@+id/sort_date_asc"
                     android:orderInCategory="1"
                     appcompat:showAsAction="ifRoom"
-                    android:title="@string/action_sort_def" />
+                    android:title="@string/action_sort_date" />
 
                 <item
-                    android:id="@+id/sort_asc"
+                    android:id="@+id/sort_date_desc"
                     android:orderInCategory="2"
+                    appcompat:showAsAction="ifRoom"
+                    android:title="@string/action_sort_date_desc" />
+
+                <item
+                    android:id="@+id/sort_name_asc"
+                    android:orderInCategory="3"
                     appcompat:showAsAction="ifRoom"
                     android:title="@string/action_sort_name" />
 
                 <item
-                    android:id="@+id/sort_desc"
-                    android:orderInCategory="3"
+                    android:id="@+id/sort_name_desc"
+                    android:orderInCategory="4"
                     appcompat:showAsAction="ifRoom"
                     android:title="@string/action_sort_name_desc" />
             </group>

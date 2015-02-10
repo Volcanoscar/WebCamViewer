@@ -102,41 +102,43 @@ public class ImportDialog extends DialogFragment {
                         @Override
                         public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
 
-                            categoryFromCurrentDate = db.createCategory(new Category(getString(R.string.imported) + " " + Utils.getDateString()));
-                            inputName = (items[which]);
-                            if (inputName.contains(Utils.extension)) {
-                                importDialog = new MaterialDialog.Builder(mActivity)
-                                        .title(getString(R.string.pref_delete_all) + "?")
-                                        .content(R.string.import_summary)
-                                        .positiveText(R.string.Yes)
-                                        .negativeText(R.string.No)
-                                        .callback(new MaterialDialog.ButtonCallback() {
-                                            @Override
-                                            public void onPositive(MaterialDialog dialog) {
-                                                db.deleteAllWebCams(false);
-                                                db.closeDB();
-                                                importJson(inputName);
-                                            }
+                            if (which >= 0) {
+                                categoryFromCurrentDate = db.createCategory(new Category(getString(R.string.imported) + " " + Utils.getDateString()));
+                                inputName = (items[which]);
+                                if (inputName.contains(Utils.extension)) {
+                                    importDialog = new MaterialDialog.Builder(mActivity)
+                                            .title(getString(R.string.pref_delete_all) + "?")
+                                            .content(R.string.import_summary)
+                                            .positiveText(R.string.Yes)
+                                            .negativeText(R.string.No)
+                                            .callback(new MaterialDialog.ButtonCallback() {
+                                                @Override
+                                                public void onPositive(MaterialDialog dialog) {
+                                                    db.deleteAllWebCams(false);
+                                                    db.closeDB();
+                                                    importJson(inputName);
+                                                }
 
-                                            @Override
-                                            public void onNegative(MaterialDialog dialog) {
-                                                importJson(inputName);
-                                            }
-                                        })
-                                        .show();
-                            } else if (inputName.contains(Utils.oldExtension)) {
-                                importDialog = new MaterialDialog.Builder(mActivity)
-                                        .title(R.string.old_database_detected)
-                                        .content(R.string.old_database_detected_summary)
-                                        .positiveText(android.R.string.ok)
-                                        .callback(new MaterialDialog.ButtonCallback() {
-                                            @Override
-                                            public void onPositive(MaterialDialog dialog) {
-                                                importOldDb(inputName);
-                                            }
+                                                @Override
+                                                public void onNegative(MaterialDialog dialog) {
+                                                    importJson(inputName);
+                                                }
+                                            })
+                                            .show();
+                                } else if (inputName.contains(Utils.oldExtension)) {
+                                    importDialog = new MaterialDialog.Builder(mActivity)
+                                            .title(R.string.old_database_detected)
+                                            .content(R.string.old_database_detected_summary)
+                                            .positiveText(android.R.string.ok)
+                                            .callback(new MaterialDialog.ButtonCallback() {
+                                                @Override
+                                                public void onPositive(MaterialDialog dialog) {
+                                                    importOldDb(inputName);
+                                                }
 
-                                        })
-                                        .show();
+                                            })
+                                            .show();
+                                }
                             }
                         }
                     })

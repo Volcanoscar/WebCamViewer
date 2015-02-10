@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string name="app_name">"WebCam Viewer"</string>
+<string name="app_name">"WebCams"</string>
 <string name="about_body"><![CDATA[
     <b>Author: <a href="http://www.yetanotherview.cz">Tomas Valenta</a></b><br>
     <b>Contribute:</b> Source code on <b><a href="https://github.com/TomasValenta/WebCamViewer">GitHub</a></b><br>
@@ -55,9 +55,6 @@
 <string name="pref_full_screen_summ">"Run application in immersive full-screen mode (only KitKat or higher)"</string>
 <string name="action_edit">"Edit"</string>
 <string name="action_sort">"Sort"</string>
-<string name="action_sort_def">"Default"</string>
-<string name="action_sort_name">"Ascending"</string>
-<string name="action_sort_name_desc">"Descending"</string>
 <string name="add_new_category_summary">"Add new category to the database"</string>
 <string name="edit_category_summary">"Edit category name in database"</string>
 <string name="delete_category_summary">"Delete category from database"</string>
@@ -83,7 +80,7 @@
 <string name="pref_import_from_server">"Import from Server"</string>
 <string name="auto_refresh_fullscreen">"Only in Full Screen view"</string>
 <string name="auto_refresh_fullscreen_summary">"Enable auto refresh only in full-screen view"</string>
-<string name="also_delete_webcams">"Also delete WebCams that are in this category?"</string>
+<string name="also_delete_webcams">"Also delete WebCams that are only in this category?"</string>
 <string name="imported">"Imported"</string>
 <string name="nothing_to_export">"Nothing to export"</string>
 <string name="old_database_detected">"Old database detected"</string>
@@ -139,4 +136,8 @@
 <string name="enter_place_or_country">"Enter a place or a country"</string>
 <string name="welcome_to_version">"Welcome to the new version"</string>
 <string name="no_categories_found">"No categories found"</string>
+<string name="action_sort_date">"Sort by Date ↓"</string>
+<string name="action_sort_date_desc">"Sort by Date ↑"</string>
+<string name="action_sort_name">"Sort by Name ↓"</string>
+<string name="action_sort_name_desc">"Sort by Name ↑"</string>
 </resources>

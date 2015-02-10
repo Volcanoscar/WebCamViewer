@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string name="app_name">"Web Cams"</string>
+<string name="app_name">"WebCams"</string>
 <string name="about_body"><![CDATA[
     <b>Autor: <a href="http://www.yetanotherview.cz">Tomas Valenta</a></b><br>
     <b>Beitragen:</b> Quellcode ist auf dem <b><a href="https://github.com/TomasValenta/WebCamViewer">GitHub</a></b><br>
@@ -28,7 +28,7 @@
 <string name="Yes">"Ja"</string>
 <string name="No">"Nein"</string>
 <string name="input_dialog_title">"Neue WebCam"</string>
-<string name="webcam_name">"Name"</string>
+<string name="webcam_name">"Der Name"</string>
 <string name="webcam_url">"Web Adresse"</string>
 <string name="webcam_category">"Kategorien"</string>
 <string name="hint_webcam_name">"Mein WebCam"</string>
@@ -55,9 +55,6 @@
 <string name="pref_full_screen_summ">"Laufen die Anwendung in immersiven Vollbildmodus (nur KitKat und höher)"</string>
 <string name="action_edit">"Bearbeiten"</string>
 <string name="action_sort">"Sortieren"</string>
-<string name="action_sort_def">"Standard"</string>
-<string name="action_sort_name">"Aufsteigend"</string>
-<string name="action_sort_name_desc">"Absteigend"</string>
 <string name="add_new_category_summary">"Neue Kategorie in der Datenbank hinzufügen"</string>
 <string name="edit_category_summary">"Kategorienamen bearbeiten in der Datenbank"</string>
 <string name="delete_category_summary">"Kategorie aus der Datenbank löschen"</string>
@@ -83,7 +80,7 @@
 <string name="pref_import_from_server">"Import von Server"</string>
 <string name="auto_refresh_fullscreen">"Nur in der Vollbildansicht"</string>
 <string name="auto_refresh_fullscreen_summary">"Automatische aktualisierung nur in der Vollbildansicht"</string>
-<string name="also_delete_webcams">"Löschen Sie auch WebCams, die in dieser Kategorie sind?"</string>
+<string name="also_delete_webcams">"Löschen Sie auch WebCams, die sind nur in dieser Kategorie?"</string>
 <string name="imported">"Importiert"</string>
 <string name="nothing_to_export">"Nichts zu exportieren"</string>
 <string name="old_database_detected">"Eine alte Version der Datenbank gefunden"</string>
@@ -139,4 +136,8 @@
 <string name="enter_place_or_country">"Geben Sie einen Ort oder Land"</string>
 <string name="welcome_to_version">"Willkommen in der neuen Version"</string>
 <string name="no_categories_found">"Keine Kategorien gefunden"</string>
+<string name="action_sort_date">"Sortieren nach Datum ↓"</string>
+<string name="action_sort_date_desc">"Sortieren nach Datum ↑"</string>
+<string name="action_sort_name">"Sortieren nach Name ↓"</string>
+<string name="action_sort_name_desc">"Sortieren nach Name ↑"</string>
 </resources>

@@ -253,12 +253,12 @@ public class JsonFetcherDialog extends DialogFragment {
                                 }
                             }
                         }
-                        editor.putLong("pref_last_fetch_popular", now);
                         if (noNewWebCams) {
                             db.deleteCategory(categoryPopular, false);
                             noNewWebCamsDialog();
                         }
                         else {
+                            editor.putLong("pref_last_fetch_popular", now);
                             mListener.invokeReload();
                             reportDialog(newWebCams, duplicityWebCams);
                         }
@@ -439,12 +439,12 @@ public class JsonFetcherDialog extends DialogFragment {
                                 }
                             }
                         }
-                        editor.putLong("pref_last_fetch_latest", now);
                         if (noNewWebCams) {
                             db.deleteCategory(categoryLatest, false);
                             noNewWebCamsDialog();
                         }
                         else {
+                            editor.putLong("pref_last_fetch_latest", now);
                             mListener.invokeReload();
                             reportDialog(newWebCams,duplicityWebCams);
                         }

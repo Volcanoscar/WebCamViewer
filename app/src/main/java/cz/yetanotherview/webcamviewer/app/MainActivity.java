@@ -83,6 +83,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private View mEmptyView;
     private WebCamAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private FloatingActionButton fab;
 
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
@@ -233,7 +234,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     }
 
     private void initFab() {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.attachToRecyclerView(mRecyclerView);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -312,6 +313,11 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         return super.onCreateOptionsMenu(menu);
     }
 
+    private void setItemChecked(Menu menu) {
+        MenuItem def = menu.findItem(R.id.sort_date_asc);
+        def.setChecked(true);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -327,17 +333,22 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 break;
 
             //Sort view
-            case R.id.sort_def:
-                sortOrder = "id ASC";
+            case R.id.sort_date_asc:
+                sortOrder = "created_at ASC";
                 reInitializeAdapter(selectedCategory);
                 item.setChecked(true);
                 break;
-            case R.id.sort_asc:
+            case R.id.sort_date_desc:
+                sortOrder = "created_at DESC";
+                reInitializeAdapter(selectedCategory);
+                item.setChecked(true);
+                break;
+            case R.id.sort_name_asc:
                 sortOrder = "webcam_name COLLATE UNICODE";
                 reInitializeAdapter(selectedCategory);
                 item.setChecked(true);
                 break;
-            case R.id.sort_desc:
+            case R.id.sort_name_desc:
                 sortOrder = "webcam_name COLLATE UNICODE DESC";
                 reInitializeAdapter(selectedCategory);
                 item.setChecked(true);
@@ -365,11 +376,6 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    private void setItemChecked(Menu menu) {
-        MenuItem def = menu.findItem(R.id.sort_def);
-        def.setChecked(true);
     }
 
     private void showWelcomeDialog() {
@@ -471,7 +477,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         }
 
         checkAdapterIsEmpty();
-
+        fab.show();
         delDone();
     }
 

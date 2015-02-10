@@ -41,9 +41,6 @@
 <string name="pref_full_screen_summ">"イマーシブ全画面モードでアプリケーションを実行します (KitKat 以降のみ)"</string>
 <string name="action_edit">"編集"</string>
 <string name="action_sort">"並び替え"</string>
-<string name="action_sort_def">"デフォルト"</string>
-<string name="action_sort_name">"昇順"</string>
-<string name="action_sort_name_desc">"降順"</string>
 <string name="add_new_category_summary">"データベースに新しいカテゴリーを追加します"</string>
 <string name="edit_category_summary">"データベースのカテゴリー名を編集します"</string>
 <string name="delete_category_summary">"データベースからカテゴリーを削除します"</string>
@@ -125,4 +122,8 @@
 <string name="enter_place_or_country">"場所または国を入力してください"</string>
 <string name="welcome_to_version">"新しいバージョンにようこそ"</string>
 <string name="no_categories_found">"全くカテゴリはありません"</string>
+<string name="action_sort_date">"日付で並べ替え ↓"</string>
+<string name="action_sort_date_desc">"日付で並べ替え ↑"</string>
+<string name="action_sort_name">"名前で並べ替え ↓"</string>
+<string name="action_sort_name_desc">"名前で並べ替え ↑"</string>
 </resources>

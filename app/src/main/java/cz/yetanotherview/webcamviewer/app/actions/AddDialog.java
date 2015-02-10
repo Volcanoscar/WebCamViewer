@@ -95,7 +95,7 @@ public class AddDialog extends DialogFragment {
         return new MaterialDialog.Builder(mActivity)
                 .title(R.string.add_options)
                 .items(items)
-                .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallback() {
+                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
                         if (which == 0) {
