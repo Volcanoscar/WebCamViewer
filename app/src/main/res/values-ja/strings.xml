@@ -126,4 +126,5 @@
 <string name="action_sort_date_desc">"日付で並べ替え ↑"</string>
 <string name="action_sort_name">"名前で並べ替え ↓"</string>
 <string name="action_sort_name_desc">"名前で並べ替え ↑"</string>
+<string name="report_problem">"問題を報告する"</string>
 </resources>

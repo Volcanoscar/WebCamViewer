@@ -140,4 +140,5 @@
 <string name="action_sort_date_desc">"Sortieren nach Datum ↑"</string>
 <string name="action_sort_name">"Sortieren nach Name ↓"</string>
 <string name="action_sort_name_desc">"Sortieren nach Name ↑"</string>
+<string name="report_problem">"Ein Problem melden"</string>
 </resources>

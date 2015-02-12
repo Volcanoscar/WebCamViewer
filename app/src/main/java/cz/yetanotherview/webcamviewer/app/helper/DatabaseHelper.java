@@ -177,8 +177,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (c.moveToFirst()) {
             do {
-                wc.setId(c.getInt(c.getColumnIndex(KEY_ID)));
-                wc.setUniId(c.getInt(c.getColumnIndex(KEY_UNI_ID)));
+                wc.setId(c.getLong(c.getColumnIndex(KEY_ID)));
+                wc.setUniId(c.getLong(c.getColumnIndex(KEY_UNI_ID)));
                 wc.setName(c.getString(c.getColumnIndex(KEY_WEBCAM)));
                 wc.setUrl(c.getString(c.getColumnIndex(KEY_WEBCAM_URL)));
                 wc.setPosition(c.getInt(c.getColumnIndex(KEY_POSITION)));
@@ -246,7 +246,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 WebCam wc = new WebCam();
-                wc.setId(c.getInt(0));
+                // Care about this hack, zero value instead KEY_ID is important!
+                wc.setId(c.getLong(0));
                 wc.setName((c.getString(c.getColumnIndex(KEY_WEBCAM))));
                 wc.setUrl((c.getString(c.getColumnIndex(KEY_WEBCAM_URL))));
                 wc.setPosition((c.getInt(c.getColumnIndex(KEY_POSITION))));

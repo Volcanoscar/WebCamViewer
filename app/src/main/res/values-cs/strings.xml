@@ -140,4 +140,5 @@
 <string name="action_sort_date_desc">"Řadit dle data ↑"</string>
 <string name="action_sort_name">"Řadit dle názvu ↓"</string>
 <string name="action_sort_name_desc">"Řadit dle názvu ↑"</string>
+<string name="report_problem">"Nahlásit problém"</string>
 </resources>

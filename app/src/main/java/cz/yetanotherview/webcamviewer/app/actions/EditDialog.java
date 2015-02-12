@@ -20,6 +20,9 @@ package cz.yetanotherview.webcamviewer.app.actions;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.content.Intent;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -55,6 +58,7 @@ public class EditDialog extends DialogFragment {
     private Category category;
 
     private CheckBox shareCheckBox;
+    private Button reportButton;
 
     private Button webCamCategoryButton;
     private String[] items;
@@ -97,6 +101,7 @@ public class EditDialog extends DialogFragment {
         webCam = db.getWebCam(id);
         allCategories = db.getAllCategories();
         webCam_category_ids = db.getWebCamCategoriesIds(webCam.getId());
+        category_ids = webCam_category_ids;
         db.closeDB();
 
         long uniId = webCam.getUniId();
@@ -116,8 +121,8 @@ public class EditDialog extends DialogFragment {
         StringBuilder checkedNames = new StringBuilder();
         int count2 = 0;
         for (int i=0; i < ids.length; i++) {
-            for (long webcam_category_id : webCam_category_ids) {
-                if (ids[i] == webcam_category_id) {
+            for (long webCam_category_id : webCam_category_ids) {
+                if (ids[i] == webCam_category_id) {
                     checkedNames.append("[");
                     checkedNames.append(items[i]);
                     checkedNames.append("] ");
@@ -131,8 +136,13 @@ public class EditDialog extends DialogFragment {
         View view = getActivity().getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
 
         shareCheckBox = (CheckBox) view.findViewById(R.id.shareCheckBox);
+        reportButton = (Button) view.findViewById(R.id.reportButton);
         if (uniId != 0) {
-            shareCheckBox.setEnabled(false);
+            shareCheckBox.setVisibility(View.GONE);
+            reportButton.setVisibility(View.VISIBLE);
+        }
+        else {
+            shareCheckBox.setVisibility(View.VISIBLE);
         }
 
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
@@ -155,8 +165,9 @@ public class EditDialog extends DialogFragment {
                             shareIsChecked = true;
                         }
 
-                        if (mOnAddListener != null)
+                        if (mOnAddListener != null) {
                             mOnAddListener.webCamEdited(position, webCam, category_ids, shareIsChecked);
+                        }
                     }
 
                     @Override
@@ -274,9 +285,41 @@ public class EditDialog extends DialogFragment {
                else positiveAction.setEnabled(false);
            }
         });
+        reportButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                        "mailto", "cz840311@gmail.com", null));
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Something is wrong");
+                emailIntent.putExtra(Intent.EXTRA_TEXT, "WebCam UniID: " + webCam.getUniId()
+                        + "\n" + "WebCam Name: " + webCam.getName());
+
+                List<ResolveInfo> list = getActivity().getPackageManager().queryIntentActivities(emailIntent, 0);
+                if(list.isEmpty()) {
+                    noEmailClientsFound();
+                }
+                else {
+                    try {
+                        startActivity(Intent.createChooser(emailIntent, getString(R.string.send_via_email)));
+                    } catch (android.content.ActivityNotFoundException ex) {
+                        noEmailClientsFound();
+                    }
+                }
+            }
+
+        });
 
         positiveAction.setEnabled(false);
 
         return dialog;
+    }
+
+    private void noEmailClientsFound() {
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.oops)
+                .content(getString(R.string.no_email_clients_installed))
+                .positiveText(android.R.string.ok)
+                .show();
     }
 }

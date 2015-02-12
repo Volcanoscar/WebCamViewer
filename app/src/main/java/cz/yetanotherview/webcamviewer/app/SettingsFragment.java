@@ -90,6 +90,10 @@ public class SettingsFragment extends PreferenceFragment {
         cleanExtFolder();
 
         resetLastCheck();
+
+        // Main activity sorting hack
+        sharedPref = getPreferenceManager().getSharedPreferences();
+        sharedPref.edit().putInt("pref_selected_category", 0).apply();
     }
 
     private void setAutoRefreshInterval() {
@@ -98,7 +102,6 @@ public class SettingsFragment extends PreferenceFragment {
         pref_auto_refresh_interval.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
 
-                sharedPref = getPreferenceManager().getSharedPreferences();
                 int auto_refresh_interval_value = sharedPref.getInt("pref_auto_refresh_interval", 30000);
 
                 View view = getActivity().getLayoutInflater().inflate(R.layout.enter_time_dialog, null);
@@ -159,7 +162,6 @@ public class SettingsFragment extends PreferenceFragment {
         pref_zoom.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
 
-                    sharedPref = getPreferenceManager().getSharedPreferences();
                     float zoom = sharedPref.getFloat("pref_zoom", 2);
                     int selected = Math.round(zoom);
 
@@ -567,7 +569,6 @@ public class SettingsFragment extends PreferenceFragment {
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
-                                sharedPref = getPreferenceManager().getSharedPreferences();
                                 sharedPref.edit().putLong("pref_last_fetch_popular", 0).apply();
                                 sharedPref.edit().putLong("pref_last_fetch_latest", 0).apply();
 
