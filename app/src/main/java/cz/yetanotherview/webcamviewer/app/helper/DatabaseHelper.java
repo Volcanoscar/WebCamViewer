@@ -447,6 +447,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return count;
     }
 
+    /**
+     * Getting Category items count
+     */
+    public int getCategoryItemsCount(long categoryId) {
+
+        String selectQuery = "SELECT * FROM " + TABLE_WEBCAM + " td, "
+                + TABLE_CATEGORY + " tg, " + TABLE_WEBCAM_CATEGORY + " tt WHERE tg."
+                + KEY_ID + " = " + categoryId + " AND tg." + KEY_ID
+                + " = " + "tt." + KEY_CATEGORY_ID + " AND td." + KEY_ID + " = "
+                + "tt." + KEY_WEBCAM_ID;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor c = db.rawQuery(selectQuery, null);
+        int count = c.getCount();
+        c.close();
+
+        return count;
+    }
+
     // ------------------------ "WebCam_categories" table methods ----------------//
 
     /**

@@ -347,11 +347,18 @@ public class JsonFetcherDialog extends DialogFragment {
                     else if (selection == 2) {
 
                         List<String> list = new ArrayList<>();
+                        List<String> listAllCountires = new ArrayList<>();
                         for (WebCam webCam : importWebCams) {
                             String country = webCam.getCountry();
-                            if (!list.contains(country))
+                            listAllCountires.add(country);
+                            if (!list.contains(country)) {
                                 list.add(country);
+                            }
                         }
+
+                        Collections.sort(listAllCountires);
+                        Log.d("", String.valueOf(listAllCountires));
+
                         Collections.sort(list);
                         String[] items = list.toArray(new String[list.size()]);
 

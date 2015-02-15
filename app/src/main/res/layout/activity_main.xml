@@ -110,8 +110,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="start"
-                    android:background="#F3F3F4"
-                    android:padding="5dp"
+                    android:background="@color/white"
                     android:fastScrollEnabled="false"
                     android:choiceMode="singleChoice"/>
             </FrameLayout>

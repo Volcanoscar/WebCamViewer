@@ -44,7 +44,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -53,6 +52,7 @@ import com.nispok.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.PicassoTools;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -62,6 +62,7 @@ import cz.yetanotherview.webcamviewer.app.actions.AddDialog;
 import cz.yetanotherview.webcamviewer.app.actions.EditDialog;
 import cz.yetanotherview.webcamviewer.app.actions.JsonFetcherDialog;
 import cz.yetanotherview.webcamviewer.app.actions.WelcomeDialog;
+import cz.yetanotherview.webcamviewer.app.adapter.CategoryAdapter;
 import cz.yetanotherview.webcamviewer.app.fullscreen.FullScreenImage;
 import cz.yetanotherview.webcamviewer.app.adapter.WebCamAdapter;
 import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
@@ -78,7 +79,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private WebCam webCam;
     private List<WebCam> allWebCams;
     private List<Category> allCategories;
-    private String[] drawerItems;
+    private Category allWebCamsCategory;
     private RecyclerView mRecyclerView;
     private View mEmptyView;
     private WebCamAdapter mAdapter;
@@ -87,6 +88,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
+    private CategoryAdapter mArrayAdapter;
     private ActionBarDrawerToggle mDrawerToggle;
     private SwipeRefreshLayout swipeLayout;
     private Toolbar mToolbar;
@@ -143,6 +145,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         db = new DatabaseHelper(getApplicationContext());
 
         initToolbar();
+        loadCategories();
         initDrawer();
         initRecyclerView();
         initFab();
@@ -156,30 +159,39 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         setSupportActionBar(mToolbar);
     }
 
+    private void loadCategories() {
+        allCategories = db.getAllCategories();
+        for (Category category : allCategories) {
+            category.setCount(db.getCategoryItemsCount(category.getId()));
+        }
+
+        allWebCamsCategory = new Category();
+        allWebCamsCategory.setcategoryName(allWebCamsString);
+        allWebCamsCategory.setCount(db.getWebCamCount());
+        db.closeDB();
+    }
+
     private void initDrawer() {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         mDrawerList = (ListView) findViewById(R.id.drawer);
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
-        allCategories = db.getAllCategories();
-        drawerItems = new String[allCategories.size() + 1];
-        drawerItems[0] = allWebCamsString;
-        if (allCategories.size() != 0) {
-            int count = 1;
-            for (Category category : allCategories) {
-                drawerItems[count] = category.getcategoryName();
-                count++;
-            }
-        }
 
         if (mDrawerList != null) {
-            ArrayAdapter<String> mArrayAdapter = new ArrayAdapter<String>(
-                    this,
-                    android.R.layout.simple_list_item_1,
-                    drawerItems);
+            ArrayList<Category> arrayOfCategories = new ArrayList<>();
+            mArrayAdapter = new CategoryAdapter(this, arrayOfCategories);
+
+            mArrayAdapter.add(allWebCamsCategory);
+            mArrayAdapter.addAll(allCategories);
+
             mDrawerList.setAdapter(mArrayAdapter);
             mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        }
+        db.closeDB();
+
+        if (mDrawerList.getCheckedItemPosition() == -1) {
+            mDrawerList.setItemChecked(0, true);
         }
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
@@ -197,7 +209,6 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 invalidateOptionsMenu();
             }
         };
-
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -263,7 +274,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            reInitializeAdapter(position);
+            reInitializeRecyclerViewAdapter(position);
             selectedCategory = position;
 
             getSupportActionBar().setTitle(selectedCategoryName);
@@ -271,31 +282,39 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         }
     }
 
-    private void reInitializeAdapter(int position) {
+    private void reInitializeRecyclerViewAdapter(int position) {
         if (db.getWebCamCount() != 0) {
             allWebCams.clear();
             if (position == 0) {
                 allWebCams = db.getAllWebCams(sortOrder);
-                db.closeDB();
                 mAdapter.swapData(allWebCams);
                 selectedCategoryName = allWebCamsString;
             }
             else {
                 Category category = allCategories.get(position - 1);
                 allWebCams = db.getAllWebCamsByCategory(category.getId(),sortOrder);
-                db.closeDB();
                 mAdapter.swapData(allWebCams);
                 selectedCategoryName = category.getcategoryName();
             }
+            db.closeDB();
             saveToPref();
             checkAdapterIsEmpty();
         }
     }
 
+    private void reInitializeDrawerListAdapter() {
+        int checked = mDrawerList.getCheckedItemPosition();
+        loadCategories();
+        mArrayAdapter.clear();
+        mArrayAdapter.add(allWebCamsCategory);
+        mArrayAdapter.addAll(allCategories);
+        mDrawerList.setAdapter(mArrayAdapter);
+        mDrawerList.setItemChecked(checked, true);
+    }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        // Sync the toggle state after onRestoreInstanceState has occurred.
         mDrawerToggle.syncState();
     }
 
@@ -335,22 +354,22 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
             //Sort view
             case R.id.sort_date_asc:
                 sortOrder = "created_at ASC";
-                reInitializeAdapter(selectedCategory);
+                reInitializeRecyclerViewAdapter(selectedCategory);
                 item.setChecked(true);
                 break;
             case R.id.sort_date_desc:
                 sortOrder = "created_at DESC";
-                reInitializeAdapter(selectedCategory);
+                reInitializeRecyclerViewAdapter(selectedCategory);
                 item.setChecked(true);
                 break;
             case R.id.sort_name_asc:
                 sortOrder = "webcam_name COLLATE UNICODE";
-                reInitializeAdapter(selectedCategory);
+                reInitializeRecyclerViewAdapter(selectedCategory);
                 item.setChecked(true);
                 break;
             case R.id.sort_name_desc:
                 sortOrder = "webcam_name COLLATE UNICODE DESC";
-                reInitializeAdapter(selectedCategory);
+                reInitializeRecyclerViewAdapter(selectedCategory);
                 item.setChecked(true);
                 break;
 
@@ -434,6 +453,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         mRecyclerView.smoothScrollToPosition(mAdapter.getItemCount() - 1);
 
         checkAdapterIsEmpty();
+        reInitializeDrawerListAdapter();
 
         if (share) {
             sendEmail(wc);
@@ -456,6 +476,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         backupManager.dataChanged();
 
         mAdapter.modifyItem(position,wc);
+        reInitializeDrawerListAdapter();
 
         if (share) {
             sendEmail(wc);
@@ -477,14 +498,16 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         }
 
         checkAdapterIsEmpty();
+        reInitializeDrawerListAdapter();
+
         fab.show();
         delDone();
     }
 
     @Override
     public void invokeReload() {
-        reInitializeAdapter(0);
-        initDrawer();
+        reInitializeRecyclerViewAdapter(0);
+        reInitializeDrawerListAdapter();
     }
 
     private void saveDone() {

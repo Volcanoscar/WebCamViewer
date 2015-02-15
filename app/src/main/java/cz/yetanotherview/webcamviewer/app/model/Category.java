@@ -22,6 +22,7 @@ public class Category {
 
     private long id;
     private String category_name;
+    private int count;
 
     // constructors
     public Category() {
@@ -46,6 +47,10 @@ public class Category {
         this.category_name = category_name;
     }
 
+    public void setCount(int count) {
+        this.count = count;
+    }
+
     // getter
     public long getId() {
         return this.id;
@@ -53,5 +58,13 @@ public class Category {
 
     public String getcategoryName() {
         return this.category_name;
+    }
+
+    public int getCount() {
+        return this.count;
+    }
+
+    public String getCountAsString() {
+        return String.valueOf(this.count);
     }
 }
