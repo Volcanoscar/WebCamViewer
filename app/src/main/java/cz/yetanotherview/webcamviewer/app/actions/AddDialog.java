@@ -84,11 +84,6 @@ public class AddDialog extends DialogFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         String[] items = {getString(R.string.pref_import_from_server),getString(R.string.add_manually)};
@@ -112,9 +107,6 @@ public class AddDialog extends DialogFragment {
     }
 
     private void addManuallyDialog() {
-        View view = mActivity.getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
-
-        shareCheckBox = (CheckBox) view.findViewById(R.id.shareCheckBox);
 
         DatabaseHelper db = new DatabaseHelper(mActivity);
         allCategories = db.getAllCategories();
@@ -129,7 +121,7 @@ public class AddDialog extends DialogFragment {
 
         MaterialDialog dialog = new MaterialDialog.Builder(mActivity)
                 .title(R.string.input_dialog_title)
-                .customView(view, true)
+                .customView(R.layout.add_edit_dialog, true)
                 .positiveText(R.string.dialog_positive_text)
                 .negativeText(android.R.string.cancel)
                 .neutralText(R.string.how_to)
@@ -161,12 +153,14 @@ public class AddDialog extends DialogFragment {
                     }
                 }).build();
 
-        mWebCamName = (EditText) view.findViewById(R.id.webcam_name);
+        shareCheckBox = (CheckBox) dialog.getCustomView().findViewById(R.id.shareCheckBox);
+
+        mWebCamName = (EditText) dialog.getCustomView().findViewById(R.id.webcam_name);
         mWebCamName.requestFocus();
 
-        mWebCamUrl = (EditText) view.findViewById(R.id.webcam_url);
+        mWebCamUrl = (EditText) dialog.getCustomView().findViewById(R.id.webcam_url);
 
-        webCamCategoryButton = (Button) view.findViewById(R.id.webcam_category_button);
+        webCamCategoryButton = (Button) dialog.getCustomView().findViewById(R.id.webcam_category_button);
         if (allCategories.size() == 0 ) {
             webCamCategoryButton.setText(R.string.category_array_empty);
         }

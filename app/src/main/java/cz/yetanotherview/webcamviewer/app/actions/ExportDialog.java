@@ -52,11 +52,6 @@ public class ExportDialog extends DialogFragment {
     private List<WebCam> allWebCams;
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -68,11 +63,9 @@ public class ExportDialog extends DialogFragment {
         MaterialDialog dialog;
         if (allWebCams.size() != 0) {
 
-            View view = getActivity().getLayoutInflater().inflate(R.layout.enter_name_dialog, null);
-
             dialog = new MaterialDialog.Builder(getActivity())
                     .title(R.string.export_title)
-                    .customView(view, true)
+                    .customView(R.layout.enter_name_dialog, true)
                     .positiveText(android.R.string.ok)
                     .negativeText(android.R.string.cancel)
                     .callback(new MaterialDialog.ButtonCallback() {
@@ -83,11 +76,11 @@ public class ExportDialog extends DialogFragment {
                         }
                     }).build();
 
-            input = (EditText) view.findViewById(R.id.input_name);
+            input = (EditText) dialog.getCustomView().findViewById(R.id.input_name);
             input.requestFocus();
             input.setHint(R.string.export_input_sample);
 
-            TextView message = (TextView) view.findViewById(R.id.message);
+            TextView message = (TextView) dialog.getCustomView().findViewById(R.id.message);
             message.setText(getString(R.string.export_message) + "\n" + Utils.folderWCVPath + "\n");
 
             positiveAction = dialog.getActionButton(DialogAction.POSITIVE);

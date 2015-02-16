@@ -104,11 +104,9 @@ public class SettingsFragment extends PreferenceFragment {
 
                 int auto_refresh_interval_value = sharedPref.getInt("pref_auto_refresh_interval", 30000);
 
-                View view = getActivity().getLayoutInflater().inflate(R.layout.enter_time_dialog, null);
-
                 MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                         .title(R.string.auto_refresh_interval)
-                        .customView(view, true)
+                        .customView(R.layout.enter_time_dialog, true)
                         .positiveText(R.string.dialog_positive_text)
                         .negativeText(android.R.string.cancel)
                         .callback(new MaterialDialog.ButtonCallback() {
@@ -125,12 +123,12 @@ public class SettingsFragment extends PreferenceFragment {
                             }
                         }).build();
 
-                input = (EditText) view.findViewById(R.id.input_name);
+                input = (EditText) dialog.getCustomView().findViewById(R.id.input_name);
                 input.requestFocus();
                 input.setText(String.valueOf(auto_refresh_interval_value / 1000));
                 input.setFilters(new InputFilter[]{new InputFilterMinMax("1", "99999")});
 
-                TextView info = (TextView) view.findViewById(R.id.time_message);
+                TextView info = (TextView) dialog.getCustomView().findViewById(R.id.time_message);
                 info.setText(getString(R.string.auto_refresh_interval_summary) + ".");
 
                 positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
@@ -167,11 +165,7 @@ public class SettingsFragment extends PreferenceFragment {
 
                     new MaterialDialog.Builder(getActivity())
                             .title(R.string.available_options)
-                            .items(new CharSequence[]{
-                                    getString(R.string.no_zoom),
-                                    getString(R.string.zoom_2x),
-                                    getString(R.string.zoom_3x),
-                                    getString(R.string.zoom_4x)})
+                            .items(R.array.zoom_values)
                             .itemsCallbackSingleChoice(selected - 1, new MaterialDialog.ListCallback() {
                                 @Override
                                 public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
@@ -192,11 +186,9 @@ public class SettingsFragment extends PreferenceFragment {
         pref_category_add.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference activity_preference) {
 
-                View view = getActivity().getLayoutInflater().inflate(R.layout.enter_name_dialog, null);
-
                 MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                         .title(R.string.new_category_name)
-                        .customView(view, true)
+                        .customView(R.layout.enter_name_dialog, true)
                         .positiveText(R.string.dialog_positive_text)
                         .negativeText(android.R.string.cancel)
                         .callback(new MaterialDialog.ButtonCallback() {
@@ -219,7 +211,7 @@ public class SettingsFragment extends PreferenceFragment {
                             }
                         }).build();
 
-                input = (EditText) view.findViewById(R.id.input_name);
+                input = (EditText) dialog.getCustomView().findViewById(R.id.input_name);
                 input.requestFocus();
                 input.setHint(R.string.new_category_hint);
 
@@ -290,11 +282,9 @@ public class SettingsFragment extends PreferenceFragment {
 
         this.category = editCategory;
 
-        View view = getActivity().getLayoutInflater().inflate(R.layout.enter_name_dialog, null);
-
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.new_category_name)
-                .customView(view, true)
+                .customView(R.layout.enter_name_dialog, true)
                 .positiveText(R.string.dialog_positive_text)
                 .negativeText(android.R.string.cancel)
                 .callback(new MaterialDialog.ButtonCallback() {
@@ -317,7 +307,7 @@ public class SettingsFragment extends PreferenceFragment {
                     }
                 }).build();
 
-        input = (EditText) view.findViewById(R.id.input_name);
+        input = (EditText) dialog.getCustomView().findViewById(R.id.input_name);
         input.requestFocus();
         input.setText(category.getcategoryName());
 

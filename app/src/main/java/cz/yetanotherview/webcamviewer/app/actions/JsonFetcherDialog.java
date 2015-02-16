@@ -116,11 +116,6 @@ public class JsonFetcherDialog extends DialogFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -265,37 +260,9 @@ public class JsonFetcherDialog extends DialogFragment {
                     }
                     else if (selection == 1) {
 
-                        View view = mActivity.getLayoutInflater().inflate(R.layout.manual_selection_dialog, null);
-                        ListView manualSelectionList = (ListView) view.findViewById(R.id.filtered_list_view);
-
-                        Collections.sort(importWebCams, new NameComparator());
-
-                        manualSelectionAdapter = new ManualSelectionAdapter(mActivity, importWebCams);
-                        manualSelectionList.setAdapter(manualSelectionAdapter);
-
-                        filterBox = (EditText) view.findViewById(R.id.ms_filter);
-                        filterBox.addTextChangedListener(new TextWatcher() {
-
-                            @Override
-                            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                String text = s.toString().trim().toLowerCase(Locale.getDefault());
-                                manualSelectionAdapter.getFilter().filter(text);
-                            }
-
-                            @Override
-                            public void beforeTextChanged(CharSequence s, int start, int count,
-                                                          int after) {
-
-                            }
-
-                            @Override
-                            public void afterTextChanged(Editable s) {
-                            }
-                        });
-
-                        new MaterialDialog.Builder(mActivity)
+                        MaterialDialog dialog = new MaterialDialog.Builder(mActivity)
                                 .title(R.string.manual_selection)
-                                .customView(view, false)
+                                .customView(R.layout.manual_selection_dialog, false)
                                 .callback(new MaterialDialog.ButtonCallback() {
                                     @Override
                                     public void onPositive(MaterialDialog dialog) {
@@ -342,7 +309,34 @@ public class JsonFetcherDialog extends DialogFragment {
 
                                 })
                                 .positiveText(R.string.import_selected)
-                                .show();
+                                .build();
+
+                        ListView manualSelectionList = (ListView) dialog.getCustomView().findViewById(R.id.filtered_list_view);
+                        Collections.sort(importWebCams, new NameComparator());
+                        manualSelectionAdapter = new ManualSelectionAdapter(mActivity, importWebCams);
+                        manualSelectionList.setAdapter(manualSelectionAdapter);
+
+                        filterBox = (EditText) dialog.getCustomView().findViewById(R.id.ms_filter);
+                        filterBox.addTextChangedListener(new TextWatcher() {
+
+                            @Override
+                            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                String text = s.toString().trim().toLowerCase(Locale.getDefault());
+                                manualSelectionAdapter.getFilter().filter(text);
+                            }
+
+                            @Override
+                            public void beforeTextChanged(CharSequence s, int start, int count,
+                                                          int after) {
+
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable s) {
+                            }
+                        });
+
+                        dialog.show();
                     }
                     else if (selection == 2) {
 

@@ -86,11 +86,6 @@ public class EditDialog extends DialogFragment {
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         Bundle bundle = this.getArguments();
@@ -133,21 +128,9 @@ public class EditDialog extends DialogFragment {
             }
         }
 
-        View view = getActivity().getLayoutInflater().inflate(R.layout.add_edit_dialog, null);
-
-        shareCheckBox = (CheckBox) view.findViewById(R.id.shareCheckBox);
-        reportButton = (Button) view.findViewById(R.id.reportButton);
-        if (uniId != 0) {
-            shareCheckBox.setVisibility(View.GONE);
-            reportButton.setVisibility(View.VISIBLE);
-        }
-        else {
-            shareCheckBox.setVisibility(View.VISIBLE);
-        }
-
         MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.action_edit)
-                .customView(view, true)
+                .customView(R.layout.add_edit_dialog, true)
                 .positiveText(R.string.dialog_positive_text)
                 .negativeText(android.R.string.cancel)
                 .neutralText(R.string.action_delete)
@@ -177,14 +160,24 @@ public class EditDialog extends DialogFragment {
                     }
                 }).build();
 
-        mWebCamName = (EditText) view.findViewById(R.id.webcam_name);
+        shareCheckBox = (CheckBox) dialog.getCustomView().findViewById(R.id.shareCheckBox);
+        reportButton = (Button) dialog.getCustomView().findViewById(R.id.reportButton);
+        if (uniId != 0) {
+            shareCheckBox.setVisibility(View.GONE);
+            reportButton.setVisibility(View.VISIBLE);
+        }
+        else {
+            shareCheckBox.setVisibility(View.VISIBLE);
+        }
+
+        mWebCamName = (EditText) dialog.getCustomView().findViewById(R.id.webcam_name);
         mWebCamName.setText(webCam.getName());
         mWebCamName.requestFocus();
 
-        mWebCamUrl = (EditText) view.findViewById(R.id.webcam_url);
+        mWebCamUrl = (EditText) dialog.getCustomView().findViewById(R.id.webcam_url);
         mWebCamUrl.setText(webCam.getUrl());
 
-        webCamCategoryButton = (Button) view.findViewById(R.id.webcam_category_button);
+        webCamCategoryButton = (Button) dialog.getCustomView().findViewById(R.id.webcam_category_button);
         if (allCategories.size() == 0 ) {
             webCamCategoryButton.setText(R.string.category_array_empty);
         }
