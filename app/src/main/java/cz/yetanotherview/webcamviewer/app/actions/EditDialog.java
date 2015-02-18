@@ -197,14 +197,14 @@ public class EditDialog extends DialogFragment {
                             .items(items)
                             .itemsCallbackMultiChoice(checked, new MaterialDialog.ListCallbackMulti() {
                                 @Override
-                                public void onSelection(MaterialDialog multidialog, Integer[] which, CharSequence[] text) {
+                                public void onSelection(MaterialDialog multiDialog, Integer[] which, CharSequence[] text) {
                                 }
                             })
                             .positiveText(R.string.choose)
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
-                                public void onPositive(MaterialDialog multidialog) {
-                                    Integer[] which = multidialog.getSelectedIndices();
+                                public void onPositive(MaterialDialog multiDialog) {
+                                    Integer[] which = multiDialog.getSelectedIndices();
 
                                     if (which != null && which.length != 0) {
                                         StringBuilder str = new StringBuilder();
@@ -224,12 +224,13 @@ public class EditDialog extends DialogFragment {
                                         }
                                         webCamCategoryButton.setText(str);
                                     } else {
+                                        category_ids = null;
                                         webCamCategoryButton.setText(R.string.category_array_choose);
                                     }
                                     checked = which;
                                     positiveAction.setEnabled(true);
 
-                                    multidialog.dismiss();
+                                    multiDialog.dismiss();
                                 }
                             })
                             .show();

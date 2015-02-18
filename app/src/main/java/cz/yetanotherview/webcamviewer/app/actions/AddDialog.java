@@ -58,6 +58,7 @@ public class AddDialog extends DialogFragment {
 
     private Button webCamCategoryButton;
     private String[] items;
+    private Integer[] whichSelected;
     private long[] category_ids;
 
     private CheckBox shareCheckBox;
@@ -174,24 +175,24 @@ public class AddDialog extends DialogFragment {
                             .title(R.string.webcam_category)
                             .autoDismiss(false)
                             .items(items)
-                            .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMulti() {
+                            .itemsCallbackMultiChoice(whichSelected, new MaterialDialog.ListCallbackMulti() {
                                 @Override
-                                public void onSelection(MaterialDialog multidialog, Integer[] which, CharSequence[] text) {
+                                public void onSelection(MaterialDialog multiDialog, Integer[] which, CharSequence[] text) {
                                 }
                             })
                             .positiveText(R.string.choose)
                             .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
-                                public void onPositive(MaterialDialog multidialog) {
-                                    Integer[] which = multidialog.getSelectedIndices();
+                                public void onPositive(MaterialDialog multiDialog) {
+                                    whichSelected = multiDialog.getSelectedIndices();
 
-                                    if (which != null && which.length != 0) {
+                                    if (whichSelected != null && whichSelected.length != 0) {
                                         StringBuilder str = new StringBuilder();
 
-                                        category_ids = new long[which.length];
+                                        category_ids = new long[whichSelected.length];
                                         int count = 0;
 
-                                        for (Integer aWhich : which) {
+                                        for (Integer aWhich : whichSelected) {
                                             category = allCategories.get(aWhich);
 
                                             category_ids[count] = category.getId();
@@ -205,7 +206,7 @@ public class AddDialog extends DialogFragment {
                                     } else
                                         webCamCategoryButton.setText(R.string.category_array_choose);
 
-                                    multidialog.dismiss();
+                                    multiDialog.dismiss();
                                 }
                             })
                             .show();
