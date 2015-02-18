@@ -21,6 +21,7 @@ package cz.yetanotherview.webcamviewer.app;
 import android.app.DialogFragment;
 import android.app.backup.BackupManager;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.Preference;
@@ -58,6 +59,8 @@ public class SettingsFragment extends PreferenceFragment {
     private int actionColor;
 
     private Integer[] whichDelete;
+
+    private MaterialDialog indeterminateProgress;
 
     private DatabaseHelper db;
     private SharedPreferences sharedPref;
@@ -390,38 +393,42 @@ public class SettingsFragment extends PreferenceFragment {
                     .callback(new MaterialDialog.ButtonCallback() {
                         @Override
                         public void onPositive(MaterialDialog dialog) {
-                            categoryDeleteAlsoWebCams(true);
+                            showIndeterminateProgress();
+                            new deleteAlsoWebCamsBackgroundTask().execute(true);
                         }
 
                         @Override
                         public void onNegative(MaterialDialog dialog) {
-                            categoryDeleteAlsoWebCams(false);
+                            showIndeterminateProgress();
+                            new deleteAlsoWebCamsBackgroundTask().execute(false);
                         }
                     })
                     .show();
     }
 
-    private void categoryDeleteAlsoWebCams(boolean alsoWebCams){
+    private class deleteAlsoWebCamsBackgroundTask extends AsyncTask<Boolean, Void, Void> {
 
-        if (whichDelete != null && whichDelete.length != 0) {
-            synchronized (SettingsFragment.sDataLock) {
-                for (Integer aWhich : whichDelete) {
-                    Category deleteCategory = allCategories.get(aWhich);
-                    if (alsoWebCams) {
-                        db.deleteCategory(deleteCategory.getId(), true);
+        @Override
+        protected Void doInBackground(Boolean... booleans) {
+
+            Boolean alsoWebCams = booleans[0];
+            if (whichDelete != null && whichDelete.length != 0) {
+                synchronized (SettingsFragment.sDataLock) {
+                    for (Integer aWhich : whichDelete) {
+                        Category deleteCategory = allCategories.get(aWhich);
+                        if (alsoWebCams) {
+                            db.deleteCategory(deleteCategory.getId(), true);
+                        }
+                        else db.deleteCategory(deleteCategory.getId(), false);
                     }
-                    else db.deleteCategory(deleteCategory.getId(), false);
+                    db.closeDB();
                 }
-                db.closeDB();
+                BackupManager backupManager = new BackupManager(getActivity());
+                backupManager.dataChanged();
             }
-            BackupManager backupManager = new BackupManager(getActivity());
-            backupManager.dataChanged();
 
-            Snackbar.with(getActivity().getApplicationContext())
-                    .text(R.string.action_deleted)
-                    .actionLabel(R.string.dismiss)
-                    .actionColor(actionColor)
-                    .show(getActivity());
+            showDeletedSnackBar();
+            return null;
         }
     }
 
@@ -459,36 +466,40 @@ public class SettingsFragment extends PreferenceFragment {
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        deleteAlsoCategories(true);
+                        showIndeterminateProgress();
+                        new deleteAlsoCategoriesBackgroundTask().execute(true);
                     }
 
                     @Override
                     public void onNegative(MaterialDialog dialog) {
-                        deleteAlsoCategories(false);
+                        showIndeterminateProgress();
+                        new deleteAlsoCategoriesBackgroundTask().execute(false);
                     }
                 })
                 .show();
     }
 
-    private void deleteAlsoCategories(boolean alsoCategories){
+    private class deleteAlsoCategoriesBackgroundTask extends AsyncTask<Boolean, Void, Void> {
 
-        synchronized (SettingsFragment.sDataLock) {
-            if (alsoCategories) {
-                db.deleteAllWebCams(true);
+        @Override
+        protected Void doInBackground(Boolean... booleans) {
+
+            Boolean alsoCategories = booleans[0];
+            synchronized (SettingsFragment.sDataLock) {
+                if (alsoCategories) {
+                    db.deleteAllWebCams(true);
+                }
+                else {
+                    db.deleteAllWebCams(false);
+                }
+                db.closeDB();
             }
-            else {
-                db.deleteAllWebCams(false);
-            }
-            db.closeDB();
+            BackupManager backupManager = new BackupManager(getActivity());
+            backupManager.dataChanged();
+
+            showDeletedSnackBar();
+            return null;
         }
-        BackupManager backupManager = new BackupManager(getActivity());
-        backupManager.dataChanged();
-
-        Snackbar.with(getActivity().getApplicationContext())
-                .text(R.string.action_deleted)
-                .actionLabel(R.string.dismiss)
-                .actionColor(actionColor)
-                .show(getActivity());
     }
 
     private void exportToExt() {
@@ -572,6 +583,29 @@ public class SettingsFragment extends PreferenceFragment {
                         .show();
 
                 return true;
+            }
+        });
+    }
+
+    private void showIndeterminateProgress() {
+        indeterminateProgress = new MaterialDialog.Builder(getActivity())
+                .content(R.string.please_wait)
+                .progress(true, 0)
+                .show();
+    }
+
+    private void showDeletedSnackBar() {
+
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+
+                indeterminateProgress.dismiss();
+                Snackbar.with(getActivity().getApplicationContext())
+                        .text(R.string.action_deleted)
+                        .actionLabel(R.string.dismiss)
+                        .actionColor(actionColor)
+                        .show(getActivity());
+
             }
         });
     }
