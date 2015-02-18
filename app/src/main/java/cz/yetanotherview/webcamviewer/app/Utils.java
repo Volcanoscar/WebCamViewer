@@ -22,10 +22,13 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.List;
 
 public class Utils {
 
@@ -112,5 +115,37 @@ public class Utils {
                 new File(backupFolder, aChildren).delete();
             }
         }
+    }
+
+    /**
+     * Get the resources Id.
+     */
+    public static int getResId(String resourceName, Class<?> c) {
+
+        List<String> us_states = Arrays.asList("alabama", "alaska", "arizona", "arkansas", "california",
+                "colorado", "connecticut", "delaware", "florida", "georgia", "hawaii", "idaho", "illinois",
+                "indiana", "iowa", "kansas", "kentucky", "louisiana", "maine", "maryland", "massachusetts",
+                "michigan", "minnesota", "mississippi", "missouri", "montana", "nebraska", "nevada",
+                "new_hampshire", "new_jersey", "new_mexico", "new_york", "north_carolina", "north_dakota",
+                "ohio", "oklahoma", "oregon", "pennsylvania", "rhode_island", "south_carolina",
+                "south_dakota", "tennessee", "texas", "utah", "vermont", "virginia", "washington",
+                "washington_dc", "west_virginia", "wisconsin", "wyoming");
+        boolean contains = us_states.contains(resourceName);
+
+            try {
+                int resId;
+                if (contains) {
+                    resId = R.drawable.united_states;
+                }
+                else {
+                    Field idField = c.getDeclaredField(resourceName);
+                    resId = idField.getInt(idField);
+                }
+                return resId;
+
+            } catch (Exception e) {
+                return R.drawable.unknown;
+            }
+
     }
 }

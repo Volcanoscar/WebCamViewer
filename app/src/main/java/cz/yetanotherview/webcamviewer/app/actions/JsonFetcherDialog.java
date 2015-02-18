@@ -21,7 +21,6 @@ package cz.yetanotherview.webcamviewer.app.actions;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.ProgressDialog;
 import android.app.backup.BackupManager;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -31,6 +30,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -61,35 +61,41 @@ import java.util.Locale;
 
 import cz.yetanotherview.webcamviewer.app.R;
 import cz.yetanotherview.webcamviewer.app.Utils;
+import cz.yetanotherview.webcamviewer.app.adapter.CountryAdapter;
 import cz.yetanotherview.webcamviewer.app.adapter.ManualSelectionAdapter;
+import cz.yetanotherview.webcamviewer.app.helper.CountryNameComparator;
 import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
-import cz.yetanotherview.webcamviewer.app.helper.NameComparator;
+import cz.yetanotherview.webcamviewer.app.helper.WebCamNameComparator;
 import cz.yetanotherview.webcamviewer.app.model.Category;
+import cz.yetanotherview.webcamviewer.app.model.Country;
 import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
 public class JsonFetcherDialog extends DialogFragment {
 
     // Object for intrinsic lock
     public static final Object sDataLock = new Object();
+
     private DatabaseHelper db;
     private List<WebCam> importWebCams;
     private List<WebCam> allWebCams;
-    private ProgressDialog progressDialog;
+    private MaterialDialog initDialog;
+    private MaterialDialog progressDialog;
 
     private int selection;
     private boolean noNewWebCams = true;
+    private List<Country> countryList;
+    private int newWebCams;
+    private int duplicityWebCams;
+    private String importProgress;
+    private int maxProgressValue;
 
-    private static final String TAG = "JsonFetcherDialog";
+    private static final String TAG = "JsonFetcher";
     private static final String JSON_FILE_URL = "http://api.yetanotherview.cz/webcams";
     private static final int latest = 14;
 
-    private String plsWait;
-    private String importProgress;
     private Activity mActivity;
-
     private EditText filterBox;
     private ManualSelectionAdapter manualSelectionAdapter;
-
     private ReloadInterface mListener;
 
     public static interface ReloadInterface {
@@ -112,7 +118,7 @@ public class JsonFetcherDialog extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setCancelable(false);
+        setCancelable(true);
     }
 
     @Override
@@ -120,22 +126,23 @@ public class JsonFetcherDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
 
         db = new DatabaseHelper(mActivity);
+        allWebCams = db.getAllWebCams("id ASC");
 
         Bundle bundle = this.getArguments();
         selection = bundle.getInt("selection", 0);
+        String plsWait = getString(R.string.please_wait);
+        importProgress = getString(R.string.import_progress) + " " + plsWait;
 
-        plsWait = getString(R.string.please_wait);
-
-        progressDialog = new ProgressDialog(mActivity, getTheme());
-        progressDialog.setTitle(R.string.importing_from_server);
-        progressDialog.setMessage(plsWait);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        initDialog = new MaterialDialog.Builder(mActivity)
+                .title(R.string.importing_from_server)
+                .content(plsWait)
+                .progress(true, 0)
+                .build();
 
         WebCamsFromJsonFetcher fetcher = new WebCamsFromJsonFetcher();
         fetcher.execute();
 
-        return progressDialog;
+        return initDialog;
     }
 
     private class WebCamsFromJsonFetcher extends AsyncTask<Void, Void, String> {
@@ -170,7 +177,156 @@ public class JsonFetcherDialog extends DialogFragment {
                             importWebCams = Arrays.asList(gson.fromJson(reader, WebCam[].class));
                             content.close();
 
-                            handleWebCamList();
+                            // Swap dialogs
+                            maxProgressValue = importWebCams.size();
+                            if ((selection == 0) || (selection == 3)) {
+                                swapProgressDialog();
+                            }
+
+                            // Handle WebCams importing task
+                            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            long now = Utils.getDate();
+                            newWebCams = 0;
+                            duplicityWebCams = 0;
+
+                            synchronized (sDataLock) {
+                                if (selection == 0) {
+
+                                    long lastFetchPopular = preferences.getLong("pref_last_fetch_popular", 0);
+                                    long categoryPopular = db.createCategory(new Category(getString(R.string.popular) + " " + Utils.getDateString()));
+
+                                    for (WebCam webCam : importWebCams) {
+                                        long webCamDateAdded = webCam.getDateAdded().getTime();
+                                        long differenceBetweenLastFetch = lastFetchPopular - webCamDateAdded;
+
+                                        if (webCam.isPopular() && differenceBetweenLastFetch < 0) {
+                                            if (allWebCams.size() != 0) {
+                                                boolean notFound = false;
+                                                for (WebCam allWebCam : allWebCams) {
+                                                    if (webCam.getUniId() == allWebCam.getUniId()) {
+                                                        db.createWebCamCategory(allWebCam.getId(), categoryPopular);
+                                                        noNewWebCams = false;
+                                                        notFound = false;
+                                                        duplicityWebCams++;
+                                                        break;
+                                                    }
+                                                    else notFound = true;
+                                                }
+                                                if (notFound) {
+                                                    db.createWebCam(webCam, new long[]{categoryPopular});
+                                                    noNewWebCams = false;
+                                                    newWebCams++;
+                                                }
+                                            }
+                                            else {
+                                                db.createWebCam(webCam, new long[]{categoryPopular});
+                                                noNewWebCams = false;
+                                                newWebCams++;
+                                            }
+                                        }
+                                        progressUpdate();
+                                    }
+                                    if (noNewWebCams) {
+                                        db.deleteCategory(categoryPopular, false);
+                                    }
+                                    else {
+                                        editor.putLong("pref_last_fetch_popular", now);
+                                        editor.apply();
+                                    }
+                                    showResult();
+                                }
+                                else if (selection == 1) {
+
+                                    Collections.sort(importWebCams, new WebCamNameComparator());
+
+                                    noNewWebCams = false;
+                                    handleManualSelection();
+                                }
+                                else if (selection == 2) {
+
+                                    List<String> tempList = new ArrayList<>();
+                                    List<String> listAllCountries = new ArrayList<>();
+                                    countryList = new ArrayList<>();
+                                    for (WebCam webCam : importWebCams) {
+
+                                        String countryName = webCam.getCountry();
+                                        listAllCountries.add(countryName);
+                                        if (!tempList.contains(countryName)) {
+                                            tempList.add(countryName);
+
+                                            Country country = new Country();
+                                            country.setCountryName(countryName);
+                                            String drawable =  countryName.toLowerCase().replace(" ", "_").replace(".","").replace("é","e").trim();
+                                            country.setIcon(Utils.getResId(drawable, R.drawable.class));
+
+                                            countryList.add(country);
+                                        }
+                                    }
+
+                                    Collections.sort(countryList, new CountryNameComparator());
+                                    Collections.sort(listAllCountries);
+
+                                    for (Country country : countryList) {
+                                        String countryName = country.getCountryName();
+                                        int occurrences = Collections.frequency(listAllCountries, countryName);
+                                        country.setCount(occurrences);
+                                    }
+
+                                    noNewWebCams = false;
+                                    handleCountrySelection();
+                                }
+                                else if (selection == 3) {
+
+                                    long lastFetchLatest = preferences.getLong("pref_last_fetch_latest", 0);
+                                    long categoryLatest = db.createCategory(new Category(getString(R.string.latest) + " " + Utils.getDateString()));
+
+                                    for (WebCam webCam : importWebCams) {
+                                        long webCamDateAdded = webCam.getDateAdded().getTime();
+                                        long differenceBetweenLastFetch = lastFetchLatest - webCamDateAdded;
+                                        int differenceBetweenDates = (int) ((now - webCamDateAdded)/86400000);
+
+                                        if (differenceBetweenDates < latest && differenceBetweenLastFetch < 0) {
+                                            if (allWebCams.size() != 0) {
+                                                boolean notFound = false;
+                                                for (WebCam allWebCam : allWebCams) {
+                                                    if (webCam.getUniId() == allWebCam.getUniId()) {
+                                                        db.createWebCamCategory(allWebCam.getId(), categoryLatest);
+                                                        noNewWebCams = false;
+                                                        notFound = false;
+                                                        duplicityWebCams++;
+                                                        break;
+                                                    }
+                                                    else notFound = true;
+                                                }
+                                                if (notFound) {
+                                                    db.createWebCam(webCam, new long[]{categoryLatest});
+                                                    noNewWebCams = false;
+                                                    newWebCams++;
+                                                }
+                                            }
+                                            else {
+                                                db.createWebCam(webCam, new long[]{categoryLatest});
+                                                noNewWebCams = false;
+                                                newWebCams++;
+                                            }
+                                        }
+                                        progressUpdate();
+                                    }
+                                    if (noNewWebCams) {
+                                        db.deleteCategory(categoryLatest, false);
+                                    }
+                                    else {
+                                        editor.putLong("pref_last_fetch_latest", now);
+                                        editor.apply();
+                                    }
+                                    showResult();
+                                }
+                            }
+                            db.closeDB();
+                            BackupManager backupManager = new BackupManager(mActivity);
+                            backupManager.dataChanged();
+
                         } catch (Exception ex) {
                             Log.e(TAG, "Failed to parse JSON due to: " + ex);
                         }
@@ -183,7 +339,7 @@ public class JsonFetcherDialog extends DialogFragment {
             } catch (IOException e) {
                 System.err.println("Error creating HTTP connection");
 
-                progressDialog.dismiss();
+                initDialog.dismiss();
                 this.publishProgress();
             }
             return null;
@@ -196,267 +352,210 @@ public class JsonFetcherDialog extends DialogFragment {
         }
     }
 
-    private void handleWebCamList() {
+    private void swapProgressDialog() {
 
         mActivity.runOnUiThread(new Runnable() {
             public void run() {
 
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mActivity);
-                SharedPreferences.Editor editor = preferences.edit();
+                if ((selection == 0) || (selection == 3)) {
+                    initDialog.dismiss();
+                }
+                progressDialog = new MaterialDialog.Builder(mActivity)
+                        .title(R.string.importing_from_server)
+                        .content(importProgress)
+                        .progress(false, maxProgressValue)
+                        .show();
+            }
+        });
+    }
 
-                long now = Utils.getDate();
-                importProgress = getString(R.string.import_progress);
+    private void progressUpdate() {
 
-                allWebCams = db.getAllWebCams("id ASC");
+        mActivity.runOnUiThread(new Runnable() {
+            public void run() {
 
-                synchronized (sDataLock) {
-                    if (selection == 0) {
-                        progressDialog.setMessage(importProgress + " " + plsWait);
+                progressDialog.incrementProgress(1);
+            }
+        });
+    }
 
-                        int newWebCams = 0;
-                        int duplicityWebCams = 0;
-                        long lastFetchPopular = preferences.getLong("pref_last_fetch_popular", 0);
-                        long categoryPopular = db.createCategory(new Category(getString(R.string.popular) + " " + Utils.getDateString()));
+    private void handleManualSelection() {
 
-                        for (WebCam webCam : importWebCams) {
-                            long webCamDateAdded = webCam.getDateAdded().getTime();
-                            long differenceBetweenLastFetch = lastFetchPopular - webCamDateAdded;
+        mActivity.runOnUiThread(new Runnable() {
+            public void run() {
 
-                            if (webCam.isPopular() && differenceBetweenLastFetch < 0) {
-                                if (allWebCams.size() != 0) {
-                                    boolean notFound = false;
-                                    for (WebCam allWebCam : allWebCams) {
-                                        if (webCam.getUniId() == allWebCam.getUniId()) {
-                                            db.createWebCamCategory(allWebCam.getId(), categoryPopular);
-                                            noNewWebCams = false;
-                                            notFound = false;
-                                            duplicityWebCams++;
-                                            break;
-                                        }
-                                        else notFound = true;
-                                    }
-                                    if (notFound) {
-                                        db.createWebCam(webCam, new long[]{categoryPopular});
-                                        noNewWebCams = false;
-                                        newWebCams++;
-                                    }
-                                }
-                                else {
-                                    db.createWebCam(webCam, new long[]{categoryPopular});
-                                    noNewWebCams = false;
-                                    newWebCams++;
-                                }
+                MaterialDialog dialog = new MaterialDialog.Builder(mActivity)
+                        .title(R.string.manual_selection)
+                        .customView(R.layout.manual_selection_dialog, false)
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+
+                                new manualSelectionBackgroundTask().execute();
+                                swapProgressDialog();
                             }
+
+                        })
+                        .positiveText(R.string.import_selected)
+                        .build();
+
+                ListView manualSelectionList = (ListView) dialog.getCustomView().findViewById(R.id.filtered_list_view);
+                manualSelectionAdapter = new ManualSelectionAdapter(mActivity, importWebCams);
+                manualSelectionList.setAdapter(manualSelectionAdapter);
+
+                filterBox = (EditText) dialog.getCustomView().findViewById(R.id.ms_filter);
+                filterBox.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        String text = s.toString().trim().toLowerCase(Locale.getDefault());
+                        manualSelectionAdapter.getFilter().filter(text);
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count,
+                                                  int after) {
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                    }
+                });
+
+                initDialog.dismiss();
+                dialog.show();
+            }
+        });
+    }
+
+    private class manualSelectionBackgroundTask extends AsyncTask<String, Integer, Long> {
+
+        @Override
+        protected Long doInBackground(String... texts) {
+
+            String selected = mActivity.getString(R.string.selected);
+            long categorySelected = db.createCategory(new Category(selected + " " + Utils.getDateString()));
+
+            for (WebCam webCam : importWebCams) {
+                if (webCam.isSelected()) {
+                    if (allWebCams.size() != 0) {
+                        boolean notFound = false;
+                        for (WebCam allWebCam : allWebCams) {
+                            if (webCam.getUniId() == allWebCam.getUniId()) {
+                                db.createWebCamCategory(allWebCam.getId(), categorySelected);
+                                notFound = false;
+                                duplicityWebCams++;
+                                break;
+                            }
+                            else notFound = true;
                         }
-                        if (noNewWebCams) {
-                            db.deleteCategory(categoryPopular, false);
-                            noNewWebCamsDialog();
-                        }
-                        else {
-                            editor.putLong("pref_last_fetch_popular", now);
-                            mListener.invokeReload();
-                            reportDialog(newWebCams, duplicityWebCams);
+                        if (notFound) {
+                            db.createWebCam(webCam, new long[]{categorySelected});
+                            newWebCams++;
                         }
                     }
-                    else if (selection == 1) {
-
-                        MaterialDialog dialog = new MaterialDialog.Builder(mActivity)
-                                .title(R.string.manual_selection)
-                                .customView(R.layout.manual_selection_dialog, false)
-                                .callback(new MaterialDialog.ButtonCallback() {
-                                    @Override
-                                    public void onPositive(MaterialDialog dialog) {
-                                        progressDialog.setMessage(importProgress + " " + plsWait);
-
-                                        String selected = mActivity.getString(R.string.selected);
-                                        int newWebCams = 0;
-                                        int duplicityWebCams = 0;
-                                        long categorySelected = db.createCategory(new Category(selected + " " + Utils.getDateString()));
-
-                                        for (WebCam webCam : importWebCams) {
-                                            if (webCam.isSelected()) {
-                                                if (allWebCams.size() != 0) {
-                                                    boolean notFound = false;
-                                                    for (WebCam allWebCam : allWebCams) {
-                                                        if (webCam.getUniId() == allWebCam.getUniId()) {
-                                                            db.createWebCamCategory(allWebCam.getId(), categorySelected);
-                                                            notFound = false;
-                                                            duplicityWebCams++;
-                                                            break;
-                                                        }
-                                                        else notFound = true;
-                                                    }
-                                                    if (notFound) {
-                                                        db.createWebCam(webCam, new long[]{categorySelected});
-                                                        newWebCams++;
-                                                    }
-                                                }
-                                                else {
-                                                    db.createWebCam(webCam, new long[]{categorySelected});
-                                                    newWebCams++;
-                                                }
-                                            }
-                                        }
-
-                                        if (newWebCams + duplicityWebCams == 0) {
-                                            db.deleteCategory(categorySelected, false);
-                                        }
-
-                                        mListener = (ReloadInterface) mActivity;
-                                        mListener.invokeReload();
-                                        reportDialog(newWebCams, duplicityWebCams);
-                                    }
-
-                                })
-                                .positiveText(R.string.import_selected)
-                                .build();
-
-                        ListView manualSelectionList = (ListView) dialog.getCustomView().findViewById(R.id.filtered_list_view);
-                        Collections.sort(importWebCams, new NameComparator());
-                        manualSelectionAdapter = new ManualSelectionAdapter(mActivity, importWebCams);
-                        manualSelectionList.setAdapter(manualSelectionAdapter);
-
-                        filterBox = (EditText) dialog.getCustomView().findViewById(R.id.ms_filter);
-                        filterBox.addTextChangedListener(new TextWatcher() {
-
-                            @Override
-                            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                                String text = s.toString().trim().toLowerCase(Locale.getDefault());
-                                manualSelectionAdapter.getFilter().filter(text);
-                            }
-
-                            @Override
-                            public void beforeTextChanged(CharSequence s, int start, int count,
-                                                          int after) {
-
-                            }
-
-                            @Override
-                            public void afterTextChanged(Editable s) {
-                            }
-                        });
-
-                        dialog.show();
-                    }
-                    else if (selection == 2) {
-
-                        List<String> list = new ArrayList<>();
-                        List<String> listAllCountires = new ArrayList<>();
-                        for (WebCam webCam : importWebCams) {
-                            String country = webCam.getCountry();
-                            listAllCountires.add(country);
-                            if (!list.contains(country)) {
-                                list.add(country);
-                            }
-                        }
-
-                        Collections.sort(listAllCountires);
-                        Log.d("", String.valueOf(listAllCountires));
-
-                        Collections.sort(list);
-                        String[] items = list.toArray(new String[list.size()]);
-
-                        new MaterialDialog.Builder(mActivity)
-                                .title(R.string.countries)
-                                .items(items)
-                                .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallback() {
-                                    @Override
-                                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                        progressDialog.setMessage(importProgress + " " + plsWait);
-
-                                        int newWebCams = 0;
-                                        int duplicityWebCams = 0;
-                                        long categoryCountry = db.createCategory(new Category(text + " " + Utils.getDateString()));
-
-                                        for (WebCam webCam : importWebCams) {
-                                            if (webCam.getCountry().equals(text)) {
-                                                if (allWebCams.size() != 0) {
-                                                    boolean notFound = false;
-                                                    for (WebCam allWebCam : allWebCams) {
-                                                        if (webCam.getUniId() == allWebCam.getUniId()) {
-                                                            db.createWebCamCategory(allWebCam.getId(), categoryCountry);
-                                                            notFound = false;
-                                                            duplicityWebCams++;
-                                                            break;
-                                                        }
-                                                        else notFound = true;
-                                                    }
-                                                    if (notFound) {
-                                                        db.createWebCam(webCam, new long[]{categoryCountry});
-                                                        newWebCams++;
-                                                    }
-                                                }
-                                                else {
-                                                    db.createWebCam(webCam, new long[]{categoryCountry});
-                                                    newWebCams++;
-                                                }
-                                            }
-                                        }
-
-                                        mListener = (ReloadInterface) mActivity;
-                                        mListener.invokeReload();
-                                        reportDialog(newWebCams, duplicityWebCams);
-                                    }
-                                })
-                                .positiveText(R.string.choose)
-                                .show();
-                    }
-                    else if (selection == 3) {
-                        progressDialog.setMessage(importProgress + " " + plsWait);
-
-                        int newWebCams = 0;
-                        int duplicityWebCams = 0;
-                        long lastFetchLatest = preferences.getLong("pref_last_fetch_latest", 0);
-                        long categoryLatest = db.createCategory(new Category(getString(R.string.latest) + " " + Utils.getDateString()));
-
-                        for (WebCam webCam : importWebCams) {
-                            long webCamDateAdded = webCam.getDateAdded().getTime();
-                            long differenceBetweenLastFetch = lastFetchLatest - webCamDateAdded;
-                            int differenceBetweenDates = (int) ((now - webCamDateAdded)/86400000);
-
-                            if (differenceBetweenDates < latest && differenceBetweenLastFetch < 0) {
-                                if (allWebCams.size() != 0) {
-                                    boolean notFound = false;
-                                    for (WebCam allWebCam : allWebCams) {
-                                        if (webCam.getUniId() == allWebCam.getUniId()) {
-                                            db.createWebCamCategory(allWebCam.getId(), categoryLatest);
-                                            noNewWebCams = false;
-                                            notFound = false;
-                                            duplicityWebCams++;
-                                            break;
-                                        }
-                                        else notFound = true;
-                                    }
-                                    if (notFound) {
-                                        db.createWebCam(webCam, new long[]{categoryLatest});
-                                        noNewWebCams = false;
-                                        newWebCams++;
-                                    }
-                                }
-                                else {
-                                    db.createWebCam(webCam, new long[]{categoryLatest});
-                                    noNewWebCams = false;
-                                    newWebCams++;
-                                }
-                            }
-                        }
-                        if (noNewWebCams) {
-                            db.deleteCategory(categoryLatest, false);
-                            noNewWebCamsDialog();
-                        }
-                        else {
-                            editor.putLong("pref_last_fetch_latest", now);
-                            mListener.invokeReload();
-                            reportDialog(newWebCams,duplicityWebCams);
-                        }
+                    else {
+                        db.createWebCam(webCam, new long[]{categorySelected});
+                        newWebCams++;
                     }
                 }
-                db.closeDB();
-                BackupManager backupManager = new BackupManager(mActivity);
-                backupManager.dataChanged();
+                progressUpdate();
+            }
 
-                editor.apply();
+            if (newWebCams + duplicityWebCams == 0) {
+                db.deleteCategory(categorySelected, false);
+            }
+
+            showResult();
+            return null;
+        }
+    }
+
+    private void handleCountrySelection() {
+
+        mActivity.runOnUiThread(new Runnable() {
+            public void run() {
+
+                final MaterialDialog dialog = new MaterialDialog.Builder(mActivity)
+                        .title(R.string.countries)
+                        .adapter(new CountryAdapter(mActivity, countryList))
+                        .build();
+
+                ListView listView = dialog.getListView();
+                if (listView != null) {
+                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                            Country country = countryList.get(position);
+                            new countrySelectionBackgroundTask().execute(country.getCountryName());
+                            dialog.dismiss();
+                            swapProgressDialog();
+                        }
+                    });
+                }
+
+                initDialog.dismiss();
+                dialog.show();
+            }
+        });
+    }
+
+    private class countrySelectionBackgroundTask extends AsyncTask<String, Integer, Long> {
+
+        @Override
+        protected Long doInBackground(String... texts) {
+
+            String text = texts[0];
+            long categoryCountry = db.createCategory(new Category(text + " " + Utils.getDateString()));
+
+            for (WebCam webCam : importWebCams) {
+                if (webCam.getCountry().equals(text)) {
+                    if (allWebCams.size() != 0) {
+                        boolean notFound = false;
+                        for (WebCam allWebCam : allWebCams) {
+                            if (webCam.getUniId() == allWebCam.getUniId()) {
+                                db.createWebCamCategory(allWebCam.getId(), categoryCountry);
+                                notFound = false;
+                                duplicityWebCams++;
+                                break;
+                            }
+                            else notFound = true;
+                        }
+                        if (notFound) {
+                            db.createWebCam(webCam, new long[]{categoryCountry});
+                            newWebCams++;
+                        }
+                    }
+                    else {
+                        db.createWebCam(webCam, new long[]{categoryCountry});
+                        newWebCams++;
+                    }
+                }
+                progressUpdate();
+            }
+
+            showResult();
+            return null;
+        }
+    }
+
+    private void showResult() {
+
+        mActivity.runOnUiThread(new Runnable() {
+            public void run() {
+
                 progressDialog.dismiss();
+                if (!noNewWebCams) {
+                    mListener = (ReloadInterface) mActivity;
+                    mListener.invokeReload();
+                    reportDialog(newWebCams, duplicityWebCams);
+                }
+                else {
+                    noNewWebCamsDialog();
+                }
+
             }
         });
     }

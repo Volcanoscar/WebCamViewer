@@ -23,7 +23,7 @@ import java.util.Comparator;
 import cz.yetanotherview.webcamviewer.app.Utils;
 import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
-public class NameComparator implements Comparator<WebCam> {
+public class WebCamNameComparator implements Comparator<WebCam> {
     @Override
     public int compare(WebCam webCam1, WebCam webCam2) {
         String strippedName1 = Utils.getNameStrippedAccents(webCam1.getName());
