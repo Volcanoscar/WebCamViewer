@@ -14,8 +14,8 @@
     <dimen name="empty_textview_padding">20dp</dimen>
 
     <dimen name="card_corner_radius">4dp</dimen>
-    <dimen name="bigger_title_size">28sp</dimen>
-    <dimen name="big_padding">16dp</dimen>
-    <dimen name="small_padding">8dp</dimen>
+    <dimen name="big_padding">10dp</dimen>
+    <dimen name="middle_padding">6dp</dimen>
+    <dimen name="small_padding">2dp</dimen>
 
 </resources>

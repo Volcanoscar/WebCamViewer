@@ -136,9 +136,10 @@
 <string name="enter_place_or_country">"Geben Sie einen Ort oder Land"</string>
 <string name="welcome_to_version">"Willkommen in der neuen Version"</string>
 <string name="no_categories_found">"Keine Kategorien gefunden"</string>
-<string name="action_sort_date">"Sortieren nach Datum ↓"</string>
-<string name="action_sort_date_desc">"Sortieren nach Datum ↑"</string>
-<string name="action_sort_name">"Sortieren nach Name ↓"</string>
-<string name="action_sort_name_desc">"Sortieren nach Name ↑"</string>
+<string name="action_sort_date">"Aufsteigend nach Datum"</string>
+<string name="action_sort_date_desc">"Absteigend nach Datum"</string>
+<string name="action_sort_name">"Aufsteigend nach Name"</string>
+<string name="action_sort_name_desc">"Absteigend nach Name"</string>
 <string name="report_problem">"Ein Problem melden"</string>
+<string name="view">"Anzeige"</string>
 </resources>

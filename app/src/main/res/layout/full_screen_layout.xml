@@ -28,37 +28,48 @@
         android:layout_height="match_parent"
         android:background="@color/white"/>
 
-        <ProgressBar
-            android:id="@+id/loadingProgressBarFull"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="?android:attr/progressBarStyleLarge"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:indeterminate="false"
-            android:visibility="visible"
-            android:progress="1" />
+        <include
+            layout="@layout/loading_progress_bar"/>
 
-        <ImageButton
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/touch_image"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
+        <RelativeLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
             android:layout_alignParentBottom="true"
-            android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_action_navigation_arrow_back"/>
+            android:id="@+id/buttons_layout">
 
-        <ImageButton
-            android:id="@+id/refresh_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/touch_image"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:background="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_action_refresh_full"/>
+            <ImageButton
+                android:id="@+id/back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentBottom="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:src="@drawable/ic_action_navigation_arrow_back"/>
 
+            <ImageButton
+                android:id="@+id/save_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginRight="45dp"
+                android:layout_marginEnd="45dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:src="@drawable/ic_action_save"/>
+
+            <ImageButton
+                android:id="@+id/refresh_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:background="?android:attr/selectableItemBackground"
+                android:src="@drawable/ic_action_refresh_full"/>
+
+        </RelativeLayout>
 </RelativeLayout>

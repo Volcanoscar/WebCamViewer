@@ -15,8 +15,10 @@
         <item name="android:textColorLink">@color/hyperlink</item>
     </style>
 
-    <style name="NoActionBar" parent="AppTheme.Base">
+    <style name="AppCompatFullScreen" parent="AppTheme.Base">
         <item name="android:windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
     <style name="MainCardView">
@@ -24,17 +26,36 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_marginTop">@dimen/margin_top</item>
         <item name="android:layout_marginBottom">@dimen/margin_bottom</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="MainImageView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:scaleType">centerCrop</item>
+    </style>
+
+    <style name="EditImageButton">
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:elevation">2dp</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:layout_alignParentRight">true</item>
+        <item name="android:src">@drawable/ic_action_navigation_more_vert</item>
+        <item name="android:background">?android:attr/selectableItemBackground</item>
     </style>
 
     <style name="CardTitle">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:textColor">#fff</item>
-        <item name="android:textSize">@dimen/bigger_title_size</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:gravity">bottom|left</item>
-        <item name="android:paddingLeft">@dimen/big_padding</item>
-        <item name="android:paddingBottom">@dimen/small_padding</item>
     </style>
 
 </resources>

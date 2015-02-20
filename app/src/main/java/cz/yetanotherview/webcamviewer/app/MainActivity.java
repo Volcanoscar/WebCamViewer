@@ -35,7 +35,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -84,7 +84,9 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private View mEmptyView;
     private WebCamAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private int numberOfColumns;
     private FloatingActionButton fab;
+    private int mOrientation;
 
     private ListView mDrawerList;
     private DrawerLayout mDrawerLayout;
@@ -113,6 +115,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         loadPref();
         allWebCamsString = getString(R.string.all_webcams);
 
+        // Inflating main layout
         setContentView(R.layout.activity_main);
         mEmptyView = findViewById(R.id.empty);
 
@@ -142,15 +145,19 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
+        // Init DatabaseHelper for late use
         db = new DatabaseHelper(getApplicationContext());
 
+        // Get current orientation
+        mOrientation = getResources().getConfiguration().orientation;
+
+        // Other core init
         initToolbar();
         loadCategories();
         initDrawer();
         initRecyclerView();
         initFab();
         initPullToRefresh();
-
     }
 
     private void initToolbar() {
@@ -216,7 +223,20 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     }
 
     private void initRecyclerView() {
-        mLayoutManager = new LinearLayoutManager(this);
+        int mLayoutId = 1;
+        if (numberOfColumns == 1 && mOrientation == 1) {
+            mLayoutId = 1;
+        }
+        else if(numberOfColumns == 1 && mOrientation == 2) {
+            mLayoutId = 2;
+        }
+        else if(numberOfColumns == 2 && mOrientation == 1) {
+            mLayoutId = 2;
+        }
+        else if(numberOfColumns == 2 && mOrientation == 2) {
+            mLayoutId = 3;
+        }
+        mLayoutManager = new GridLayoutManager(this, mLayoutId);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.cardList);
         mRecyclerView.setHasFixedSize(true);
@@ -226,11 +246,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         allWebCams = db.getAllWebCams(sortOrder);
         db.closeDB();
 
-        mAdapter = new WebCamAdapter(allWebCams);
+        mAdapter = new WebCamAdapter(this, allWebCams, mOrientation, mLayoutId);
         mRecyclerView.setAdapter(mAdapter);
-
-        checkAdapterIsEmpty();
-
         mAdapter.setClickListener(new WebCamAdapter.ClickListener() {
 
             @Override
@@ -242,6 +259,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 }
             }
         });
+
+        checkAdapterIsEmpty();
     }
 
     private void initFab() {
@@ -250,7 +269,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showAddDialog();
+                DialogFragment newFragment = AddDialog.newInstance(MainActivity.this);
+                newFragment.show(getFragmentManager(), "AddDialog");
             }
         });
     }
@@ -328,13 +348,14 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
-        setItemChecked(menu);
-        return super.onCreateOptionsMenu(menu);
-    }
 
-    private void setItemChecked(Menu menu) {
-        MenuItem def = menu.findItem(R.id.sort_date_asc);
-        def.setChecked(true);
+        MenuItem dashboard = menu.findItem(R.id.action_dashboard);
+        if (numberOfColumns == 1) {
+            dashboard.setIcon(R.drawable.ic_action_action_dashboard);
+        }
+        else dashboard.setIcon(R.drawable.ic_action_action_view_day);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -352,25 +373,23 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 break;
 
             //Sort view
-            case R.id.sort_date_asc:
-                sortOrder = "created_at ASC";
-                reInitializeRecyclerViewAdapter(selectedCategory);
-                item.setChecked(true);
+            case R.id.action_sort:
+                    showSortDialog();
                 break;
-            case R.id.sort_date_desc:
-                sortOrder = "created_at DESC";
-                reInitializeRecyclerViewAdapter(selectedCategory);
+
+            //View
+            case R.id.action_dashboard:
+                if (numberOfColumns == 1) {
+                    numberOfColumns = 2;
+                    item.setIcon(R.drawable.ic_action_action_view_day);
+                }
+                else if (numberOfColumns == 2) {
+                    numberOfColumns = 1;
+                    item.setIcon(R.drawable.ic_action_action_dashboard);
+                }
+                initRecyclerView();
                 item.setChecked(true);
-                break;
-            case R.id.sort_name_asc:
-                sortOrder = "webcam_name COLLATE UNICODE";
-                reInitializeRecyclerViewAdapter(selectedCategory);
-                item.setChecked(true);
-                break;
-            case R.id.sort_name_desc:
-                sortOrder = "webcam_name COLLATE UNICODE DESC";
-                reInitializeRecyclerViewAdapter(selectedCategory);
-                item.setChecked(true);
+                saveToPref();
                 break;
 
             //Settings
@@ -397,6 +416,55 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         return super.onOptionsItemSelected(item);
     }
 
+    private void showSortDialog() {
+
+        int whatMarkToCheck = 0;
+        switch (sortOrder) {
+            case "created_at ASC":
+                whatMarkToCheck = 0;
+                break;
+            case "created_at DESC":
+                whatMarkToCheck = 1;
+                break;
+            case "webcam_name COLLATE UNICODE":
+                whatMarkToCheck = 2;
+                break;
+            case "webcam_name COLLATE UNICODE DESC":
+                whatMarkToCheck = 3;
+                break;
+            default:
+                break;
+        }
+
+        new MaterialDialog.Builder(this)
+                .title(R.string.action_sort)
+                .items(R.array.sort_values)
+                .itemsCallbackSingleChoice(whatMarkToCheck, new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        switch (which) {
+                            case 0:
+                                sortOrder = "created_at ASC";
+                                break;
+                            case 1:
+                                sortOrder = "created_at DESC";
+                                break;
+                            case 2:
+                                sortOrder = "webcam_name COLLATE UNICODE";
+                                break;
+                            case 3:
+                                sortOrder = "webcam_name COLLATE UNICODE DESC";
+                                break;
+                            default:
+                                break;
+                        }
+                        reInitializeRecyclerViewAdapter(selectedCategory);
+                    }
+                })
+                .negativeText(R.string.close)
+                .show();
+    }
+
     private void showWelcomeDialog() {
         DialogFragment newFragment = new WelcomeDialog();
         newFragment.show(getFragmentManager(), "WelcomeDialog");
@@ -409,18 +477,17 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
     private void showImageFullscreen(int position) {
         webCam = (WebCam) mAdapter.getItem(position);
-        Intent fullScreenIntent = new Intent(getApplicationContext(), FullScreenImage.class);
-        fullScreenIntent.putExtra("url", webCam.getUrl());
-        fullScreenIntent.putExtra("zoom", zoom);
-        fullScreenIntent.putExtra("autoRefresh", autoRefresh);
-        fullScreenIntent.putExtra("interval", autoRefreshInterval);
-        fullScreenIntent.putExtra("screenAlwaysOn", screenAlwaysOn);
-        startActivity(fullScreenIntent);
-    }
 
-    private void showAddDialog() {
-        DialogFragment newFragment = AddDialog.newInstance(this);
-        newFragment.show(getFragmentManager(), "AddDialog");
+        Intent intent = new Intent(this, FullScreenImage.class);
+        intent.putExtra("name", webCam.getName());
+        intent.putExtra("url", webCam.getUrl());
+        intent.putExtra("zoom", zoom);
+        intent.putExtra("fullScreen", fullScreen);
+        intent.putExtra("autoRefresh", autoRefresh);
+        intent.putExtra("interval", autoRefreshInterval);
+        intent.putExtra("screenAlwaysOn", screenAlwaysOn);
+
+        startActivity(intent);
     }
 
     private void showEditDialog(int position) {
@@ -638,6 +705,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private void loadPref(){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         firstRun = preferences.getBoolean("pref_first_run", true);
+        numberOfColumns = preferences.getInt("number_of_columns", 1);
         fullScreen = preferences.getBoolean("pref_full_screen", false);
         autoRefresh = preferences.getBoolean("pref_auto_refresh", false);
         autoRefreshInterval = preferences.getInt("pref_auto_refresh_interval", 30000);
@@ -652,6 +720,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("pref_first_run", firstRun);
+        editor.putInt("number_of_columns", numberOfColumns);
         editor.putInt("pref_selected_category",selectedCategory);
         editor.putString("pref_selectedCategoryName",selectedCategoryName);
         editor.apply();

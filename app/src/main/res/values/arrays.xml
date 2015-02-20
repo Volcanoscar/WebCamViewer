@@ -8,4 +8,11 @@
         <item>@string/zoom_4x</item>
     </string-array>
 
+    <string-array name="sort_values">
+        <item>@string/action_sort_date</item>
+        <item>@string/action_sort_date_desc</item>
+        <item>@string/action_sort_name</item>
+        <item>@string/action_sort_name_desc</item>
+    </string-array>
+
 </resources>

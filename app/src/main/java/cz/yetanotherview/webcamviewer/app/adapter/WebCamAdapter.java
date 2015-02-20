@@ -18,6 +18,7 @@
 
 package cz.yetanotherview.webcamviewer.app.adapter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,11 +39,18 @@ import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
 public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamViewHolder> {
 
+    private final int mLayoutId;
+    private final int mOrientation;
+
+    private final Context mContext;
     private List<WebCam> webCamItems;
     private ClickListener clickListener;
 
-    public WebCamAdapter(List<WebCam> webCamItems) {
+    public WebCamAdapter(Context context, List<WebCam> webCamItems, int orientation, int layoutId) {
         this.webCamItems = webCamItems;
+        mContext = context;
+        mLayoutId = layoutId;
+        mOrientation = orientation;
     }
 
     public void swapData(List<WebCam> webCamItems) {
@@ -57,8 +65,8 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
     }
 
     @Override
-    public void onBindViewHolder(final WebCamViewHolder webcamViewHolder, int i) {
-        WebCam webCam = webCamItems.get(i);
+    public void onBindViewHolder(final WebCamViewHolder webcamViewHolder, int position) {
+        WebCam webCam = webCamItems.get(position);
         webcamViewHolder.vName.setText(webCam.getName());
         webcamViewHolder.vProgress.setVisibility(View.VISIBLE);
 
@@ -100,6 +108,29 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
 
             vImage.setOnClickListener(this);
             vButton.setOnClickListener(this);
+
+            final int small = mContext.getResources().getDimensionPixelSize(R.dimen.small_padding);
+            final int middle = mContext.getResources().getDimensionPixelSize(R.dimen.middle_padding);
+            final int big = mContext.getResources().getDimensionPixelSize(R.dimen.big_padding);
+
+            if (mLayoutId == 1) {
+                vName.setTextSize(28);
+                vName.setPadding(big,0,0,middle);
+            }
+            else if (mLayoutId == 2 && mOrientation == 1) {
+                vName.setTextSize(16);
+                vName.setPadding(middle,0,0,small);
+                vButton.setMaxHeight(120);
+            }
+            else if (mLayoutId == 2 && mOrientation == 2) {
+                vName.setTextSize(26);
+                vName.setPadding(middle,0,0,small);
+            }
+            else if (mLayoutId == 3) {
+                vName.setTextSize(19);
+                vName.setPadding(small,0,0,0);
+                vButton.setMaxHeight(120);
+            }
         }
 
         @Override

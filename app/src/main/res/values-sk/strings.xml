@@ -136,9 +136,10 @@
 <string name="enter_place_or_country">"Zadajte miesto alebo krajinu"</string>
 <string name="welcome_to_version">"Vitajte v novej verzii"</string>
 <string name="no_categories_found">"Neboli nájdené žiadne kategórie"</string>
-<string name="action_sort_date">"Radiť podľa dáta ↓"</string>
-<string name="action_sort_date_desc">"Radiť podľa dáta ↑"</string>
-<string name="action_sort_name">"Radiť podľa názvu ↓"</string>
-<string name="action_sort_name_desc">"Radiť podľa názvu ↑"</string>
+<string name="action_sort_date">"Vzostupne podľa dátumu"</string>
+<string name="action_sort_date_desc">"Zostupne podľa dátumu"</string>
+<string name="action_sort_name">"Vzostupne podľa názvu"</string>
+<string name="action_sort_name_desc">"Zostupne podľa názvu"</string>
 <string name="report_problem">"Nahlásiť problém"</string>
+<string name="view">"Zobrazenie"</string>
 </resources>

@@ -2,62 +2,40 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:appcompat="http://schemas.android.com/apk/res-auto">
 
-    <!-- Sort, should appear as action button -->
     <item android:icon="@drawable/ic_action_refresh"
         android:id="@+id/action_refresh"
         android:title="@string/refresh"
         android:orderInCategory="1"
         appcompat:showAsAction="ifRoom" />
-    <item
-        android:icon="@drawable/ic_action_sort_by_size_white"
-        android:id="@+id/action_sort"
-        android:title="@string/action_sort"
+
+    <item android:id="@+id/action_dashboard"
+        android:title="@string/view"
         android:orderInCategory="2"
         appcompat:showAsAction="ifRoom" >
-        <menu>
-            <group android:checkableBehavior="single">
-                <item
-                    android:id="@+id/sort_date_asc"
-                    android:orderInCategory="1"
-                    appcompat:showAsAction="ifRoom"
-                    android:title="@string/action_sort_date" />
+    </item>
 
-                <item
-                    android:id="@+id/sort_date_desc"
-                    android:orderInCategory="2"
-                    appcompat:showAsAction="ifRoom"
-                    android:title="@string/action_sort_date_desc" />
-
-                <item
-                    android:id="@+id/sort_name_asc"
-                    android:orderInCategory="3"
-                    appcompat:showAsAction="ifRoom"
-                    android:title="@string/action_sort_name" />
-
-                <item
-                    android:id="@+id/sort_name_desc"
-                    android:orderInCategory="4"
-                    appcompat:showAsAction="ifRoom"
-                    android:title="@string/action_sort_name_desc" />
-            </group>
-        </menu>
+    <item android:icon="@drawable/ic_action_sort_by_size_white"
+        android:id="@+id/action_sort"
+        android:title="@string/action_sort"
+        android:orderInCategory="3"
+        appcompat:showAsAction="ifRoom" >
     </item>
 
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
-        android:orderInCategory="3"
+        android:orderInCategory="4"
         appcompat:showAsAction="never" />
 
     <item
         android:id="@+id/menu_about"
         android:title="@string/action_menu_about"
-        android:orderInCategory="4"
+        android:orderInCategory="5"
         appcompat:showAsAction="never"/>
 
     <item
         android:id="@+id/menu_help"
         android:title="@string/action_menu_help"
-        android:orderInCategory="5"
+        android:orderInCategory="6"
         appcompat:showAsAction="never"/>
 
 </menu>

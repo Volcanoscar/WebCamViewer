@@ -19,8 +19,9 @@
 package cz.yetanotherview.webcamviewer.app.fullscreen;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,27 +29,41 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.PicassoTools;
+import com.squareup.picasso.Target;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import cz.yetanotherview.webcamviewer.app.R;
+import cz.yetanotherview.webcamviewer.app.Utils;
+import cz.yetanotherview.webcamviewer.app.actions.FolderSelectorDialog;
 
-public class FullScreenImage extends Activity {
+public class FullScreenImage extends Activity implements FolderSelectorDialog.FolderSelectCallback {
 
     private static final String TAG = "ImmersiveMode";
-    private static Context context;
 
+    private RelativeLayout mButtonsLayout;
     private TouchImageView image;
     private ProgressBar progressBar;
+    private Animation fadeOut;
+    private String name;
+    private String strippedName;
     private String url;
     private float zoom;
+    private boolean fullScreen;
+    private String path;
 
     private boolean autoRefresh;
     private int autoRefreshInterval;
@@ -57,17 +72,22 @@ public class FullScreenImage extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FullScreenImage.context = getApplicationContext();
-
         setContentView(R.layout.full_screen_layout);
-        goFullScreen();
+        mButtonsLayout = (RelativeLayout) findViewById(R.id.buttons_layout);
 
         Intent intent = getIntent();
+        name = intent.getExtras().getString("name");
         url = intent.getExtras().getString("url");
         zoom = intent.getExtras().getFloat("zoom");
+        fullScreen = intent.getExtras().getBoolean("fullScreen");
         autoRefresh = intent.getExtras().getBoolean("autoRefresh");
         autoRefreshInterval = intent.getExtras().getInt("interval");
         screenAlwaysOn = intent.getExtras().getBoolean("screenAlwaysOn");
+
+        // Go FullScreen only on KitKat and up
+        if (Build.VERSION.SDK_INT >= 19 && fullScreen) {
+            goFullScreen();
+        }
 
         // Screen Always on
         if (screenAlwaysOn){
@@ -77,14 +97,24 @@ public class FullScreenImage extends Activity {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
 
+        // Auto Refresh timer
+        if (autoRefresh) {
+            autoRefreshTimer(autoRefreshInterval);
+        }
+
+        initViews();
+        loadImage();
+        setAnimation();
+    }
+
+    private void initViews() {
         image = (TouchImageView) findViewById(R.id.touch_image);
         image.setMaxZoom(zoom);
-
-        ImageButton backButton = (ImageButton) findViewById(R.id.back_button);
-        backButton.setOnClickListener(new OnClickListener() {
+        image.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                mButtonsLayout.setVisibility(View.VISIBLE);
+                mButtonsLayout.startAnimation(fadeOut);
             }
         });
 
@@ -96,22 +126,47 @@ public class FullScreenImage extends Activity {
             }
         });
 
-        progressBar = (ProgressBar) findViewById(R.id.loadingProgressBarFull);
+        ImageButton saveButton = (ImageButton) findViewById(R.id.save_button);
+        saveButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new FolderSelectorDialog().show(FullScreenImage.this);
+            }
+        });
 
-        loadImage();
+        ImageButton backButton = (ImageButton) findViewById(R.id.back_button);
+        backButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
-        if (autoRefresh) {
-            autoRefreshTimer(autoRefreshInterval);
-        }
+        progressBar = (ProgressBar) findViewById(R.id.loadingProgressBar);
     }
 
-    private static Context getAppContext() {
-        return FullScreenImage.context;
+    private void setAnimation() {
+        fadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                mButtonsLayout.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
     private void loadImage() {
-        //Picasso.with(FullScreenImage.getAppContext()).setIndicatorsEnabled(true);
-        Picasso.with(FullScreenImage.getAppContext())
+        //Picasso.with(image.getContext()).setIndicatorsEnabled(true);
+        Picasso.with(image.getContext())
                 .load(url)
                 .fit()
                 .placeholder(R.drawable.placeholder)
@@ -120,6 +175,8 @@ public class FullScreenImage extends Activity {
                     @Override
                     public void onSuccess() {
                         progressBar.setVisibility(View.GONE);
+                        mButtonsLayout.startAnimation(fadeOut);
+                        mButtonsLayout.setBackgroundResource(R.drawable.selector);
                     }
 
                     @Override
@@ -189,8 +246,52 @@ public class FullScreenImage extends Activity {
     }
 
     private void refresh() {
-        PicassoTools.clearCache(Picasso.with(getApplicationContext()));
+        PicassoTools.clearCache(Picasso.with(image.getContext()));
         progressBar.setVisibility(View.VISIBLE);
         loadImage();
+    }
+
+    @Override
+    public void onFolderSelection(File folder) {
+        path = folder.getAbsolutePath();
+        strippedName = Utils.getNameStrippedAccents(name);
+
+        Target saveFileTarget = new Target() {
+            @Override
+            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        File file = new File(path + "/" + strippedName + " " + Utils.getDateString() + ".jpg");
+                        try
+                        {
+                            file.createNewFile();
+                            FileOutputStream ostream = new FileOutputStream(file);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 89, ostream);
+                            ostream.close();
+                        }
+                        catch (Exception e)
+                        {
+                            e.printStackTrace();
+                        }
+
+                    }
+                }).start();
+            }
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+            }
+        };
+
+        Picasso.with(image.getContext())
+                .load(url)
+                .into(saveFileTarget);
+
+        Toast.makeText(this, R.string.dialog_positive_toast_message, Toast.LENGTH_SHORT).show();
     }
 }

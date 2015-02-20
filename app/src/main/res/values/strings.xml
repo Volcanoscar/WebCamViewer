@@ -136,9 +136,10 @@
 <string name="enter_place_or_country">"Enter a place or a country"</string>
 <string name="welcome_to_version">"Welcome to the new version"</string>
 <string name="no_categories_found">"No categories found"</string>
-<string name="action_sort_date">"Sort by Date ↓"</string>
-<string name="action_sort_date_desc">"Sort by Date ↑"</string>
-<string name="action_sort_name">"Sort by Name ↓"</string>
-<string name="action_sort_name_desc">"Sort by Name ↑"</string>
+<string name="action_sort_date">"Ascending by Date"</string>
+<string name="action_sort_date_desc">"Descending by Date"</string>
+<string name="action_sort_name">"Ascending by Name"</string>
+<string name="action_sort_name_desc">"Descending by Name"</string>
 <string name="report_problem">"Report a problem"</string>
+<string name="view">"View"</string>
 </resources>

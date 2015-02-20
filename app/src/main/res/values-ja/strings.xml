@@ -122,9 +122,10 @@
 <string name="enter_place_or_country">"場所または国を入力してください"</string>
 <string name="welcome_to_version">"新しいバージョンにようこそ"</string>
 <string name="no_categories_found">"全くカテゴリはありません"</string>
-<string name="action_sort_date">"日付で並べ替え ↓"</string>
-<string name="action_sort_date_desc">"日付で並べ替え ↑"</string>
-<string name="action_sort_name">"名前で並べ替え ↓"</string>
-<string name="action_sort_name_desc">"名前で並べ替え ↑"</string>
+<string name="action_sort_date">"日によって昇順"</string>
+<string name="action_sort_date_desc">"日付によって降順"</string>
+<string name="action_sort_name">"名前による昇順"</string>
+<string name="action_sort_name_desc">"名前による降順"</string>
 <string name="report_problem">"問題を報告する"</string>
+<string name="view">"ディスプレイ"</string>
 </resources>
