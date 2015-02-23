@@ -182,6 +182,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 wc.setName(c.getString(c.getColumnIndex(KEY_WEBCAM)));
                 wc.setUrl(c.getString(c.getColumnIndex(KEY_WEBCAM_URL)));
                 wc.setPosition(c.getInt(c.getColumnIndex(KEY_POSITION)));
+                wc.setLatitude(c.getDouble(c.getColumnIndex(KEY_LATITUDE)));
+                wc.setLongitude(c.getDouble(c.getColumnIndex(KEY_LONGITUDE)));
                 wc.setCreatedAt(c.getString(c.getColumnIndex(KEY_CREATED_AT)));
             } while (c.moveToNext());
         }
@@ -289,6 +291,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(KEY_WEBCAM_URL, webCam.getUrl());
         values.put(KEY_POSITION, webCam.getPosition());
         values.put(KEY_STATUS, webCam.getStatus());
+        values.put(KEY_LATITUDE, webCam.getLatitude());
+        values.put(KEY_LONGITUDE, webCam.getLongitude());
 
         long webcam_id = webCam.getId();
 

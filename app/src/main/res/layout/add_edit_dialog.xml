@@ -51,6 +51,37 @@
             android:layout_marginBottom="20dip"
             android:inputType="textUri"
             android:singleLine="true"
+            android:imeOptions="actionNext"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/webcam_coordinates" />
+
+        <EditText
+            android:id="@+id/webcam_latitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_webcam_latitude"
+            android:layout_marginTop="5dip"
+            android:layout_marginBottom="20dip"
+            android:inputType="numberDecimal"
+            android:digits="0123456789."
+            android:maxLength="9"
+            android:singleLine="true"
+            android:imeOptions="actionNext"/>
+
+        <EditText
+            android:id="@+id/webcam_longitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_webcam_longitude"
+            android:layout_marginTop="5dip"
+            android:layout_marginBottom="20dip"
+            android:inputType="numberDecimal"
+            android:digits="0123456789."
+            android:maxLength="9"
+            android:singleLine="true"
             android:imeOptions="actionDone"/>
 
     <TextView
@@ -70,29 +101,17 @@
 
     <TextView
         android:id="@+id/shareCheckBoxTextView"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/community_list" />
 
         <CheckBox
             android:id="@+id/shareCheckBox"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/submit_for_approval"
-            android:layout_marginTop="5dip"
-            android:layout_marginLeft="5dip"
-            android:layout_marginStart="5dip"/>
-
-        <Button
-            android:id="@+id/reportButton"
-            android:drawableLeft="@android:drawable/stat_sys_warning"
-            android:drawableStart="@android:drawable/stat_sys_warning"
-            android:visibility="gone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/report_problem"
-            android:textSize="10sp"
-            android:layout_gravity="center"
             android:layout_marginTop="5dip"
             android:layout_marginLeft="5dip"
             android:layout_marginStart="5dip"/>

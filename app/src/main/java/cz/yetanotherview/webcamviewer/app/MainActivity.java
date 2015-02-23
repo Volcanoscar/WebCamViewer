@@ -61,6 +61,8 @@ import cz.yetanotherview.webcamviewer.app.actions.AboutDialog;
 import cz.yetanotherview.webcamviewer.app.actions.AddDialog;
 import cz.yetanotherview.webcamviewer.app.actions.EditDialog;
 import cz.yetanotherview.webcamviewer.app.actions.JsonFetcherDialog;
+import cz.yetanotherview.webcamviewer.app.actions.SaveDialog;
+import cz.yetanotherview.webcamviewer.app.actions.SelectionDialog;
 import cz.yetanotherview.webcamviewer.app.actions.WelcomeDialog;
 import cz.yetanotherview.webcamviewer.app.adapter.CategoryAdapter;
 import cz.yetanotherview.webcamviewer.app.fullscreen.FullScreenImage;
@@ -106,6 +108,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private int autoRefreshInterval;
     private boolean autoRefreshFullScreenOnly;
     private boolean screenAlwaysOn;
+
+    private MaterialDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +162,14 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         initRecyclerView();
         initFab();
         initPullToRefresh();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (dialog != null) {
+            dialog.dismiss();
+        }
     }
 
     private void initToolbar() {
@@ -253,7 +265,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
             @Override
             public void onClick(View v, int position, boolean isEditClick) {
                 if (isEditClick) {
-                    showEditDialog(position);
+                    showOptionsDialog(position);
                 } else {
                     showImageFullscreen(position);
                 }
@@ -269,8 +281,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DialogFragment newFragment = AddDialog.newInstance(MainActivity.this);
-                newFragment.show(getFragmentManager(), "AddDialog");
+                showChooseDialog();
             }
         });
     }
@@ -436,7 +447,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 break;
         }
 
-        new MaterialDialog.Builder(this)
+        dialog = new MaterialDialog.Builder(this)
                 .title(R.string.action_sort)
                 .items(R.array.sort_values)
                 .itemsCallbackSingleChoice(whatMarkToCheck, new MaterialDialog.ListCallback() {
@@ -490,6 +501,86 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         startActivity(intent);
     }
 
+    private void showOptionsDialog(final int position) {
+        webCam = (WebCam) mAdapter.getItem(position);
+
+        String[] options_values = getResources().getStringArray(R.array.options_values);
+        if (webCam.getUniId() != 0) {
+            options_values[6] = getString(R.string.report_problem);
+        }
+        else {
+            options_values[6] = getString(R.string.submit_to_appr);
+        }
+
+        dialog = new MaterialDialog.Builder(this)
+                .items(options_values)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        switch (which) {
+                            case 0:
+                                showEditDialog(position);
+                                break;
+                            case 1:
+                                webCamDeleted(webCam.getId(), position);
+                                break;
+                            case 2:
+                                showImageFullscreen(position);
+                                break;
+                            case 3:
+                                DialogFragment newFragment = new SaveDialog();
+                                Bundle bundle = new Bundle();
+                                bundle.putString("name", webCam.getName());
+                                bundle.putString("url", webCam.getUrl());
+                                newFragment.setArguments(bundle);
+                                newFragment.show(getFragmentManager(), "SaveDialog");
+                                break;
+                            case 4:
+
+                                break;
+                            case 5:
+
+                                break;
+                            case 6:
+                                if (webCam.getUniId() != 0) {
+                                    sendEmail(webCam, true);
+                                }
+                                else sendEmail(webCam, false);
+                                break;
+                            default:
+                                break;
+                        }
+
+                    }
+                })
+                .show();
+    }
+
+    private void showChooseDialog() {
+        dialog = new MaterialDialog.Builder(this)
+                .title(R.string.add_options)
+                .items(R.array.choose_values)
+                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                        if (which == 0) {
+                            DialogFragment selection = new SelectionDialog();
+                            selection.show(getFragmentManager(), "SelectionDialog");
+                        }
+                        else if (which == 1){
+                            showAddDialog();
+                        }
+                    }
+                })
+                .positiveText(R.string.choose)
+                .show();
+    }
+
+    private void showAddDialog() {
+        DialogFragment newFragment = AddDialog.newInstance(this);
+        newFragment.show(getFragmentManager(), "AddDialog");
+    }
+
     private void showEditDialog(int position) {
         DialogFragment newFragment = EditDialog.newInstance(this);
 
@@ -523,13 +614,13 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         reInitializeDrawerListAdapter();
 
         if (share) {
-            sendEmail(wc);
+            sendEmail(wc, false);
         }
         else saveDone();
     }
 
     @Override
-    public void webCamEdited(int position, WebCam wc, long[] category_ids, boolean share) {
+    public void webCamEdited(int position, WebCam wc, long[] category_ids) {
         synchronized (sDataLock) {
             if (category_ids != null) {
                 db.updateWebCam(wc, category_ids);
@@ -545,10 +636,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         mAdapter.modifyItem(position,wc);
         reInitializeDrawerListAdapter();
 
-        if (share) {
-            sendEmail(wc);
-        }
-        else saveDone();
+        saveDone();
     }
 
     @Override
@@ -654,12 +742,22 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         timer.schedule(doAsynchronousTask, 0, interval);
     }
 
-    private void sendEmail(WebCam webCam) {
+    private void sendEmail(WebCam webCam, boolean fromCommunityList) {
+
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                "mailto","cz840311@gmail.com", null));
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "New WebCam for approval");
-        emailIntent.putExtra(Intent.EXTRA_TEXT, "WebCam Name: " + webCam.getName()
-                + "\n" + "WebCam URL: " + webCam.getUrl());
+                "mailto", "cz840311@gmail.com", null));
+
+        if (fromCommunityList) {
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Something is wrong");
+            emailIntent.putExtra(Intent.EXTRA_TEXT, "WebCam UniID: " + webCam.getUniId()
+                    + "\n" + "WebCam Name: " + webCam.getName());
+        }
+        else {
+            emailIntent.putExtra(Intent.EXTRA_SUBJECT, "New WebCam for approval");
+            emailIntent.putExtra(Intent.EXTRA_TEXT, "WebCam Name: " + webCam.getName()
+                    + "\n" + "WebCam URL: " + webCam.getUrl() + "\n" + "WebCam Coordinates: "
+                    + webCam.getLatitude() + " - " + webCam.getLongitude());
+        }
 
         List<ResolveInfo> list = getPackageManager().queryIntentActivities(emailIntent, 0);
         if(list.isEmpty()) {
@@ -675,7 +773,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     }
 
     private void noEmailClientsFound() {
-        new MaterialDialog.Builder(this)
+        dialog = new MaterialDialog.Builder(this)
                 .title(R.string.oops)
                 .content(getString(R.string.no_email_clients_installed))
                 .positiveText(android.R.string.ok)

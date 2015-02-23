@@ -19,9 +19,8 @@
 package cz.yetanotherview.webcamviewer.app.fullscreen;
 
 import android.app.Activity;
+import android.app.DialogFragment;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,23 +33,17 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
-
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.PicassoTools;
-import com.squareup.picasso.Target;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import cz.yetanotherview.webcamviewer.app.R;
-import cz.yetanotherview.webcamviewer.app.Utils;
-import cz.yetanotherview.webcamviewer.app.actions.FolderSelectorDialog;
+import cz.yetanotherview.webcamviewer.app.actions.SaveDialog;
 
-public class FullScreenImage extends Activity implements FolderSelectorDialog.FolderSelectCallback {
+public class FullScreenImage extends Activity {
 
     private static final String TAG = "ImmersiveMode";
 
@@ -59,11 +52,9 @@ public class FullScreenImage extends Activity implements FolderSelectorDialog.Fo
     private ProgressBar progressBar;
     private Animation fadeOut;
     private String name;
-    private String strippedName;
     private String url;
     private float zoom;
     private boolean fullScreen;
-    private String path;
 
     private boolean autoRefresh;
     private int autoRefreshInterval;
@@ -130,7 +121,12 @@ public class FullScreenImage extends Activity implements FolderSelectorDialog.Fo
         saveButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                new FolderSelectorDialog().show(FullScreenImage.this);
+                DialogFragment newFragment = new SaveDialog();
+                Bundle bundle = new Bundle();
+                bundle.putString("name", name);
+                bundle.putString("url", url);
+                newFragment.setArguments(bundle);
+                newFragment.show(getFragmentManager(), "SaveDialog");
             }
         });
 
@@ -249,49 +245,5 @@ public class FullScreenImage extends Activity implements FolderSelectorDialog.Fo
         PicassoTools.clearCache(Picasso.with(image.getContext()));
         progressBar.setVisibility(View.VISIBLE);
         loadImage();
-    }
-
-    @Override
-    public void onFolderSelection(File folder) {
-        path = folder.getAbsolutePath();
-        strippedName = Utils.getNameStrippedAccents(name);
-
-        Target saveFileTarget = new Target() {
-            @Override
-            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        File file = new File(path + "/" + strippedName + " " + Utils.getDateString() + ".jpg");
-                        try
-                        {
-                            file.createNewFile();
-                            FileOutputStream ostream = new FileOutputStream(file);
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 89, ostream);
-                            ostream.close();
-                        }
-                        catch (Exception e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }).start();
-            }
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-            }
-        };
-
-        Picasso.with(image.getContext())
-                .load(url)
-                .into(saveFileTarget);
-
-        Toast.makeText(this, R.string.dialog_positive_toast_message, Toast.LENGTH_SHORT).show();
     }
 }

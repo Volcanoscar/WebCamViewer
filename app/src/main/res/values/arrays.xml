@@ -15,4 +15,19 @@
         <item>@string/action_sort_name_desc</item>
     </string-array>
 
+    <string-array name="options_values">
+        <item>@string/action_edit</item>
+        <item>@string/action_delete</item>
+        <item>@string/maximize</item>
+        <item>@string/save_to</item>
+        <item>@string/share</item>
+        <item>@string/show_on_map</item>
+        <item>""</item>
+    </string-array>
+
+    <string-array name="choose_values">
+        <item>@string/pref_import_from_server</item>
+        <item>@string/add_manually</item>
+    </string-array>
+
 </resources>

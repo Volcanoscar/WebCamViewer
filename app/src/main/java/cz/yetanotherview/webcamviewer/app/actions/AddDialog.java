@@ -18,7 +18,6 @@
 
 package cz.yetanotherview.webcamviewer.app.actions;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Intent;
@@ -30,6 +29,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -49,6 +49,8 @@ public class AddDialog extends DialogFragment {
 
     private EditText mWebCamName;
     private EditText mWebCamUrl;
+    private EditText mWebCamLatitude;
+    private EditText mWebCamLongitude;
     private WebCam webCam;
     private WebCamListener mOnAddListener;
     private View positiveAction;
@@ -62,8 +64,6 @@ public class AddDialog extends DialogFragment {
     private long[] category_ids;
 
     private CheckBox shareCheckBox;
-
-    private Activity mActivity;
 
     public AddDialog() {
     }
@@ -79,37 +79,9 @@ public class AddDialog extends DialogFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mActivity = activity;
-    }
-
-    @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        String[] items = {getString(R.string.pref_import_from_server),getString(R.string.add_manually)};
-        return new MaterialDialog.Builder(mActivity)
-                .title(R.string.add_options)
-                .items(items)
-                .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                        if (which == 0) {
-                            DialogFragment selection = new SelectionDialog();
-                            selection.show(getFragmentManager(), "SelectionDialog");
-                        }
-                        else if (which == 1){
-                            addManuallyDialog();
-                        }
-                    }
-                })
-                .positiveText(R.string.choose)
-                .build();
-    }
-
-    private void addManuallyDialog() {
-
-        DatabaseHelper db = new DatabaseHelper(mActivity);
+        DatabaseHelper db = new DatabaseHelper(getActivity());
         allCategories = db.getAllCategories();
         db.closeDB();
 
@@ -120,7 +92,7 @@ public class AddDialog extends DialogFragment {
             count++;
         }
 
-        MaterialDialog dialog = new MaterialDialog.Builder(mActivity)
+        MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                 .title(R.string.input_dialog_title)
                 .customView(R.layout.add_edit_dialog, true)
                 .positiveText(R.string.dialog_positive_text)
@@ -131,11 +103,27 @@ public class AddDialog extends DialogFragment {
                     public void onPositive(MaterialDialog dialog) {
                         boolean shareIsChecked = false;
 
+                        String latitudeStr = mWebCamLatitude.getText().toString().trim();
+                        double latitude;
+                        if (latitudeStr.isEmpty()) {
+                            latitude = 0.0;
+                        }
+                        else latitude = Double.parseDouble(latitudeStr);
+
+                        String longitudeStr = mWebCamLongitude.getText().toString().trim();
+                        double longitude;
+                        if (longitudeStr.isEmpty()) {
+                            longitude = 0.0;
+                        }
+                        else longitude = Double.parseDouble(longitudeStr);
+
                         webCam = new WebCam(
                                 mWebCamName.getText().toString().trim(),
                                 mWebCamUrl.getText().toString().trim(),
                                 0,
-                                0);
+                                0,
+                                latitude,
+                                longitude);
 
                         if (shareCheckBox.isChecked()) {
                             shareIsChecked = true;
@@ -150,16 +138,22 @@ public class AddDialog extends DialogFragment {
                     @Override
                     public void onNeutral(MaterialDialog dialog) {
                         Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://youtu.be/liYtvXE0JTI"));
-                        mActivity.startActivity(browserIntent);
+                        startActivity(browserIntent);
                     }
                 }).build();
 
+        TextView shareCheckBoxTextView = (TextView) dialog.getCustomView().findViewById(R.id.shareCheckBoxTextView);
+        shareCheckBoxTextView.setVisibility(View.VISIBLE);
         shareCheckBox = (CheckBox) dialog.getCustomView().findViewById(R.id.shareCheckBox);
+        shareCheckBox.setVisibility(View.VISIBLE);
 
         mWebCamName = (EditText) dialog.getCustomView().findViewById(R.id.webcam_name);
         mWebCamName.requestFocus();
 
         mWebCamUrl = (EditText) dialog.getCustomView().findViewById(R.id.webcam_url);
+
+        mWebCamLatitude = (EditText) dialog.getCustomView().findViewById(R.id.webcam_latitude);
+        mWebCamLongitude = (EditText) dialog.getCustomView().findViewById(R.id.webcam_longitude);
 
         webCamCategoryButton = (Button) dialog.getCustomView().findViewById(R.id.webcam_category_button);
         if (allCategories.size() == 0 ) {
@@ -171,7 +165,7 @@ public class AddDialog extends DialogFragment {
 
                 @Override
                 public void onClick(View v) {
-                    new MaterialDialog.Builder(mActivity)
+                    new MaterialDialog.Builder(getActivity())
                             .title(R.string.webcam_category)
                             .autoDismiss(false)
                             .items(items)
@@ -234,5 +228,7 @@ public class AddDialog extends DialogFragment {
 
         dialog.show();
         positiveAction.setEnabled(false);
+
+        return dialog;
     }
 }

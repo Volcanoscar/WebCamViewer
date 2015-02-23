@@ -142,4 +142,13 @@
 <string name="action_sort_name_desc">"Absteigend nach Name"</string>
 <string name="report_problem">"Ein Problem melden"</string>
 <string name="view">"Anzeige"</string>
+<string name="webcam_coordinates">"Koordinaten"</string>
+<string name="hint_webcam_latitude">"50.770481 (breitengrad)"</string>
+<string name="hint_webcam_longitude">"14.209077 (längengrad)"</string>
+<string name="maximize">"Maximieren"</string>
+<string name="save_to">"Speichern in..."</string>
+<string name="share">"Teilen"</string>
+<string name="submit_to_appr">"Zur Zustimmung senden"</string>
+<string name="back">"Zurück"</string>
+<string name="show_on_map">"Auf der Karte zeigen"</string>
 </resources>

@@ -20,16 +20,11 @@ package cz.yetanotherview.webcamviewer.app.actions;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Intent;
-import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -50,6 +45,8 @@ public class EditDialog extends DialogFragment {
 
     private EditText mWebCamName;
     private EditText mWebCamUrl;
+    private EditText mWebCamLatitude;
+    private EditText mWebCamLongitude;
     private WebCam webCam;
     private WebCamListener mOnAddListener;
     private View positiveAction;
@@ -57,13 +54,9 @@ public class EditDialog extends DialogFragment {
     private List<Category> allCategories;
     private Category category;
 
-    private CheckBox shareCheckBox;
-    private Button reportButton;
-
     private Button webCamCategoryButton;
     private String[] items;
     private long[] category_ids;
-    private long[] webCam_category_ids;
     private Integer[] checked;
 
     private long id;
@@ -95,11 +88,10 @@ public class EditDialog extends DialogFragment {
         DatabaseHelper db = new DatabaseHelper(getActivity());
         webCam = db.getWebCam(id);
         allCategories = db.getAllCategories();
-        webCam_category_ids = db.getWebCamCategoriesIds(webCam.getId());
+        long[] webCam_category_ids = db.getWebCamCategoriesIds(webCam.getId());
         category_ids = webCam_category_ids;
         db.closeDB();
 
-        long uniId = webCam.getUniId();
         pos = webCam.getPosition();
         status = webCam.getStatus();
 
@@ -137,19 +129,15 @@ public class EditDialog extends DialogFragment {
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        boolean shareIsChecked = false;
-
                         webCam.setName(mWebCamName.getText().toString().trim());
                         webCam.setUrl(mWebCamUrl.getText().toString().trim());
                         webCam.setPosition(pos);
                         webCam.setStatus(status);
-
-                        if (shareCheckBox.isChecked()) {
-                            shareIsChecked = true;
-                        }
+                        webCam.setLatitude(Double.parseDouble(mWebCamLatitude.getText().toString().trim()));
+                        webCam.setLongitude(Double.parseDouble(mWebCamLongitude.getText().toString().trim()));
 
                         if (mOnAddListener != null) {
-                            mOnAddListener.webCamEdited(position, webCam, category_ids, shareIsChecked);
+                            mOnAddListener.webCamEdited(position, webCam, category_ids);
                         }
                     }
 
@@ -160,22 +148,18 @@ public class EditDialog extends DialogFragment {
                     }
                 }).build();
 
-        shareCheckBox = (CheckBox) dialog.getCustomView().findViewById(R.id.shareCheckBox);
-        reportButton = (Button) dialog.getCustomView().findViewById(R.id.reportButton);
-        if (uniId != 0) {
-            shareCheckBox.setVisibility(View.GONE);
-            reportButton.setVisibility(View.VISIBLE);
-        }
-        else {
-            shareCheckBox.setVisibility(View.VISIBLE);
-        }
-
         mWebCamName = (EditText) dialog.getCustomView().findViewById(R.id.webcam_name);
         mWebCamName.setText(webCam.getName());
         mWebCamName.requestFocus();
 
         mWebCamUrl = (EditText) dialog.getCustomView().findViewById(R.id.webcam_url);
         mWebCamUrl.setText(webCam.getUrl());
+
+        mWebCamLatitude = (EditText) dialog.getCustomView().findViewById(R.id.webcam_latitude);
+        mWebCamLatitude.setText(String.valueOf(webCam.getLatitude()));
+
+        mWebCamLongitude = (EditText) dialog.getCustomView().findViewById(R.id.webcam_longitude);
+        mWebCamLongitude.setText(String.valueOf(webCam.getLongitude()));
 
         webCamCategoryButton = (Button) dialog.getCustomView().findViewById(R.id.webcam_category_button);
         if (allCategories.size() == 0 ) {
@@ -269,51 +253,37 @@ public class EditDialog extends DialogFragment {
             public void afterTextChanged(Editable s) {
             }
         });
-        shareCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-           @Override
-           public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-               if (isChecked) {
-                   positiveAction.setEnabled(true);
-               }
-               else positiveAction.setEnabled(false);
-           }
-        });
-        reportButton.setOnClickListener(new View.OnClickListener() {
-
+        mWebCamLatitude.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
-                Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                        "mailto", "cz840311@gmail.com", null));
-                emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Something is wrong");
-                emailIntent.putExtra(Intent.EXTRA_TEXT, "WebCam UniID: " + webCam.getUniId()
-                        + "\n" + "WebCam Name: " + webCam.getName());
-
-                List<ResolveInfo> list = getActivity().getPackageManager().queryIntentActivities(emailIntent, 0);
-                if(list.isEmpty()) {
-                    noEmailClientsFound();
-                }
-                else {
-                    try {
-                        startActivity(Intent.createChooser(emailIntent, getString(R.string.send_via_email)));
-                    } catch (android.content.ActivityNotFoundException ex) {
-                        noEmailClientsFound();
-                    }
-                }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                positiveAction.setEnabled(s.toString().trim().length() > 0);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
+        mWebCamLongitude.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                positiveAction.setEnabled(s.toString().trim().length() > 0);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
         });
 
         positiveAction.setEnabled(false);
 
         return dialog;
-    }
-
-    private void noEmailClientsFound() {
-        new MaterialDialog.Builder(getActivity())
-                .title(R.string.oops)
-                .content(getString(R.string.no_email_clients_installed))
-                .positiveText(android.R.string.ok)
-                .show();
     }
 }
