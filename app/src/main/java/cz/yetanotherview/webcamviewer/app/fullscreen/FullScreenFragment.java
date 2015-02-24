@@ -18,21 +18,20 @@
 
 package cz.yetanotherview.webcamviewer.app.fullscreen;
 
-import android.app.Activity;
 import android.app.DialogFragment;
+import android.app.Fragment;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.WindowManager;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.PicassoTools;
@@ -43,10 +42,9 @@ import java.util.TimerTask;
 import cz.yetanotherview.webcamviewer.app.R;
 import cz.yetanotherview.webcamviewer.app.actions.SaveDialog;
 
-public class FullScreenImage extends Activity {
+public class FullScreenFragment extends Fragment {
 
-    private static final String TAG = "ImmersiveMode";
-
+    private View view;
     private RelativeLayout mButtonsLayout;
     private TouchImageView image;
     private ProgressBar progressBar;
@@ -54,39 +52,22 @@ public class FullScreenImage extends Activity {
     private String name;
     private String url;
     private float zoom;
-    private boolean fullScreen;
-
     private boolean autoRefresh;
     private int autoRefreshInterval;
-    private boolean screenAlwaysOn;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.full_screen_layout);
-        mButtonsLayout = (RelativeLayout) findViewById(R.id.buttons_layout);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        view = inflater.inflate(R.layout.full_screen_layout, container, false);
 
-        Intent intent = getIntent();
+        mButtonsLayout = (RelativeLayout) view.findViewById(R.id.buttons_layout);
+
+        Intent intent = getActivity().getIntent();
         name = intent.getExtras().getString("name");
         url = intent.getExtras().getString("url");
         zoom = intent.getExtras().getFloat("zoom");
-        fullScreen = intent.getExtras().getBoolean("fullScreen");
         autoRefresh = intent.getExtras().getBoolean("autoRefresh");
         autoRefreshInterval = intent.getExtras().getInt("interval");
-        screenAlwaysOn = intent.getExtras().getBoolean("screenAlwaysOn");
-
-        // Go FullScreen only on KitKat and up
-        if (Build.VERSION.SDK_INT >= 19 && fullScreen) {
-            goFullScreen();
-        }
-
-        // Screen Always on
-        if (screenAlwaysOn){
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }
-        else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }
 
         // Auto Refresh timer
         if (autoRefresh) {
@@ -96,12 +77,14 @@ public class FullScreenImage extends Activity {
         initViews();
         loadImage();
         setAnimation();
+
+        return view;
     }
 
     private void initViews() {
-        image = (TouchImageView) findViewById(R.id.touch_image);
+        image = (TouchImageView) view.findViewById(R.id.touch_image);
         image.setMaxZoom(zoom);
-        image.setOnClickListener(new OnClickListener() {
+        image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mButtonsLayout.setVisibility(View.VISIBLE);
@@ -109,16 +92,24 @@ public class FullScreenImage extends Activity {
             }
         });
 
-        ImageButton refreshButton = (ImageButton) findViewById(R.id.refresh_button);
-        refreshButton.setOnClickListener(new OnClickListener() {
+        ImageButton mapButton = (ImageButton) view.findViewById(R.id.maps_button);
+        mapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((FullScreenActivity) getActivity()).replaceFragments(true);
+            }
+        });
+
+        ImageButton refreshButton = (ImageButton) view.findViewById(R.id.refresh_button);
+        refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 refresh();
             }
         });
 
-        ImageButton saveButton = (ImageButton) findViewById(R.id.save_button);
-        saveButton.setOnClickListener(new OnClickListener() {
+        ImageButton saveButton = (ImageButton) view.findViewById(R.id.save_button);
+        saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DialogFragment newFragment = new SaveDialog();
@@ -130,19 +121,19 @@ public class FullScreenImage extends Activity {
             }
         });
 
-        ImageButton backButton = (ImageButton) findViewById(R.id.back_button);
-        backButton.setOnClickListener(new OnClickListener() {
+        ImageButton backButton = (ImageButton) view.findViewById(R.id.back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                getActivity().finish();
             }
         });
 
-        progressBar = (ProgressBar) findViewById(R.id.loadingProgressBar);
+        progressBar = (ProgressBar) view.findViewById(R.id.loadingProgressBar);
     }
 
     private void setAnimation() {
-        fadeOut = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out);
+        fadeOut = AnimationUtils.loadAnimation(getActivity().getApplicationContext(), R.anim.fade_out);
         fadeOut.setAnimationListener(new Animation.AnimationListener() {
             @Override
             public void onAnimationStart(Animation animation) {
@@ -182,45 +173,6 @@ public class FullScreenImage extends Activity {
                 });
     }
 
-    private void goFullScreen() {
-
-        // The UI options currently enabled are represented by a bitfield.
-        // getSystemUiVisibility() gives us that bitfield.
-        int uiOptions = getWindow().getDecorView().getSystemUiVisibility();
-        int newUiOptions = uiOptions;
-        boolean isImmersiveModeEnabled =
-                ((uiOptions | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY) == uiOptions);
-        if (isImmersiveModeEnabled) {
-            Log.i(TAG, "Turning immersive mode mode off. ");
-        } else {
-            Log.i(TAG, "Turning immersive mode mode on.");
-        }
-
-        // Navigation bar hiding:  Backwards compatible to ICS.
-        if (Build.VERSION.SDK_INT >= 14) {
-            newUiOptions ^= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-        }
-
-        // Status bar hiding: Backwards compatible to Jellybean
-        if (Build.VERSION.SDK_INT >= 16) {
-            newUiOptions ^= View.SYSTEM_UI_FLAG_FULLSCREEN;
-        }
-
-        // Immersive mode: Backward compatible to KitKat.
-        // Note that this flag doesn't do anything by itself, it only augments the behavior
-        // of HIDE_NAVIGATION and FLAG_FULLSCREEN.  For the purposes of this sample
-        // all three flags are being toggled together.
-        // Note that there are two immersive mode UI flags, one of which is referred to as "sticky".
-        // Sticky immersive mode differs in that it makes the navigation and status bars
-        // semi-transparent, and the UI flag does not get cleared when the user interacts with
-        // the screen.
-        if (Build.VERSION.SDK_INT >= 18) {
-            newUiOptions ^= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-        }
-
-        getWindow().getDecorView().setSystemUiVisibility(newUiOptions);
-    }
-
     private void autoRefreshTimer(int interval) {
         final Handler handler = new Handler();
         Timer timer = new Timer();
@@ -243,7 +195,9 @@ public class FullScreenImage extends Activity {
 
     private void refresh() {
         PicassoTools.clearCache(Picasso.with(image.getContext()));
+        mButtonsLayout.setBackgroundResource(0);
         progressBar.setVisibility(View.VISIBLE);
         loadImage();
     }
 }
+

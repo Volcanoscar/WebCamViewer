@@ -65,7 +65,7 @@ import cz.yetanotherview.webcamviewer.app.actions.SaveDialog;
 import cz.yetanotherview.webcamviewer.app.actions.SelectionDialog;
 import cz.yetanotherview.webcamviewer.app.actions.WelcomeDialog;
 import cz.yetanotherview.webcamviewer.app.adapter.CategoryAdapter;
-import cz.yetanotherview.webcamviewer.app.fullscreen.FullScreenImage;
+import cz.yetanotherview.webcamviewer.app.fullscreen.FullScreenActivity;
 import cz.yetanotherview.webcamviewer.app.adapter.WebCamAdapter;
 import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
 import cz.yetanotherview.webcamviewer.app.helper.WebCamListener;
@@ -267,7 +267,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 if (isEditClick) {
                     showOptionsDialog(position);
                 } else {
-                    showImageFullscreen(position);
+                    showImageFullscreen(position, false);
                 }
             }
         });
@@ -486,12 +486,14 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         newFragment.show(getFragmentManager(), "AboutDialog");
     }
 
-    private void showImageFullscreen(int position) {
+    private void showImageFullscreen(int position, boolean map) {
         webCam = (WebCam) mAdapter.getItem(position);
 
-        Intent intent = new Intent(this, FullScreenImage.class);
+        Intent intent = new Intent(this, FullScreenActivity.class);
+        intent.putExtra("map", map);
         intent.putExtra("name", webCam.getName());
         intent.putExtra("url", webCam.getUrl());
+        intent.putExtra("coordinates", webCam.getLatitude() + "," + webCam.getLongitude());
         intent.putExtra("zoom", zoom);
         intent.putExtra("fullScreen", fullScreen);
         intent.putExtra("autoRefresh", autoRefresh);
@@ -525,7 +527,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                                 webCamDeleted(webCam.getId(), position);
                                 break;
                             case 2:
-                                showImageFullscreen(position);
+                                showImageFullscreen(position, false);
                                 break;
                             case 3:
                                 DialogFragment newFragment = new SaveDialog();
@@ -539,7 +541,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
                                 break;
                             case 5:
-
+                                showImageFullscreen(position, true);
                                 break;
                             case 6:
                                 if (webCam.getUniId() != 0) {

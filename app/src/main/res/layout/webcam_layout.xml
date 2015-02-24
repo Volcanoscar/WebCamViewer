@@ -47,6 +47,10 @@
             <TextView
                 style="@style/CardTitle"
                 android:layout_alignBottom="@id/imageView"
+                android:shadowColor="@color/black"
+                android:shadowDx="1"
+                android:shadowDy="1"
+                android:shadowRadius="4"
                 android:id="@+id/titleTextView"/>
 
         </RelativeLayout>
