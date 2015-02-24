@@ -21,6 +21,7 @@
             android:title="@string/pref_general">
 
     <CheckBoxPreference
+        android:widgetLayout="@layout/switch_compat"
         android:key="pref_full_screen"
         android:enabled="false"
         android:checked="false"
@@ -28,18 +29,21 @@
         android:summary="@string/pref_full_screen_summ" />
 
     <CheckBoxPreference
+        android:widgetLayout="@layout/switch_compat"
         android:key="pref_screen_always_on"
         android:checked="false"
         android:title="@string/pref_screen_always_on"
         android:summary="@string/pref_screen_always_on_summary" />
 
     <CheckBoxPreference
+        android:widgetLayout="@layout/switch_compat"
         android:key="pref_auto_refresh"
         android:checked="false"
         android:title="@string/pref_auto_refresh"
         android:summary="@string/pref_auto_refresh_summary" />
 
         <CheckBoxPreference
+            android:widgetLayout="@layout/switch_compat"
             android:dependency="pref_auto_refresh"
             android:key="pref_auto_refresh_fullscreen"
             android:checked="false"

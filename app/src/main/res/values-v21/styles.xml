@@ -13,4 +13,8 @@
 
     </style>
 
+    <style name="SeekBar">
+        <item name="android:seekBarStyle">@android:style/Widget.Material.SeekBar</item>
+    </style>
+
 </resources>

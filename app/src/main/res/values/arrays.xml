@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string-array name="zoom_values">
-        <item>@string/no_zoom</item>
-        <item>@string/zoom_2x</item>
-        <item>@string/zoom_3x</item>
-        <item>@string/zoom_4x</item>
-    </string-array>
-
     <string-array name="sort_values">
         <item>@string/action_sort_date</item>
         <item>@string/action_sort_date_desc</item>

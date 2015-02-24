@@ -64,10 +64,6 @@
 <string name="refresh">"Erneuern"</string>
 <string name="pref_zoom">"Zoom"</string>
 <string name="pref_zoom_summary">"Einstellen die maximale Zoomstufe im Vollbildmodus"</string>
-<string name="no_zoom">"Kein zoom"</string>
-<string name="zoom_2x">"Zoom bis zu 2x"</string>
-<string name="zoom_3x">"Zoom bis zu 3x"</string>
-<string name="zoom_4x">"Zoom bis zu 4x"</string>
 <string name="action_menu_help">"Hilfe"</string>
 <string name="pref_auto_refresh">"Automatische Aktualisierung"</string>
 <string name="pref_auto_refresh_summary">"Aktivieren oder deaktivieren WebCam auto aktualisierung"</string>
@@ -151,4 +147,5 @@
 <string name="submit_to_appr">"Zur Zustimmung senden"</string>
 <string name="back">"Zurück"</string>
 <string name="show_on_map">"Auf der Karte zeigen"</string>
+<string name="zoom_small">"zoom"</string>
 </resources>

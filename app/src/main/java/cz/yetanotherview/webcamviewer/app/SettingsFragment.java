@@ -28,10 +28,11 @@ import android.preference.Preference;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceFragment;
 import android.text.Editable;
-import android.text.InputFilter;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -43,7 +44,6 @@ import java.util.List;
 import cz.yetanotherview.webcamviewer.app.actions.ExportDialog;
 import cz.yetanotherview.webcamviewer.app.actions.ImportDialog;
 import cz.yetanotherview.webcamviewer.app.helper.DatabaseHelper;
-import cz.yetanotherview.webcamviewer.app.helper.InputFilterMinMax;
 import cz.yetanotherview.webcamviewer.app.model.Category;
 
 public class SettingsFragment extends PreferenceFragment {
@@ -61,6 +61,10 @@ public class SettingsFragment extends PreferenceFragment {
     private Integer[] whichDelete;
 
     private MaterialDialog indeterminateProgress;
+    private SeekBar seekBar;
+    private TextView seekBarText;
+    private int seekBarProgress;
+    private int seekBarCorrection;
 
     private DatabaseHelper db;
     private SharedPreferences sharedPref;
@@ -105,52 +109,49 @@ public class SettingsFragment extends PreferenceFragment {
         pref_auto_refresh_interval.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
 
-                int auto_refresh_interval_value = sharedPref.getInt("pref_auto_refresh_interval", 30000);
-
                 MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
                         .title(R.string.auto_refresh_interval)
-                        .customView(R.layout.enter_time_dialog, true)
+                        .customView(R.layout.seekbar_dialog, false)
                         .positiveText(R.string.dialog_positive_text)
-                        .negativeText(android.R.string.cancel)
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
-                                int inputTime = Integer.parseInt(input.getText().toString().trim());
-                                sharedPref.edit().putInt("pref_auto_refresh_interval", inputTime * 1000).apply();
+                                sharedPref.edit().putInt("pref_auto_refresh_interval", seekBarProgress * 1000).apply();
 
-                                Snackbar.with(getActivity().getApplicationContext())
-                                        .text(R.string.dialog_positive_toast_message)
-                                        .actionLabel(R.string.dismiss)
-                                        .actionColor(actionColor)
-                                        .show(getActivity());
+                                saveDone();
                             }
-                        }).build();
+                        })
+                        .build();
 
-                input = (EditText) dialog.getCustomView().findViewById(R.id.input_name);
-                input.requestFocus();
-                input.setText(String.valueOf(auto_refresh_interval_value / 1000));
-                input.setFilters(new InputFilter[]{new InputFilterMinMax("1", "99999")});
+                seekBar = (SeekBar) dialog.getCustomView().findViewById(R.id.seekbar_seek);
+                seekBarText = (TextView) dialog.getCustomView().findViewById(R.id.seekbar_text);
 
-                TextView info = (TextView) dialog.getCustomView().findViewById(R.id.time_message);
-                info.setText(getString(R.string.auto_refresh_interval_summary) + ".");
+                seekBarCorrection = 1;
+                seekBar.setMax(359);
+                seekBar.setProgress((sharedPref.getInt("pref_auto_refresh_interval", 30000) / 1000) - seekBarCorrection);
+                seekBarText.setText((seekBar.getProgress() + seekBarCorrection) + "s");
 
-                positiveAction = dialog.getActionButton(DialogAction.POSITIVE);
+                seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+                    int val = seekBar.getProgress();
 
-                input.addTextChangedListener(new TextWatcher() {
                     @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        seekBarProgress = val;
                     }
+
                     @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        positiveAction.setEnabled(s.toString().trim().length() > 0);
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+
                     }
+
                     @Override
-                    public void afterTextChanged(Editable s) {
+                    public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+                        val = progressValue + seekBarCorrection;
+                        seekBarText.setText(val + "s");
                     }
                 });
 
                 dialog.show();
-                positiveAction.setEnabled(false);
 
                 return true;
             }
@@ -163,20 +164,48 @@ public class SettingsFragment extends PreferenceFragment {
         pref_zoom.setOnPreferenceClickListener(new OnPreferenceClickListener() {
             public boolean onPreferenceClick(Preference preference) {
 
-                    float zoom = sharedPref.getFloat("pref_zoom", 2);
-                    int selected = Math.round(zoom);
-
-                    new MaterialDialog.Builder(getActivity())
-                            .title(R.string.available_options)
-                            .items(R.array.zoom_values)
-                            .itemsCallbackSingleChoice(selected - 1, new MaterialDialog.ListCallback() {
+                MaterialDialog dialog = new MaterialDialog.Builder(getActivity())
+                            .title(R.string.pref_zoom)
+                            .customView(R.layout.seekbar_dialog, false)
+                            .positiveText(R.string.dialog_positive_text)
+                            .callback(new MaterialDialog.ButtonCallback() {
                                 @Override
-                                public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                    sharedPref.edit().putFloat("pref_zoom", which + 1).apply();
+                                public void onPositive(MaterialDialog dialog) {
+                                    sharedPref.edit().putFloat("pref_zoom", seekBarProgress).apply();
+
+                                    saveDone();
                                 }
                             })
-                            .positiveText(R.string.choose)
-                            .show();
+                            .build();
+
+                seekBar = (SeekBar) dialog.getCustomView().findViewById(R.id.seekbar_seek);
+                seekBarText = (TextView) dialog.getCustomView().findViewById(R.id.seekbar_text);
+
+                seekBarCorrection = 1;
+                seekBar.setMax(3);
+                seekBar.setProgress(Math.round(sharedPref.getFloat("pref_zoom", 2)) - seekBarCorrection);
+                seekBarText.setText((seekBar.getProgress() + seekBarCorrection) + "x " + getString(R.string.zoom_small));
+
+                seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+                    int val = seekBar.getProgress();
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        seekBarProgress = val;
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+                        val = progressValue + seekBarCorrection;
+                        seekBarText.setText(val + "x " + getString(R.string.zoom_small));
+                    }
+                });
+
+                dialog.show();
 
                 return true;
             }
@@ -206,13 +235,10 @@ public class SettingsFragment extends PreferenceFragment {
                                 BackupManager backupManager = new BackupManager(getActivity());
                                 backupManager.dataChanged();
 
-                                Snackbar.with(getActivity().getApplicationContext())
-                                        .text(R.string.dialog_positive_toast_message)
-                                        .actionLabel(R.string.dismiss)
-                                        .actionColor(actionColor)
-                                        .show(getActivity());
+                                saveDone();
                             }
-                        }).build();
+                        })
+                        .build();
 
                 input = (EditText) dialog.getCustomView().findViewById(R.id.input_name);
                 input.requestFocus();
@@ -302,11 +328,7 @@ public class SettingsFragment extends PreferenceFragment {
                         BackupManager backupManager = new BackupManager(getActivity());
                         backupManager.dataChanged();
 
-                        Snackbar.with(getActivity().getApplicationContext())
-                                .text(R.string.dialog_positive_toast_message)
-                                .actionLabel(R.string.dismiss)
-                                .actionColor(actionColor)
-                                .show(getActivity());
+                        saveDone();
                     }
                 }).build();
 
@@ -608,5 +630,13 @@ public class SettingsFragment extends PreferenceFragment {
 
             }
         });
+    }
+
+    private void saveDone() {
+        Snackbar.with(getActivity().getApplicationContext())
+                .text(R.string.dialog_positive_toast_message)
+                .actionLabel(R.string.dismiss)
+                .actionColor(getResources().getColor(R.color.yellow))
+                .show(getActivity());
     }
 }

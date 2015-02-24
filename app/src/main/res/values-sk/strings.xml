@@ -64,10 +64,6 @@
 <string name="refresh">"Obnoviť"</string>
 <string name="pref_zoom">"Zoom"</string>
 <string name="pref_zoom_summary">"Nastaviť maximálnu úroveň zväčšenia pri zobrazení WebKamery na celú obrazovku"</string>
-<string name="no_zoom">"Žiadne zväčšenie"</string>
-<string name="zoom_2x">"Zväčšovať až 2x"</string>
-<string name="zoom_3x">"Zväčšovať až 3x"</string>
-<string name="zoom_4x">"Zväčšovať až 4x"</string>
 <string name="action_menu_help">"Nápoveda"</string>
 <string name="pref_auto_refresh">"Automatická aktualizácia"</string>
 <string name="pref_auto_refresh_summary">"Povoliť alebo zakázať automatické obnovenie WebKamery"</string>
@@ -151,4 +147,5 @@
 <string name="submit_to_appr">"Odoslať na schválenie"</string>
 <string name="back">"Späť"</string>
 <string name="show_on_map">"Zobraziť na mape"</string>
+<string name="zoom_small">"zoom"</string>
 </resources>
