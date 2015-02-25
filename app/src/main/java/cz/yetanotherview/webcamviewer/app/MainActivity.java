@@ -63,6 +63,7 @@ import cz.yetanotherview.webcamviewer.app.actions.EditDialog;
 import cz.yetanotherview.webcamviewer.app.actions.JsonFetcherDialog;
 import cz.yetanotherview.webcamviewer.app.actions.SaveDialog;
 import cz.yetanotherview.webcamviewer.app.actions.SelectionDialog;
+import cz.yetanotherview.webcamviewer.app.actions.ShareDialog;
 import cz.yetanotherview.webcamviewer.app.actions.WelcomeDialog;
 import cz.yetanotherview.webcamviewer.app.adapter.CategoryAdapter;
 import cz.yetanotherview.webcamviewer.app.fullscreen.FullScreenActivity;
@@ -531,15 +532,20 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                                 showImageFullscreen(position, false);
                                 break;
                             case 3:
-                                DialogFragment newFragment = new SaveDialog();
-                                Bundle bundle = new Bundle();
-                                bundle.putString("name", webCam.getName());
-                                bundle.putString("url", webCam.getUrl());
-                                newFragment.setArguments(bundle);
-                                newFragment.show(getFragmentManager(), "SaveDialog");
+                                SaveDialog saveDialog = new SaveDialog();
+                                Bundle saveDialogBundle = new Bundle();
+                                saveDialogBundle.putString("name", webCam.getName());
+                                saveDialogBundle.putString("url", webCam.getUrl());
+                                saveDialog.setArguments(saveDialogBundle);
+                                saveDialog.show(getFragmentManager(), "SaveDialog");
                                 break;
                             case 4:
-
+                                ShareDialog shareDialog = new ShareDialog();
+                                Bundle shareDialogBundle = new Bundle();
+                                shareDialogBundle.putString("name", webCam.getName());
+                                shareDialogBundle.putString("url", webCam.getUrl());
+                                shareDialog.setArguments(shareDialogBundle);
+                                shareDialog.show(getFragmentManager(), "ShareDialog");
                                 break;
                             case 5:
                                 showImageFullscreen(position, true);
@@ -547,8 +553,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                             case 6:
                                 if (webCam.getUniId() != 0) {
                                     sendEmail(webCam, true);
-                                }
-                                else sendEmail(webCam, false);
+                                } else sendEmail(webCam, false);
                                 break;
                             default:
                                 break;

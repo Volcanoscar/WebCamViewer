@@ -20,36 +20,25 @@ package cz.yetanotherview.webcamviewer.app.actions;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import cz.yetanotherview.webcamviewer.app.R;
-import cz.yetanotherview.webcamviewer.app.Utils;
 
 public class SaveDialog extends DialogFragment {
 
     private File parentFolder;
     private File[] parentContents;
     private boolean canGoUp = true;
-
-    private String strippedName;
-    private String path;
 
     private String name;
     private String url;
@@ -87,7 +76,13 @@ public class SaveDialog extends DialogFragment {
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        saveImage();
+                        DialogFragment saveProgressDialog = new SaveProgressDialog();
+                        Bundle bundle = new Bundle();
+                        bundle.putString("name", name);
+                        bundle.putString("url", url);
+                        bundle.putString("path", parentFolder.getAbsolutePath());
+                        saveProgressDialog.setArguments(bundle);
+                        saveProgressDialog.show(getFragmentManager(), "SaveProgressDialog");
                         dialog.dismiss();
                     }
 
@@ -100,50 +95,6 @@ public class SaveDialog extends DialogFragment {
                 .positiveText(R.string.choose)
                 .negativeText(android.R.string.cancel)
                 .build();
-    }
-
-    private void saveImage() {
-        path = parentFolder.getAbsolutePath();
-        strippedName = Utils.getNameStrippedAccents(name);
-
-        Target saveFileTarget = new Target() {
-            @Override
-            public void onBitmapLoaded(final Bitmap bitmap, Picasso.LoadedFrom from) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        File file = new File(path + "/" + strippedName + " " + Utils.getDateString() + ".jpg");
-                        try
-                        {
-                            boolean bool = file.createNewFile();
-                            Log.d("", "File created: " + bool);
-                            FileOutputStream ostream = new FileOutputStream(file);
-                            bitmap.compress(Bitmap.CompressFormat.JPEG, 89, ostream);
-                            ostream.close();
-                        }
-                        catch (Exception e)
-                        {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }).start();
-            }
-            @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
-            }
-        };
-
-        Picasso.with(getActivity())
-                .load(url)
-                .into(saveFileTarget);
-
-        Toast.makeText(getActivity(), R.string.dialog_positive_toast_message, Toast.LENGTH_SHORT).show();
     }
 
     private static class FolderSorter implements Comparator<File> {

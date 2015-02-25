@@ -33,6 +33,7 @@ import java.util.List;
 public class Utils {
 
     public static String folderWCVPath = Environment.getExternalStorageDirectory() + "/WebCamViewer/";
+    public static String folderWCVPathTmp = folderWCVPath + "/Tmp/";
     public static String extension = ".wcv";
     public static String oldExtension = ".db";
 
@@ -52,6 +53,16 @@ public class Utils {
     public static String getDateString() {
         Calendar c = Calendar.getInstance();
         SimpleDateFormat df = new SimpleDateFormat();
+        return df.format(c.getTime());
+    }
+
+    /**
+     * Get current date for files in specific format
+     * @return Date in specific format
+     */
+    public static String getCustomDateString() {
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat df = new SimpleDateFormat("HH.mm_d.M.yy");
         return df.format(c.getTime());
     }
 
@@ -84,11 +95,15 @@ public class Utils {
      * @return An array list of strings file names
      */
     public static ArrayList<String> getFileNames(File[] file){
-        ArrayList<String> arrayFiles = new ArrayList<String>();
+        ArrayList<String> arrayFiles = new ArrayList<>();
         if (file.length == 0)
             return null;
         else {
-            for (File aFile : file) arrayFiles.add(aFile.getName());
+            for (File aFile : file) {
+                if (aFile.isFile()) {
+                    arrayFiles.add(aFile.getName());
+                }
+            }
         }
         return arrayFiles;
     }
