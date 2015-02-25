@@ -542,7 +542,6 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                             case 4:
                                 ShareDialog shareDialog = new ShareDialog();
                                 Bundle shareDialogBundle = new Bundle();
-                                shareDialogBundle.putString("name", webCam.getName());
                                 shareDialogBundle.putString("url", webCam.getUrl());
                                 shareDialog.setArguments(shareDialogBundle);
                                 shareDialog.show(getFragmentManager(), "ShareDialog");

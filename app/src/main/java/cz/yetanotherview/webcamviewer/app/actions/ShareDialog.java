@@ -42,7 +42,6 @@ import cz.yetanotherview.webcamviewer.app.Utils;
 
 public class ShareDialog extends DialogFragment {
 
-    private String name;
     private Uri bmpUri;
 
     private MaterialDialog mProgressDialog;
@@ -52,7 +51,6 @@ public class ShareDialog extends DialogFragment {
 
         Bundle bundle = this.getArguments();
         String url = bundle.getString("url", "");
-        name = bundle.getString("name", "");
 
         mProgressDialog = new MaterialDialog.Builder(getActivity())
                 .content(R.string.please_wait)

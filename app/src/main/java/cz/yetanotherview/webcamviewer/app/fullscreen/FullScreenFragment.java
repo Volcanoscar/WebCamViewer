@@ -41,6 +41,7 @@ import java.util.TimerTask;
 
 import cz.yetanotherview.webcamviewer.app.R;
 import cz.yetanotherview.webcamviewer.app.actions.SaveDialog;
+import cz.yetanotherview.webcamviewer.app.actions.ShareDialog;
 
 public class FullScreenFragment extends Fragment {
 
@@ -97,6 +98,18 @@ public class FullScreenFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ((FullScreenActivity) getActivity()).replaceFragments(true);
+            }
+        });
+
+        ImageButton shareButton = (ImageButton) view.findViewById(R.id.share_button);
+        shareButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShareDialog shareDialog = new ShareDialog();
+                Bundle shareDialogBundle = new Bundle();
+                shareDialogBundle.putString("url", url);
+                shareDialog.setArguments(shareDialogBundle);
+                shareDialog.show(getFragmentManager(), "ShareDialog");
             }
         });
 
