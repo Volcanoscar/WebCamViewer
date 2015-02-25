@@ -493,7 +493,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         intent.putExtra("map", map);
         intent.putExtra("name", webCam.getName());
         intent.putExtra("url", webCam.getUrl());
-        intent.putExtra("coordinates", webCam.getLatitude() + "," + webCam.getLongitude());
+        intent.putExtra("latitude", webCam.getLatitude());
+        intent.putExtra("longitude", webCam.getLongitude());
         intent.putExtra("zoom", zoom);
         intent.putExtra("fullScreen", fullScreen);
         intent.putExtra("autoRefresh", autoRefresh);
@@ -506,7 +507,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private void showOptionsDialog(final int position) {
         webCam = (WebCam) mAdapter.getItem(position);
 
-        String[] options_values = getResources().getStringArray(R.array.options_values);
+        String[] options_values = getResources().getStringArray(R.array.opt_values);
         if (webCam.getUniId() != 0) {
             options_values[6] = getString(R.string.report_problem);
         }

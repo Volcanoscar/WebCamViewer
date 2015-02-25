@@ -98,7 +98,7 @@
 <string name="pref_reset_last_check_summary">"人気のある最新のウェブカムの、最後の確認回数をリセットします"</string>
 <string name="reset_last_check_message">"人気のある最新のウェブカムの、最後の確認回数をリセットしますか?"</string>
 <string name="community_list">"コミュニティリスト"</string>
-<string name="submit_for_approval">"承認のためこのウェブカムを提出"</string>
+<string name="submit_for_approval">"承認のためこのウェブカムを送信"</string>
 <string name="send_via_email">"メールで送信..."</string>
 <string name="no_email_clients_installed">"メールクライアントがインストールされていません。"</string>
 <string name="import_webcams_now">"今すぐウェブカムをインポート!"</string>
@@ -124,5 +124,14 @@
 <string name="action_sort_name_desc">"名前による降順"</string>
 <string name="report_problem">"問題を報告する"</string>
 <string name="view">"ディスプレイ"</string>
+<string name="webcam_coordinates">"経度と緯度"</string>
+<string name="hint_webcam_latitude">"50.770481 (緯度)"</string>
+<string name="hint_webcam_longitude">"14.209077 (経度)"</string>
+<string name="maximize">"最大化"</string>
+<string name="save_to">"...に保存"</string>
+<string name="share">"共有"</string>
+<string name="submit_to_appr">"承認して送信"</string>
+<string name="back">"戻る"</string>
+<string name="show_on_map">"地図上に表示する"</string>
 <string name="zoom_small">"ズーム"</string>
 </resources>

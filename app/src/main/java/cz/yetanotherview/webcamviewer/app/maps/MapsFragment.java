@@ -21,94 +21,74 @@ package cz.yetanotherview.webcamviewer.app.maps;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.GeolocationPermissions;
-import android.webkit.WebChromeClient;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.ProgressBar;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import cz.yetanotherview.webcamviewer.app.R;
 
 public class MapsFragment extends Fragment {
 
-    private WebView viewContentWebView;
-    private ProgressBar viewContentProgress;
-
-    private String url;
-
-    private boolean resetHistory = true;
+    MapView mMapView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.maps_layout, container, false);
+        View view = inflater.inflate(R.layout.maps_layout, container,
+                false);
+        mMapView = (MapView) view.findViewById(R.id.mapView);
+        mMapView.onCreate(savedInstanceState);
+        mMapView.onResume();
 
         Intent intent = getActivity().getIntent();
-        String coordinates = intent.getExtras().getString("coordinates");
-        String baseUrl = "http://maps.google.com?q=";
-        url = baseUrl + coordinates;
+        String name = intent.getExtras().getString("name");
+        double latitude = intent.getExtras().getDouble("latitude");
+        double longitude = intent.getExtras().getDouble("longitude");
 
-        viewContentProgress = (ProgressBar) view.findViewById(R.id.progress);
-        viewContentWebView = (WebView) view.findViewById(R.id.webView);
-        viewContentWebView.getSettings().setJavaScriptEnabled(true);
-        viewContentWebView.getSettings().setSaveFormData(false);
-        viewContentWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                return super.shouldOverrideUrlLoading(view, url);
-            }
-        });
-        viewContentWebView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                viewContentProgress.setProgress(newProgress);
-                viewContentProgress.setVisibility(newProgress == 100 ? View.GONE : View.VISIBLE);
+        try {
+            MapsInitializer.initialize(getActivity().getApplicationContext());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-                if (newProgress == 100 && resetHistory) {
-                    viewContentWebView.clearHistory();
-                    resetHistory = false;
-                }
-            }
-            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                callback.invoke(origin, true, false);
-            }
-        });
+        LatLng latLng = new LatLng(latitude, longitude);
+        GoogleMap googleMap = mMapView.getMap();
+        googleMap.addMarker(new MarkerOptions().position(latLng)
+                .title(name));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
+        //googleMap.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
 
         return view;
     }
 
     @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        reload();
+    public void onResume() {
+        super.onResume();
+        mMapView.onResume();
     }
 
     @Override
-    public void onHiddenChanged(boolean hidden) {
-        super.onHiddenChanged(hidden);
-        if (hidden)
-            viewContentWebView.stopLoading();
-        else
-            reload();
-    }
-
-    public void reload() {
-        if (TextUtils.isEmpty(url))
-            return;
-
-        viewContentWebView.loadUrl(url);
+    public void onPause() {
+        super.onPause();
+        mMapView.onPause();
     }
 
     @Override
-    public void onDestroy () {
+    public void onDestroy() {
         super.onDestroy();
-        viewContentWebView.clearCache(true);
-        viewContentWebView.clearHistory();
-        Log.d("Clean", "?!?");
+        mMapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mMapView.onLowMemory();
     }
 }

@@ -8,7 +8,7 @@
         <item>@string/action_sort_name_desc</item>
     </string-array>
 
-    <string-array name="options_values">
+    <string-array name="opt_values" translatable="false">
         <item>@string/action_edit</item>
         <item>@string/action_delete</item>
         <item>@string/maximize</item>
