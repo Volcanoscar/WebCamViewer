@@ -23,6 +23,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.backup.BackupManager;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -33,6 +34,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
@@ -59,6 +62,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationServices;
+
 import cz.yetanotherview.webcamviewer.app.R;
 import cz.yetanotherview.webcamviewer.app.Utils;
 import cz.yetanotherview.webcamviewer.app.adapter.CountryAdapter;
@@ -70,7 +79,7 @@ import cz.yetanotherview.webcamviewer.app.model.Category;
 import cz.yetanotherview.webcamviewer.app.model.Country;
 import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
-public class JsonFetcherDialog extends DialogFragment {
+public class JsonFetcherDialog extends DialogFragment implements ConnectionCallbacks, OnConnectionFailedListener {
 
     // Object for intrinsic lock
     public static final Object sDataLock = new Object();
@@ -98,6 +107,15 @@ public class JsonFetcherDialog extends DialogFragment {
     private ManualSelectionAdapter manualSelectionAdapter;
     private ReloadInterface mListener;
 
+    protected GoogleApiClient mGoogleApiClient;
+    protected Location mLastLocation;
+    private double mLatitude;
+    private double mLongitude;
+    private SeekBar seekBar;
+    private TextView seekBarText;
+    private int seekBarProgress;
+    private int seekBarCorrection;
+
     public static interface ReloadInterface {
         public void invokeReload();
     }
@@ -111,8 +129,12 @@ public class JsonFetcherDialog extends DialogFragment {
 
     @Override
     public void onDetach() {
-        mListener = null;
         super.onDetach();
+        mListener = null;
+
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
     @Override
@@ -124,6 +146,7 @@ public class JsonFetcherDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        buildGoogleApiClient();
 
         db = new DatabaseHelper(mActivity);
         allWebCams = db.getAllWebCams("id ASC");
@@ -143,6 +166,37 @@ public class JsonFetcherDialog extends DialogFragment {
         fetcher.execute();
 
         return initDialog;
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            mLatitude = Utils.roundDouble(mLastLocation.getLatitude(), 6);
+            mLongitude = Utils.roundDouble(mLastLocation.getLongitude(), 6);
+            Log.i(TAG, String.valueOf(mLatitude) + " " + String.valueOf(mLongitude));
+        } else {
+            Log.i(TAG, "No location detected");
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
     }
 
     private class WebCamsFromJsonFetcher extends AsyncTask<Void, Void, String> {
@@ -179,7 +233,7 @@ public class JsonFetcherDialog extends DialogFragment {
 
                             // Swap dialogs
                             maxProgressValue = importWebCams.size();
-                            if ((selection == 0) || (selection == 3)) {
+                            if ((selection == 0) || (selection == 4)) {
                                 swapProgressDialog();
                             }
 
@@ -237,13 +291,19 @@ public class JsonFetcherDialog extends DialogFragment {
                                     showResult();
                                 }
                                 else if (selection == 1) {
+                                    mGoogleApiClient.connect();
+
+                                    noNewWebCams = false;
+                                    handleNearSelection();
+                                }
+                                else if (selection == 2) {
 
                                     Collections.sort(importWebCams, new WebCamNameComparator());
 
                                     noNewWebCams = false;
                                     handleManualSelection();
                                 }
-                                else if (selection == 2) {
+                                else if (selection == 3) {
 
                                     List<String> tempList = new ArrayList<>();
                                     List<String> listAllCountries = new ArrayList<>();
@@ -276,7 +336,7 @@ public class JsonFetcherDialog extends DialogFragment {
                                     noNewWebCams = false;
                                     handleCountrySelection();
                                 }
-                                else if (selection == 3) {
+                                else if (selection == 4) {
 
                                     long lastFetchLatest = preferences.getLong("pref_last_fetch_latest", 0);
                                     long categoryLatest = db.createCategory(new Category(getString(R.string.latest) + " " + Utils.getDateString()));
@@ -322,6 +382,7 @@ public class JsonFetcherDialog extends DialogFragment {
                                     }
                                     showResult();
                                 }
+
                             }
                             db.closeDB();
                             BackupManager backupManager = new BackupManager(mActivity);
@@ -357,7 +418,7 @@ public class JsonFetcherDialog extends DialogFragment {
         mActivity.runOnUiThread(new Runnable() {
             public void run() {
 
-                if ((selection == 0) || (selection == 3)) {
+                if ((selection == 0) || (selection == 4)) {
                     initDialog.dismiss();
                 }
                 progressDialog = new MaterialDialog.Builder(mActivity)
@@ -377,6 +438,106 @@ public class JsonFetcherDialog extends DialogFragment {
                 progressDialog.incrementProgress(1);
             }
         });
+    }
+
+    private void handleNearSelection() {
+
+        mActivity.runOnUiThread(new Runnable() {
+            public void run() {
+                MaterialDialog dialog = new MaterialDialog.Builder(mActivity)
+                        .title(R.string.select_radius)
+                        .customView(R.layout.seekbar_dialog, false)
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+
+                                new nearSelectionBackgroundTask().execute();
+                                swapProgressDialog();
+                            }
+                        })
+                        .positiveText(android.R.string.ok)
+                        .build();
+
+                seekBar = (SeekBar) dialog.getCustomView().findViewById(R.id.seekbar_seek);
+                seekBarText = (TextView) dialog.getCustomView().findViewById(R.id.seekbar_text);
+
+                seekBarCorrection = 10;
+                seekBar.setMax(290);
+                seekBarProgress = 50;
+                seekBar.setProgress(seekBarProgress - seekBarCorrection);
+                seekBarText.setText((seekBar.getProgress() + seekBarCorrection) + " km");
+
+                seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                    int val = seekBar.getProgress();
+
+                    @Override
+                    public void onStopTrackingTouch(SeekBar seekBar) {
+                        seekBarProgress = val;
+                    }
+
+                    @Override
+                    public void onStartTrackingTouch(SeekBar seekBar) {
+                    }
+
+                    @Override
+                    public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+                        val = progressValue + seekBarCorrection;
+                        seekBarText.setText(val + " km");
+                    }
+                });
+
+                initDialog.dismiss();
+                dialog.show();
+            }
+        });
+    }
+
+    private class nearSelectionBackgroundTask extends AsyncTask<String, Integer, Long> {
+
+        @Override
+        protected Long doInBackground(String... texts) {
+
+            String selected = mActivity.getString(R.string.nearby);
+            long categoryNear = db.createCategory(new Category(selected + " " + Utils.getDateString()));
+            float selectedDistance = seekBarProgress * 1000;
+
+            for (WebCam webCam : importWebCams) {
+
+                float[] distance = new float[1];
+                Location.distanceBetween(webCam.getLatitude(), webCam.getLongitude(), mLatitude, mLongitude, distance);
+
+                if (distance[0] < selectedDistance) {
+                    if (allWebCams.size() != 0) {
+                        boolean notFound = false;
+                        for (WebCam allWebCam : allWebCams) {
+                            if (webCam.getUniId() == allWebCam.getUniId()) {
+                                db.createWebCamCategory(allWebCam.getId(), categoryNear);
+                                notFound = false;
+                                duplicityWebCams++;
+                                break;
+                            }
+                            else notFound = true;
+                        }
+                        if (notFound) {
+                            db.createWebCam(webCam, new long[]{categoryNear});
+                            newWebCams++;
+                        }
+                    }
+                    else {
+                        db.createWebCam(webCam, new long[]{categoryNear});
+                        newWebCams++;
+                    }
+                }
+                progressUpdate();
+            }
+
+            if (newWebCams + duplicityWebCams == 0) {
+                db.deleteCategory(categoryNear, false);
+            }
+
+            showResult();
+            return null;
+        }
     }
 
     private void handleManualSelection() {
@@ -548,9 +709,14 @@ public class JsonFetcherDialog extends DialogFragment {
 
                 progressDialog.dismiss();
                 if (!noNewWebCams) {
-                    mListener = (ReloadInterface) mActivity;
-                    mListener.invokeReload();
-                    reportDialog(newWebCams, duplicityWebCams);
+                    if (selection == 1 && (newWebCams + duplicityWebCams == 0)) {
+                        noNearbyWebCamsDialog();
+                    }
+                    else {
+                        mListener = (ReloadInterface) mActivity;
+                        mListener.invokeReload();
+                        reportDialog(newWebCams, duplicityWebCams);
+                    }
                 }
                 else {
                     noNewWebCamsDialog();
@@ -566,6 +732,14 @@ public class JsonFetcherDialog extends DialogFragment {
                 .content(mActivity.getString(R.string.import_successfully) + "\n\n"
                         + mActivity.getString(R.string.new_webcams) + " " + newWebCams
                         + "\n" + mActivity.getString(R.string.reassigned) + " " + duplicityWebCams)
+                .positiveText(android.R.string.ok)
+                .show();
+    }
+
+    private void noNearbyWebCamsDialog() {
+        new MaterialDialog.Builder(mActivity)
+                .title(R.string.no_nearby_webcams)
+                .content(R.string.no_nearby_webcams_summary)
                 .positiveText(android.R.string.ok)
                 .show();
     }

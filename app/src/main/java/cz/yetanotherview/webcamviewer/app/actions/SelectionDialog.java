@@ -38,11 +38,9 @@ public class SelectionDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String[] items = {getString(R.string.popular_webcams),getString(R.string.manual_selection),getString(R.string.selecting_by_country),getString(R.string.latest_webcams)};
-
         return new MaterialDialog.Builder(getActivity())
                 .title(R.string.available_options)
-                .items(items)
+                .items(R.array.selection_values)
                 .itemsCallbackSingleChoice(0, new MaterialDialog.ListCallback() {
                     @Override
                     public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {

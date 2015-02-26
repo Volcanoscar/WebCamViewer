@@ -97,6 +97,7 @@ public class SettingsFragment extends PreferenceFragment {
         cleanExtFolder();
 
         resetLastCheck();
+        cleanCacheAndTmpFolder();
 
         // Main activity sorting hack
         sharedPref = getPreferenceManager().getSharedPreferences();
@@ -128,7 +129,8 @@ public class SettingsFragment extends PreferenceFragment {
 
                 seekBarCorrection = 1;
                 seekBar.setMax(359);
-                seekBar.setProgress((sharedPref.getInt("pref_auto_refresh_interval", 30000) / 1000) - seekBarCorrection);
+                seekBarProgress = (sharedPref.getInt("pref_auto_refresh_interval", 30000) / 1000);
+                seekBar.setProgress(seekBarProgress - seekBarCorrection);
                 seekBarText.setText((seekBar.getProgress() + seekBarCorrection) + "s");
 
                 seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -183,7 +185,8 @@ public class SettingsFragment extends PreferenceFragment {
 
                 seekBarCorrection = 1;
                 seekBar.setMax(3);
-                seekBar.setProgress(Math.round(sharedPref.getFloat("pref_zoom", 2)) - seekBarCorrection);
+                seekBarProgress = Math.round(sharedPref.getFloat("pref_zoom", 2));
+                seekBar.setProgress(seekBarProgress - seekBarCorrection);
                 seekBarText.setText((seekBar.getProgress() + seekBarCorrection) + "x " + getString(R.string.zoom_small));
 
                 seekBar.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -564,11 +567,7 @@ public class SettingsFragment extends PreferenceFragment {
                             public void onPositive(MaterialDialog dialog) {
                                 Utils.cleanBackupFolder();
 
-                                Snackbar.with(getActivity().getApplicationContext())
-                                        .text(R.string.action_deleted)
-                                        .actionLabel(R.string.dismiss)
-                                        .actionColor(actionColor)
-                                        .show(getActivity());
+                                deleteDone();
                             }
                         })
                         .show();
@@ -609,6 +608,32 @@ public class SettingsFragment extends PreferenceFragment {
         });
     }
 
+    private void cleanCacheAndTmpFolder() {
+        // Clean Cache and Tmp folder OnPreferenceClickListener
+        Preference pref_clean_cache_and_tmp = findPreference("pref_clean_cache_and_tmp");
+        pref_clean_cache_and_tmp.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+            public boolean onPreferenceClick(Preference preference) {
+
+                new MaterialDialog.Builder(getActivity())
+                        .title(R.string.pref_clear_cache_and_tmp)
+                        .content(R.string.are_you_sure)
+                        .positiveText(R.string.Yes)
+                        .negativeText(R.string.No)
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                Utils.deleteCache(getActivity().getApplicationContext());
+
+                                deleteDone();
+                            }
+                        })
+                        .show();
+
+                return true;
+            }
+        });
+    }
+
     private void showIndeterminateProgress() {
         indeterminateProgress = new MaterialDialog.Builder(getActivity())
                 .content(R.string.please_wait)
@@ -622,14 +647,18 @@ public class SettingsFragment extends PreferenceFragment {
             public void run() {
 
                 indeterminateProgress.dismiss();
-                Snackbar.with(getActivity().getApplicationContext())
-                        .text(R.string.action_deleted)
-                        .actionLabel(R.string.dismiss)
-                        .actionColor(actionColor)
-                        .show(getActivity());
+                deleteDone();
 
             }
         });
+    }
+
+    private void deleteDone() {
+        Snackbar.with(getActivity().getApplicationContext())
+                .text(R.string.action_deleted)
+                .actionLabel(R.string.dismiss)
+                .actionColor(actionColor)
+                .show(getActivity());
     }
 
     private void saveDone() {

@@ -23,4 +23,12 @@
         <item>@string/add_manually</item>
     </string-array>
 
+    <string-array name="selection_values">
+        <item>@string/popular_webcams</item>
+        <item>@string/nearby</item>
+        <item>@string/manual_selection</item>
+        <item>@string/selecting_by_country</item>
+        <item>@string/latest_webcams</item>
+    </string-array>
+
 </resources>

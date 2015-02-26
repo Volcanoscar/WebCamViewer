@@ -18,11 +18,14 @@
 
 package cz.yetanotherview.webcamviewer.app;
 
+import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -162,5 +165,51 @@ public class Utils {
                 return R.drawable.unknown;
             }
 
+    }
+
+    /**
+     * Round double
+     */
+    public static double roundDouble(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
+    /**
+     * Delete application cache and tmp folder
+     */
+    public static void deleteCache(Context context) {
+        try {
+            File dir = context.getCacheDir();
+            if (dir != null && dir.isDirectory()) {
+                deleteDir(dir);
+            }
+            File tmpFolder = new File(folderWCVPathTmp);
+            if (tmpFolder.isDirectory()) {
+                String[] children = tmpFolder.list();
+                for (String aChildren : children) {
+                    new File(tmpFolder, aChildren).delete();
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
+    /**
+     * Delete selected dir
+     */
+    public static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (String aChildren : children) {
+                boolean success = deleteDir(new File(dir, aChildren));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+        return dir.delete();
     }
 }

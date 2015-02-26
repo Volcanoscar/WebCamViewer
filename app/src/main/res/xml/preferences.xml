@@ -110,5 +110,10 @@
             android:title="@string/pref_reset_last_check"
             android:summary="@string/pref_reset_last_check_summary" />
 
+        <Preference
+            android:key="pref_clean_cache_and_tmp"
+            android:title="@string/pref_clear_cache_and_tmp"
+            android:summary="@string/pref_clear_cache_and_tmp_summary" />
+
     </PreferenceCategory>
 </PreferenceScreen>
