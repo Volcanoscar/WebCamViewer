@@ -49,6 +49,9 @@ import android.widget.ListView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.melnykov.fab.FloatingActionButton;
 import com.nispok.snackbar.Snackbar;
+import com.nispok.snackbar.SnackbarManager;
+import com.nispok.snackbar.listeners.ActionClickListener;
+import com.nispok.snackbar.listeners.EventListener;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.PicassoTools;
 
@@ -109,6 +112,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private int autoRefreshInterval;
     private boolean autoRefreshFullScreenOnly;
     private boolean screenAlwaysOn;
+    private boolean notUndo;
 
     private MaterialDialog dialog;
 
@@ -526,7 +530,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                                 showEditDialog(position);
                                 break;
                             case 1:
-                                webCamDeleted(webCam.getId(), position);
+                                webCamDeleted(webCam, position);
                                 break;
                             case 2:
                                 showImageFullscreen(position, false);
@@ -647,23 +651,64 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     }
 
     @Override
-    public void webCamDeleted(long id, int position) {
-        synchronized (sDataLock) {
-            db.deleteWebCam(id);
-            db.closeDB();
-        }
-        BackupManager backupManager = new BackupManager(this);
-        backupManager.dataChanged();
+    public void webCamDeleted(final WebCam wc, final int position) {
+
+        notUndo = true;
 
         if (mAdapter != null && mAdapter.getItemCount() > 0) {
             mAdapter.removeItem(mAdapter.getItemAt(position));
         }
-
-        checkAdapterIsEmpty();
-        reInitializeDrawerListAdapter();
-
         fab.show();
-        delDone();
+
+        SnackbarManager.show(
+                Snackbar.with(getApplicationContext())
+                        .text(R.string.action_deleted)
+                        .actionLabel(R.string.undo)
+                        .actionColor(getResources().getColor(R.color.yellow))
+                        .actionListener(new ActionClickListener() {
+                            @Override
+                            public void onActionClicked(Snackbar snackbar) {
+                                mAdapter.addItem(position, wc);
+                                notUndo = false;
+                            }
+                        })
+                        .eventListener(new EventListener() {
+                            @Override
+                            public void onShow(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onShowByReplace(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onShown(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onDismiss(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onDismissByReplace(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onDismissed(Snackbar snackbar) {
+                                if (notUndo) {
+                                    synchronized (sDataLock) {
+                                        db.deleteWebCam(wc.getId());
+                                        db.closeDB();
+                                    }
+                                    BackupManager backupManager = new BackupManager(getApplicationContext());
+                                    backupManager.dataChanged();
+
+                                    checkAdapterIsEmpty();
+                                    reInitializeDrawerListAdapter();
+                                }
+                            }
+                        })
+                , this);
     }
 
     @Override
@@ -680,15 +725,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 .show(this);
     }
 
-    private void delDone() {
-        Snackbar.with(getApplicationContext())
-                .text(R.string.action_deleted)
-                .actionLabel(R.string.dismiss)
-                .actionColor(getResources().getColor(R.color.yellow))
-                .show(this);
-    }
-
-    private void refreshIsRunning() {
+     private void refreshIsRunning() {
         Snackbar.with(getApplicationContext())
                 .text(R.string.refresh_is_running)
                 .actionLabel(R.string.dismiss)

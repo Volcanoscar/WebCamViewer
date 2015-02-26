@@ -134,4 +134,5 @@
 <string name="back">"戻る"</string>
 <string name="show_on_map">"地図上に表示する"</string>
 <string name="zoom_small">"ズーム"</string>
+<string name="undo">"戻す"</string>
 </resources>

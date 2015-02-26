@@ -144,7 +144,7 @@ public class EditDialog extends DialogFragment {
                     @Override
                     public void onNeutral(MaterialDialog dialog) {
                         if (mOnAddListener != null)
-                            mOnAddListener.webCamDeleted(id, position);
+                            mOnAddListener.webCamDeleted(webCam, position);
                     }
                 }).build();
 

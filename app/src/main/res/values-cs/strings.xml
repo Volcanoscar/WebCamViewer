@@ -139,8 +139,8 @@
 <string name="report_problem">"Nahlásit problém"</string>
 <string name="view">"Zobrazení"</string>
 <string name="webcam_coordinates">"Souřadnice"</string>
-<string name="hint_webcam_latitude">"50.770481 (zem. šířka)"</string>
-<string name="hint_webcam_longitude">"14.209077 (zem. délka)"</string>
+<string name="hint_webcam_latitude">"50.770481 (z. šířka)"</string>
+<string name="hint_webcam_longitude">"14.209077 (z. délka)"</string>
 <string name="maximize">"Maximalizovat"</string>
 <string name="save_to">"Uložit do..."</string>
 <string name="share">"Sdílet"</string>
@@ -148,4 +148,5 @@
 <string name="back">"Zpět"</string>
 <string name="show_on_map">"Zobrazit na mapě"</string>
 <string name="zoom_small">"zoom"</string>
+<string name="undo">"VRÁTIT ZPĚT"</string>
 </resources>
