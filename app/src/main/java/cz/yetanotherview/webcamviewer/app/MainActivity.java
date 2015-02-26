@@ -658,6 +658,9 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         if (mAdapter != null && mAdapter.getItemCount() > 0) {
             mAdapter.removeItem(mAdapter.getItemAt(position));
         }
+
+        checkAdapterIsEmpty();
+        reInitializeDrawerListAdapter();
         fab.show();
 
         SnackbarManager.show(
@@ -669,6 +672,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                             @Override
                             public void onActionClicked(Snackbar snackbar) {
                                 mAdapter.addItem(position, wc);
+                                checkAdapterIsEmpty();
+                                reInitializeDrawerListAdapter();
                                 notUndo = false;
                             }
                         })
@@ -702,8 +707,6 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                                     }
                                     BackupManager backupManager = new BackupManager(getApplicationContext());
                                     backupManager.dataChanged();
-
-                                    checkAdapterIsEmpty();
                                     reInitializeDrawerListAdapter();
                                 }
                             }

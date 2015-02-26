@@ -20,13 +20,19 @@ package cz.yetanotherview.webcamviewer.app.actions;
 
 import android.app.Dialog;
 import android.app.DialogFragment;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import junit.framework.Assert;
+
 import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -43,6 +49,8 @@ public class SaveDialog extends DialogFragment {
     private String name;
     private String url;
 
+    private MaterialDialog dialog;
+
     public SaveDialog() {
         parentFolder = Environment.getExternalStorageDirectory();
         parentContents = listFiles();
@@ -55,7 +63,7 @@ public class SaveDialog extends DialogFragment {
         name = bundle.getString("name", "");
         url = bundle.getString("url", "");
 
-        return new MaterialDialog.Builder(getActivity())
+        dialog = new MaterialDialog.Builder(getActivity())
                 .title(parentFolder.getAbsolutePath())
                 .items(getContentsArray())
                 .itemsCallback(new MaterialDialog.ListCallback() {
@@ -76,14 +84,7 @@ public class SaveDialog extends DialogFragment {
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        DialogFragment saveProgressDialog = new SaveProgressDialog();
-                        Bundle bundle = new Bundle();
-                        bundle.putString("name", name);
-                        bundle.putString("url", url);
-                        bundle.putString("path", parentFolder.getAbsolutePath());
-                        saveProgressDialog.setArguments(bundle);
-                        saveProgressDialog.show(getFragmentManager(), "SaveProgressDialog");
-                        dialog.dismiss();
+                        new ConnectionTester().execute();
                     }
 
                     @Override
@@ -95,6 +96,35 @@ public class SaveDialog extends DialogFragment {
                 .positiveText(R.string.choose)
                 .negativeText(android.R.string.cancel)
                 .build();
+        return dialog;
+    }
+
+    private class ConnectionTester extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            try {
+                URL mUrl = new URL(url);
+                HttpURLConnection urlConn = (HttpURLConnection) mUrl.openConnection();
+                urlConn.connect();
+                Assert.assertEquals(HttpURLConnection.HTTP_OK, urlConn.getResponseCode());
+
+                continueOnUiThread();
+            }
+            catch (IOException e) {
+                System.err.println("Error creating HTTP connection");
+
+                this.publishProgress();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            dialogUnavailable();
+        }
     }
 
     private static class FolderSorter implements Comparator<File> {
@@ -120,5 +150,30 @@ public class SaveDialog extends DialogFragment {
         }
         Collections.sort(results, new FolderSorter());
         return results.toArray(new File[results.size()]);
+    }
+
+    private void continueOnUiThread() {
+
+        getActivity().runOnUiThread(new Runnable() {
+            public void run() {
+                dialog.dismiss();
+                DialogFragment saveProgressDialog = new SaveProgressDialog();
+                Bundle bundle = new Bundle();
+                bundle.putString("name", name);
+                bundle.putString("url", url);
+                bundle.putString("path", parentFolder.getAbsolutePath());
+                saveProgressDialog.setArguments(bundle);
+                saveProgressDialog.show(getFragmentManager(), "SaveProgressDialog");
+            }
+        });
+    }
+
+    private void dialogUnavailable() {
+        dialog.dismiss();
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.server_unavailable)
+                .content(R.string.server_unavailable_summary)
+                .positiveText(android.R.string.ok)
+                .show();
     }
 }

@@ -29,11 +29,15 @@ import android.os.Bundle;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import junit.framework.Assert;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -43,33 +47,62 @@ import cz.yetanotherview.webcamviewer.app.Utils;
 public class ShareDialog extends DialogFragment {
 
     private Uri bmpUri;
-
+    private String url;
     private MaterialDialog mProgressDialog;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         Bundle bundle = this.getArguments();
-        String url = bundle.getString("url", "");
+        url = bundle.getString("url", "");
 
         mProgressDialog = new MaterialDialog.Builder(getActivity())
                 .content(R.string.please_wait)
                 .progress(false, 100)
                 .build();
 
-        new ShareImage().execute(url);
+        new ConnectionTester().execute();
 
         return mProgressDialog;
     }
 
-    class ShareImage extends AsyncTask <String,Integer,Long> {
+    private class ConnectionTester extends AsyncTask<Void, Void, String> {
+
+        @Override
+        protected String doInBackground(Void... params) {
+
+            try {
+                URL mUrl = new URL(url);
+                HttpURLConnection urlConn = (HttpURLConnection) mUrl.openConnection();
+                urlConn.connect();
+                Assert.assertEquals(HttpURLConnection.HTTP_OK, urlConn.getResponseCode());
+
+                new ShareImage().execute();
+            }
+            catch (IOException e) {
+                System.err.println("Error creating HTTP connection");
+
+                mProgressDialog.dismiss();
+                this.publishProgress();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            dialogUnavailable();
+        }
+    }
+
+    private class ShareImage extends AsyncTask <String,Integer,Long> {
 
         @Override
         protected Long doInBackground(String... args) {
             int count;
             try {
-                URL url = new URL(args[0]);
-                URLConnection connexion = url.openConnection();
+                URL mUrl = new URL(url);
+                URLConnection connexion = mUrl.openConnection();
                 connexion.connect();
                 String targetFileName = "share_image_" + System.currentTimeMillis() + ".jpg";
                 int lengthOfFile = connexion.getContentLength();
@@ -78,7 +111,7 @@ public class ShareDialog extends DialogFragment {
                 if(!folder.exists()){
                     folder.mkdir();
                 }
-                InputStream input = new BufferedInputStream(url.openStream());
+                InputStream input = new BufferedInputStream(mUrl.openStream());
                 OutputStream output = new FileOutputStream(PATH + targetFileName);
                 byte data[] = new byte[1024];
                 long total = 0;
@@ -122,5 +155,13 @@ public class ShareDialog extends DialogFragment {
 
             }
         });
+    }
+
+    private void dialogUnavailable() {
+        new MaterialDialog.Builder(getActivity())
+                .title(R.string.server_unavailable)
+                .content(R.string.server_unavailable_summary)
+                .positiveText(android.R.string.ok)
+                .show();
     }
 }

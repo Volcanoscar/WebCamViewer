@@ -58,7 +58,7 @@ public class SaveProgressDialog extends DialogFragment {
     }
 
 
-    class SaveImage extends AsyncTask <String,Integer,Long> {
+    private class SaveImage extends AsyncTask <String,Integer,Long> {
 
         @Override
         protected Long doInBackground(String... args) {

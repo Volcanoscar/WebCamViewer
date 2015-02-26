@@ -30,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import cz.yetanotherview.webcamviewer.app.R;
@@ -60,8 +61,11 @@ public class MapsFragment extends Fragment {
 
         LatLng latLng = new LatLng(latitude, longitude);
         GoogleMap googleMap = mMapView.getMap();
-        googleMap.addMarker(new MarkerOptions().position(latLng)
+        Marker marker = googleMap.addMarker(new MarkerOptions().position(latLng)
                 .title(name));
+        marker.showInfoWindow();
+        marker.setDraggable(false);
+        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 14));
         //googleMap.animateCamera(CameraUpdateFactory.zoomTo(12), 2000, null);
 
