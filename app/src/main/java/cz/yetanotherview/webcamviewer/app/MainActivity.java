@@ -104,6 +104,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private boolean firstRun;
     private String sortOrder = "id ASC";
     private String allWebCamsString;
+    private String allWebCamsTitle;
     private String selectedCategoryName;
     private int selectedCategory;
     private float zoom;
@@ -113,6 +114,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private boolean autoRefreshFullScreenOnly;
     private boolean screenAlwaysOn;
     private boolean notUndo;
+    private int mLayoutId;
 
     private MaterialDialog dialog;
 
@@ -123,6 +125,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         // loading saved preferences
         loadPref();
         allWebCamsString = getString(R.string.all_webcams);
+        allWebCamsTitle = getString(R.string.app_name);
 
         // Inflating main layout
         setContentView(R.layout.activity_main);
@@ -179,7 +182,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
     private void initToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle(allWebCamsString);
+        mToolbar.setTitle(allWebCamsTitle);
         setSupportActionBar(mToolbar);
     }
 
@@ -240,7 +243,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     }
 
     private void initRecyclerView() {
-        int mLayoutId = 1;
+        mLayoutId = 1;
         if (numberOfColumns == 1 && mOrientation == 1) {
             mLayoutId = 1;
         }
@@ -257,10 +260,18 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
         mRecyclerView = (RecyclerView) findViewById(R.id.cardList);
         mRecyclerView.setHasFixedSize(true);
-        mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        allWebCams = db.getAllWebCams(sortOrder);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        if (selectedCategory == 0) {
+            allWebCams = db.getAllWebCams(sortOrder);
+            selectedCategoryName = allWebCamsString;
+        }
+        else {
+            Category category = allCategories.get(selectedCategory - 1);
+            allWebCams = db.getAllWebCamsByCategory(category.getId(),sortOrder);
+            selectedCategoryName = category.getcategoryName();
+        }
         db.closeDB();
 
         mAdapter = new WebCamAdapter(this, allWebCams, mOrientation, mLayoutId);
@@ -295,7 +306,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         // Pull To Refresh 1/2
         swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
-        swipeLayout.setColorSchemeResources(R.color.primary_dark);
+        swipeLayout.setColorSchemeResources(R.color.swipe);
     }
 
     private void checkAdapterIsEmpty () {
@@ -311,9 +322,15 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             reInitializeRecyclerViewAdapter(position);
+            reInitializeDrawerListAdapter();
             selectedCategory = position;
 
-            getSupportActionBar().setTitle(selectedCategoryName);
+            if (selectedCategoryName.contains(allWebCamsString)) {
+                getSupportActionBar().setTitle(allWebCamsTitle);
+            }
+            else {
+                getSupportActionBar().setTitle(selectedCategoryName);
+            }
             mDrawerLayout.closeDrawers();
         }
     }

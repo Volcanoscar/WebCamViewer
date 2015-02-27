@@ -36,7 +36,7 @@
 <string name="how_to">"How to"</string>
 <string name="dialog_positive_text">"Save"</string>
 <string name="dialog_positive_toast_message">"Saved!"</string>
-<string name="empty_list_view">"No WebCams found. Use the FAB button to manually add or import new WebCams from server …"</string>
+<string name="empty_list_view">"Oops, the list is blank. Would you like to create or import some WebCams? Use the red button."</string>
 <string name="pref_database">"Database"</string>
 <string name="pref_import_from_ext">"Import from External Storage"</string>
 <string name="pref_import_from_ext_summ">"Import WebCam database from External Storage"</string>

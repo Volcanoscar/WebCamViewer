@@ -19,11 +19,13 @@
 package cz.yetanotherview.webcamviewer.app;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.Normalizer;
@@ -36,7 +38,7 @@ import java.util.List;
 public class Utils {
 
     public static String folderWCVPath = Environment.getExternalStorageDirectory() + "/WebCamViewer/";
-    public static String folderWCVPathTmp = folderWCVPath + "/Tmp/";
+    public static String folderWCVPathTmp = folderWCVPath + "Tmp/";
     public static String extension = ".wcv";
     public static String oldExtension = ".db";
 
@@ -179,14 +181,26 @@ public class Utils {
     }
 
     /**
-     * Delete application cache and tmp folder
+     * Clear Cache and Tmp folder
      */
     public static void deleteCache(Context context) {
-        try {
-            File dir = context.getCacheDir();
-            if (dir != null && dir.isDirectory()) {
-                deleteDir(dir);
+
+        PackageManager pm = context.getPackageManager();
+        // Get all methods on the PackageManager
+        Method[] methods = pm.getClass().getDeclaredMethods();
+        for (Method m : methods) {
+            if (m.getName().equals("freeStorageAndNotify")) {
+                // Found the method I want to use
+                try {
+                    m.invoke(pm, Long.MAX_VALUE , null);
+                } catch (Exception e) {
+                    Log.d("","Method invocation failed. Could be a permission problem");
+                }
+                break;
             }
+        }
+
+        try {
             File tmpFolder = new File(folderWCVPathTmp);
             if (tmpFolder.isDirectory()) {
                 String[] children = tmpFolder.list();
@@ -195,21 +209,5 @@ public class Utils {
                 }
             }
         } catch (Exception ignored) {}
-    }
-
-    /**
-     * Delete selected dir
-     */
-    public static boolean deleteDir(File dir) {
-        if (dir != null && dir.isDirectory()) {
-            String[] children = dir.list();
-            for (String aChildren : children) {
-                boolean success = deleteDir(new File(dir, aChildren));
-                if (!success) {
-                    return false;
-                }
-            }
-        }
-        return dir.delete();
     }
 }

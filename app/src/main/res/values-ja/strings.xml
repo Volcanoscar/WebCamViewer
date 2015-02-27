@@ -22,7 +22,7 @@
 <string name="how_to">"使い方"</string>
 <string name="dialog_positive_text">"保存"</string>
 <string name="dialog_positive_toast_message">"保存しました!"</string>
-<string name="empty_list_view">"ウェブカムが見つかりません. FABボタンを使用して新しいウェブカムを追加するか、サーバーからインポートしてください…"</string>
+<string name="empty_list_view"></string>
 <string name="pref_database">"データベース"</string>
 <string name="pref_import_from_ext">"外部ストレージからインポート"</string>
 <string name="pref_import_from_ext_summ">"外部ストレージからウェブカムデータベースをインポートします"</string>
@@ -135,4 +135,10 @@
 <string name="show_on_map">"地図上に表示する"</string>
 <string name="zoom_small">"ズーム"</string>
 <string name="undo">"戻す"</string>
+<string name="nearby">"近く"</string>
+<string name="select_radius">"範囲を選択"</string>
+<string name="no_nearby_webcams">"近くにウェブカムはありません"</string>
+<string name="no_nearby_webcams_summary">"近くにウェブカムはありません。範囲を広げてみてください。"</string>
+<string name="pref_clear_cache_and_tmp">"キャッシュをクリア"</string>
+<string name="pref_clear_cache_and_tmp_summary">"このアプリケーションのキャッシュと一時フォルダをすべてクリアします"</string>
 </resources>

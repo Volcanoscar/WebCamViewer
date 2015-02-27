@@ -50,6 +50,9 @@ public class ShareDialog extends DialogFragment {
     private String url;
     private MaterialDialog mProgressDialog;
 
+    private static String baseFolderPath = Utils.folderWCVPath;
+    private static String tmpFolderPath = Utils.folderWCVPathTmp;
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -61,9 +64,21 @@ public class ShareDialog extends DialogFragment {
                 .progress(false, 100)
                 .build();
 
+        createFolders();
         new ConnectionTester().execute();
 
         return mProgressDialog;
+    }
+
+    private void createFolders() {
+        File baseFolder = new File(baseFolderPath);
+        File tmpFolder = new File(tmpFolderPath);
+        if (!baseFolder.exists()) {
+            baseFolder.mkdir();
+        }
+        if (!tmpFolder.exists()) {
+            tmpFolder.mkdir();
+        }
     }
 
     private class ConnectionTester extends AsyncTask<Void, Void, String> {
@@ -106,13 +121,8 @@ public class ShareDialog extends DialogFragment {
                 connexion.connect();
                 String targetFileName = "share_image_" + System.currentTimeMillis() + ".jpg";
                 int lengthOfFile = connexion.getContentLength();
-                String PATH = Utils.folderWCVPathTmp;
-                File folder = new File(PATH);
-                if(!folder.exists()){
-                    folder.mkdir();
-                }
                 InputStream input = new BufferedInputStream(mUrl.openStream());
-                OutputStream output = new FileOutputStream(PATH + targetFileName);
+                OutputStream output = new FileOutputStream(tmpFolderPath + targetFileName);
                 byte data[] = new byte[1024];
                 long total = 0;
                 while ((count = input.read(data)) != -1) {
@@ -125,7 +135,7 @@ public class ShareDialog extends DialogFragment {
                 input.close();
 
                 // Compress
-                File file =  new File(PATH + targetFileName);
+                File file =  new File(tmpFolderPath + targetFileName);
                 Bitmap bmp = BitmapFactory.decodeFile(file.getAbsolutePath());
                 FileOutputStream out = new FileOutputStream(file);
                 bmp.compress(Bitmap.CompressFormat.JPEG, 78, out);

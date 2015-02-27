@@ -36,7 +36,7 @@
 <string name="how_to">"Jak na to"</string>
 <string name="dialog_positive_text">"Uložit"</string>
 <string name="dialog_positive_toast_message">"Uloženo!"</string>
-<string name="empty_list_view">"Nebyly nalezeny žádné WebKamery. Pomocí spodního FAB tlačítka můžete nějakou ručně přidat nebo importovat ze serveru…"</string>
+<string name="empty_list_view">"Jejda, seznam je prázdný. Chtěli byste vytvořit nebo importovat nějaké WebKamery? Použijte červené tlačítko."</string>
 <string name="pref_database">"Databáze"</string>
 <string name="pref_import_from_ext">"Import z Externího úložiště"</string>
 <string name="pref_import_from_ext_summ">"Importovat databázi WebKamer z Externího úložiště"</string>
@@ -149,4 +149,10 @@
 <string name="show_on_map">"Zobrazit na mapě"</string>
 <string name="zoom_small">"zoom"</string>
 <string name="undo">"VRÁTIT ZPĚT"</string>
+<string name="nearby">"Z okolí"</string>
+<string name="select_radius">"Zadejte poloměr"</string>
+<string name="no_nearby_webcams">"Žádné WebKamery v okolí"</string>
+<string name="no_nearby_webcams_summary">"V zadané vzdálenosti nebyly nalezeny žádné WebKamery. Zkuste prosím zvětšit poloměr."</string>
+<string name="pref_clear_cache_and_tmp">"Vyčistit mezipaměť"</string>
+<string name="pref_clear_cache_and_tmp_summary">"Vyčistit mezipaměť a všechny dočasné soubory této aplikace"</string>
 </resources>

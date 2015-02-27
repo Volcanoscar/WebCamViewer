@@ -115,6 +115,7 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
     private TextView seekBarText;
     private int seekBarProgress;
     private int seekBarCorrection;
+    private String units;
 
     public static interface ReloadInterface {
         public void invokeReload();
@@ -461,11 +462,17 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
                 seekBar = (SeekBar) dialog.getCustomView().findViewById(R.id.seekbar_seek);
                 seekBarText = (TextView) dialog.getCustomView().findViewById(R.id.seekbar_text);
 
+                units = " km";
+                String mLocale = getResources().getConfiguration().locale.getISO3Country();
+                if (mLocale.equalsIgnoreCase(Locale.US.getISO3Country())) {
+                    units = " mi";
+                }
+
                 seekBarCorrection = 10;
                 seekBar.setMax(290);
                 seekBarProgress = 50;
                 seekBar.setProgress(seekBarProgress - seekBarCorrection);
-                seekBarText.setText((seekBar.getProgress() + seekBarCorrection) + " km");
+                seekBarText.setText((seekBar.getProgress() + seekBarCorrection) + units);
 
                 seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                     int val = seekBar.getProgress();
@@ -482,7 +489,7 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
                     @Override
                     public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
                         val = progressValue + seekBarCorrection;
-                        seekBarText.setText(val + " km");
+                        seekBarText.setText(val + units);
                     }
                 });
 

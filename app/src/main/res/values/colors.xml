@@ -2,11 +2,11 @@
 <resources>
 
     <!-- Material design -->
-    <color name="primary">#558b2f</color>
+    <color name="primary">#4D8531</color>
     <color name="primary_dark">#33691e</color>
-    <color name="accent">#558b2f</color>
+    <color name="accent">@color/primary</color>
     <color name="hyperlink">#689f38</color>
-    <color name="ripple">@color/accent</color>
+    <color name="ripple">@color/primary</color>
 
     <color name="white">#ffffffff</color>
     <color name="yellow">#ffeb3b</color>
@@ -14,5 +14,11 @@
     <color name="black">#000000</color>
     <color name="grey">#cecece</color>
     <color name="light_grey">#44909090</color>
+
+    <color name="fab_normal">#D12C00</color>
+    <color name="fab_pressed">#BA2700</color>
+    <color name="fab_ripple">#A72700</color>
+
+    <color name="swipe">@color/fab_normal</color>
 
 </resources>

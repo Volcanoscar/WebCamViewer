@@ -19,10 +19,12 @@
 package cz.yetanotherview.webcamviewer.app.adapter;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -49,6 +51,13 @@ public class CategoryAdapter extends ArrayAdapter<Category> {
 
         TextView categoryName = (TextView) convertView.findViewById(R.id.categoryName);
         TextView categoryCount = (TextView) convertView.findViewById(R.id.categoryCount);
+
+        categoryName.setTypeface(null, Typeface.NORMAL);
+        categoryCount.setTypeface(null, Typeface.NORMAL);
+        if (((ListView)parent).isItemChecked(position)) {
+            categoryName.setTypeface(null, Typeface.BOLD);
+            categoryCount.setTypeface(null, Typeface.BOLD);
+        }
 
         categoryName.setText(category.getcategoryName());
         categoryCount.setText("(" + category.getCountAsString() + ")");
