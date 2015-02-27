@@ -73,7 +73,6 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
         //Picasso.with(webcamViewHolder.itemView.getContext()).setIndicatorsEnabled(true);
         Picasso.with(webcamViewHolder.itemView.getContext())
                 .load(webCam.getUrl())
-                .fit()
                 .transform(new SizeAndRoundTransform(6, 0))
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.placeholder_error)

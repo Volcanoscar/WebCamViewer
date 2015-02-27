@@ -36,7 +36,7 @@
 <string name="how_to">"Jak na to"</string>
 <string name="dialog_positive_text">"Uložit"</string>
 <string name="dialog_positive_toast_message">"Uloženo!"</string>
-<string name="empty_list_view">"Jejda, seznam je prázdný. Chtěli byste vytvořit nebo importovat nějaké WebKamery? Použijte červené tlačítko."</string>
+<string name="empty_list_view">"Jejda, seznam je prázdný. Chtěli byste vytvořit nebo importovat nějaké WebKamery? Použijte spodní červené tlačítko."</string>
 <string name="pref_database">"Databáze"</string>
 <string name="pref_import_from_ext">"Import z Externího úložiště"</string>
 <string name="pref_import_from_ext_summ">"Importovat databázi WebKamer z Externího úložiště"</string>

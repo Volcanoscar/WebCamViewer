@@ -35,7 +35,8 @@ public class SizeAndRoundTransform implements com.squareup.picasso.Transformatio
     @Override
     public Bitmap transform(final Bitmap source) {
         int targetWidth = source.getWidth();
-        int targetHeight = (int) (targetWidth * 0.67);
+        //int targetHeight = (int) (targetWidth * 0.67);
+        int targetHeight = source.getHeight();
 
         final Paint paint = new Paint();
         paint.setAntiAlias(true);

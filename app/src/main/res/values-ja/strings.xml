@@ -22,7 +22,7 @@
 <string name="how_to">"使い方"</string>
 <string name="dialog_positive_text">"保存"</string>
 <string name="dialog_positive_toast_message">"保存しました!"</string>
-<string name="empty_list_view"></string>
+<string name="empty_list_view">"リストは空です。ウェブカムを作成するか、インポートしますか? 赤いボタンを使用してください。"</string>
 <string name="pref_database">"データベース"</string>
 <string name="pref_import_from_ext">"外部ストレージからインポート"</string>
 <string name="pref_import_from_ext_summ">"外部ストレージからウェブカムデータベースをインポートします"</string>

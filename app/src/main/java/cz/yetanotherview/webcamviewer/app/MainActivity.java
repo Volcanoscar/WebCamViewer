@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,8 +36,8 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -256,7 +257,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         else if(numberOfColumns == 2 && mOrientation == 2) {
             mLayoutId = 3;
         }
-        mLayoutManager = new GridLayoutManager(this, mLayoutId);
+        mLayoutManager = new StaggeredGridLayoutManager(mLayoutId, StaggeredGridLayoutManager.VERTICAL);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.cardList);
         mRecyclerView.setHasFixedSize(true);
@@ -718,17 +719,34 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                             @Override
                             public void onDismissed(Snackbar snackbar) {
                                 if (notUndo) {
-                                    synchronized (sDataLock) {
-                                        db.deleteWebCam(wc.getId());
-                                        db.closeDB();
-                                    }
-                                    BackupManager backupManager = new BackupManager(getApplicationContext());
-                                    backupManager.dataChanged();
-                                    reInitializeDrawerListAdapter();
+                                    new deleteWebCamBackgroundTask().execute(wc.getId());
                                 }
                             }
                         })
                 , this);
+    }
+
+    private class deleteWebCamBackgroundTask extends AsyncTask<Long, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Long... longs) {
+
+            synchronized (sDataLock) {
+                db.deleteWebCam(longs[0]);
+                db.closeDB();
+            }
+            BackupManager backupManager = new BackupManager(getApplicationContext());
+            backupManager.dataChanged();
+            this.publishProgress();
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+            reInitializeDrawerListAdapter();
+        }
     }
 
     @Override

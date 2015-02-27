@@ -182,6 +182,8 @@ public class FullScreenFragment extends Fragment {
                     @Override
                     public void onError() {
                         progressBar.setVisibility(View.GONE);
+                        mButtonsLayout.startAnimation(fadeOut);
+                        mButtonsLayout.setBackgroundResource(R.drawable.selector);
                     }
                 });
     }
