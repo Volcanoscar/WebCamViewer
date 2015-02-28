@@ -26,12 +26,15 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 
 public class SizeAndRoundTransform implements com.squareup.picasso.Transformation {
+
     private final int radius;
     private final int margin;
+
     public SizeAndRoundTransform(final int radius, final int margin) {
         this.radius = radius;
         this.margin = margin;
     }
+
     @Override
     public Bitmap transform(final Bitmap source) {
         int targetWidth = source.getWidth();
@@ -49,6 +52,7 @@ public class SizeAndRoundTransform implements com.squareup.picasso.Transformatio
         }
         return output;
     }
+
     @Override
     public String key() {
         return "rounded(radius=" + radius + ", margin=" + margin + ")";

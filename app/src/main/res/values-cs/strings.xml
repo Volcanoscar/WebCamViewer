@@ -7,13 +7,13 @@
         Pro pomoc s překladem do vašeho jazyka použijte <b><a href="http://goo.gl/MUJqYZ">tento online nástroj</a></b>.<br>
         <br>
         <b>Velké díky patří těmto open source projektům:</b><br>
-    <b><a href="https://developer.android.com/tools/support-library/features.html">Support knihovny</a></b><i> od Google.</i><br>
-    <b><a href="https://github.com/afollestad/material-dialogs">Material Dialogy</a></b><i> od Aidan Follestad.</i><br>
-    <b><a href="https://github.com/square/picasso">Picasso</a></b><i> od Square.</i><br><br>
+        <b><a href="https://developer.android.com/tools/support-library/features.html">Support knihovny</a></b><i> od Google.</i><br>
+        <b><a href="https://github.com/afollestad/material-dialogs">Material Dialogy</a></b><i> od Aidan Follestad.</i><br>
+        <b><a href="https://github.com/square/picasso">Picasso</a></b><i> od Square.</i><br><br>
         <b>Velké díky patří také těmto překladatelům:</b><br>
-    Čínština (cn + tw) - <b><a href="https://plus.google.com/105827775849570821979/">John Chung</a></b><br>
-    Japonština - <b><a href="mailto:naofum@gmail.com">Naofumi</a></b><br>
-    <br>
+        Japonština - <b><a href="mailto:naofum@gmail.com">Naofumi</a></b><br>
+        Norština - <b><a href="http://0p.no/">Lars Falk-Petersen</a></b><br>
+        <br>
         <b>Mé velké poděkování patří <a href="http://upload.wikimedia.org/wikipedia/commons/b/b3/Shield-Trinity-Scutum-Fidei-English.svg">Bohu, Ježíši i Duchu Svatému!</a> A také <a href="https://plus.google.com/104896455725487013630/">Radku Matouchovi</a></b> za pomoc + užitečné tipy.
     ]]></string>
 <string name="action_menu_about">"O aplikaci"</string>
@@ -155,4 +155,6 @@
 <string name="no_nearby_webcams_summary">"V zadané vzdálenosti nebyly nalezeny žádné WebKamery. Zkuste prosím zvětšit poloměr."</string>
 <string name="pref_clear_cache_and_tmp">"Vyčistit mezipaměť"</string>
 <string name="pref_clear_cache_and_tmp_summary">"Vyčistit mezipaměť a všechny dočasné soubory této aplikace"</string>
+<string name="nearby_webcams">"WebKamery z okolí"</string>
+<string name="all">"Vše"</string>
 </resources>

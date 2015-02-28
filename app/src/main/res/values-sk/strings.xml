@@ -7,13 +7,13 @@
         Pre pomoc s prekladom do vášho jazyka použite <b><a href="http://goo.gl/MUJqYZ">tento online nástroj</a></b>.<br>
         <br>
         <b>Veľké vďaka patrí týmto open source projektom:</b><br>
-    <b><a href="https://developer.android.com/tools/support-library/features.html">Support knižnice</a></b><i> od Google.</i><br>
-    <b><a href="https://github.com/afollestad/material-dialogs">Materiál Dialógy</a></b><i> od Aidan Follestad.</i><br>
-    <b><a href="https://github.com/square/picasso">Picasso</a></b><i> od Square.</i><br><br>
+        <b><a href="https://developer.android.com/tools/support-library/features.html">Support knižnice</a></b><i> od Google.</i><br>
+        <b><a href="https://github.com/afollestad/material-dialogs">Materiál Dialógy</a></b><i> od Aidan Follestad.</i><br>
+        <b><a href="https://github.com/square/picasso">Picasso</a></b><i> od Square.</i><br><br>
         <b>Veľké vďaka patrí tiež týmto prekladateľom:</b><br>
-    Čínština (cn + tw) - <b><a href="https://plus.google.com/105827775849570821979/">John Chung</a></b><br>
-    Japončina - <b><a href="mailto:naofum@gmail.com">Naofumi</a></b><br>
-    <br>
+        Japončina - <b><a href="mailto:naofum@gmail.com">Naofumi</a></b><br>
+        Nórčina - <b><a href="http://0p.no/">Lars Falk-Petersen</a></b><br>
+        <br>
         <b>Moje veľké poďakovanie patrí <a href="http://upload.wikimedia.org/wikipedia/commons/b/b3/Shield-Trinity-Scutum-Fidei-English.svg">Bohu, Ježišovi i Duchu Svätému!</a> A tiež <a href="https://plus.google.com/104896455725487013630/">Radku Matouchovi</a></b> za pomoc + užitočné tipy.
     ]]></string>
 <string name="action_menu_about">"O aplikácii"</string>
@@ -155,4 +155,6 @@
 <string name="no_nearby_webcams_summary">"V zadanej vzdialenosti neboli nájdené žiadne WebKamery. Skúste prosím zväčšiť polomer."</string>
 <string name="pref_clear_cache_and_tmp">"Vyčistiť vyrovnávaciu pamäť"</string>
 <string name="pref_clear_cache_and_tmp_summary">"Vyčistiť vyrovnávaciu pamäť a všetky dočasné súbory tejto aplikácie"</string>
+<string name="nearby_webcams">"WebKamery z okolia"</string>
+<string name="all">"Všetko"</string>
 </resources>

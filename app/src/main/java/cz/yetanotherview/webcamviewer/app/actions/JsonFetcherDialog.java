@@ -234,7 +234,7 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
 
                             // Swap dialogs
                             maxProgressValue = importWebCams.size();
-                            if ((selection == 0) || (selection == 4)) {
+                            if ((selection == 0) || (selection == 4 || (selection == 5))) {
                                 swapProgressDialog();
                             }
 
@@ -298,7 +298,6 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
                                     handleNearSelection();
                                 }
                                 else if (selection == 2) {
-
                                     Collections.sort(importWebCams, new WebCamNameComparator());
 
                                     noNewWebCams = false;
@@ -383,7 +382,43 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
                                     }
                                     showResult();
                                 }
+                                else if (selection == 5) {
+                                    noNewWebCams = false;
 
+                                    long categoryAll = db.createCategory(new Category(getString(R.string.all) + " " + Utils.getDateString()));
+                                    for (WebCam webCam : importWebCams) {
+                                            if (allWebCams.size() != 0) {
+                                                boolean notFound = false;
+                                                for (WebCam allWebCam : allWebCams) {
+                                                    if (webCam.getUniId() == allWebCam.getUniId()) {
+                                                        db.createWebCamCategory(allWebCam.getId(), categoryAll);
+                                                        noNewWebCams = false;
+                                                        notFound = false;
+                                                        duplicityWebCams++;
+                                                        break;
+                                                    }
+                                                    else notFound = true;
+                                                }
+                                                if (notFound) {
+                                                    db.createWebCam(webCam, new long[]{categoryAll});
+                                                    noNewWebCams = false;
+                                                    newWebCams++;
+                                                }
+                                            }
+                                            else {
+                                                db.createWebCam(webCam, new long[]{categoryAll});
+                                                noNewWebCams = false;
+                                                newWebCams++;
+                                            }
+
+                                        progressUpdate();
+                                    }
+                                    if (noNewWebCams) {
+                                        db.deleteCategory(categoryAll, false);
+                                    }
+
+                                    showResult();
+                                }
                             }
                             db.closeDB();
                             BackupManager backupManager = new BackupManager(mActivity);
@@ -419,7 +454,7 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
         mActivity.runOnUiThread(new Runnable() {
             public void run() {
 
-                if ((selection == 0) || (selection == 4)) {
+                if ((selection == 0) || (selection == 4) || (selection == 5)) {
                     initDialog.dismiss();
                 }
                 progressDialog = new MaterialDialog.Builder(mActivity)

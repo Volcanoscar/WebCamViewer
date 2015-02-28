@@ -124,9 +124,9 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         super.onCreate(savedInstanceState);
 
         // loading saved preferences
-        loadPref();
         allWebCamsString = getString(R.string.all_webcams);
         allWebCamsTitle = getString(R.string.app_name);
+        loadPref();
 
         // Inflating main layout
         setContentView(R.layout.activity_main);
@@ -183,7 +183,12 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
     private void initToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mToolbar.setTitle(allWebCamsTitle);
+        if (selectedCategoryName.contains(allWebCamsString)) {
+            mToolbar.setTitle(allWebCamsTitle);
+        }
+        else {
+            mToolbar.setTitle(selectedCategoryName);
+        }
         setSupportActionBar(mToolbar);
     }
 
@@ -218,8 +223,11 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         }
         db.closeDB();
 
-        if (mDrawerList.getCheckedItemPosition() == -1) {
+        if (selectedCategoryName.contains(allWebCamsString)) {
             mDrawerList.setItemChecked(0, true);
+        }
+        else {
+            mDrawerList.setItemChecked(selectedCategory, true);
         }
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
@@ -322,9 +330,9 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            selectedCategory = position;
             reInitializeRecyclerViewAdapter(position);
             reInitializeDrawerListAdapter();
-            selectedCategory = position;
 
             if (selectedCategoryName.contains(allWebCamsString)) {
                 getSupportActionBar().setTitle(allWebCamsTitle);
@@ -431,6 +439,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 Intent intent = new Intent();
                 intent.setClass(MainActivity.this, SettingsActivity.class);
                 startActivityForResult(intent, 0);
+                selectedCategoryName = allWebCamsString;
+                saveToPref();
                 break;
 
             //About
@@ -751,7 +761,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
     @Override
     public void invokeReload() {
-        reInitializeRecyclerViewAdapter(0);
+        reInitializeRecyclerViewAdapter(selectedCategory);
         reInitializeDrawerListAdapter();
     }
 
@@ -892,7 +902,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         autoRefreshFullScreenOnly = preferences.getBoolean("pref_auto_refresh_fullscreen", false);
         zoom = preferences.getFloat("pref_zoom", 2);
         selectedCategory = preferences.getInt("pref_selected_category", 0);
-        selectedCategoryName = preferences.getString("pref_selectedCategoryName", allWebCamsString);
+        selectedCategoryName = preferences.getString("pref_selected_category_name", allWebCamsString);
         screenAlwaysOn = preferences.getBoolean("pref_screen_always_on", false);
     }
 
@@ -901,8 +911,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("pref_first_run", firstRun);
         editor.putInt("number_of_columns", numberOfColumns);
-        editor.putInt("pref_selected_category",selectedCategory);
-        editor.putString("pref_selectedCategoryName",selectedCategoryName);
+        editor.putInt("pref_selected_category", selectedCategory);
+        editor.putString("pref_selected_category_name", selectedCategoryName);
         editor.apply();
     }
 }
