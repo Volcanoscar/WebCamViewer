@@ -343,6 +343,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 getSupportActionBar().setTitle(selectedCategoryName);
             }
             mDrawerLayout.closeDrawers();
+            fab.show();
         }
     }
 

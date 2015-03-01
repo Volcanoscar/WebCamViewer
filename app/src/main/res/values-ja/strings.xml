@@ -143,4 +143,8 @@
 <string name="pref_clear_cache_and_tmp_summary">"このアプリケーションのキャッシュと一時フォルダをすべてクリアします"</string>
 <string name="nearby_webcams">"近くのウェブカム"</string>
 <string name="all">"すべて"</string>
+<string name="no_coordinates">"経度と緯度はありません"</string>
+<string name="no_coordinates_summary">"このウェブカムは場所に関する情報がありません (経度と緯度は編集ダイアログで追加できます)"</string>
+<string name="google_play_services">"Google Playサービス"</string>
+<string name="google_play_services_summary">"初めにGoogle Playサービスをインストールするかアップデートしてください。"</string>
 </resources>

@@ -78,22 +78,44 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
         webcamViewHolder.vProgress.setVisibility(View.VISIBLE);
 
         //Picasso.with(webcamViewHolder.itemView.getContext()).setIndicatorsEnabled(true);
-        Picasso.with(webcamViewHolder.itemView.getContext())
-                .load(webCam.getUrl())
-                .transform(new SizeTransform(mLayoutId))
-                .placeholder(R.drawable.placeholder)
-                .error(R.drawable.placeholder_error)
-                .into(webcamViewHolder.vImage, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        webcamViewHolder.vProgress.setVisibility(View.GONE);
-                    }
+        if (mLayoutId == 1) {
+            Picasso.with(webcamViewHolder.itemView.getContext())
+                    .load(webCam.getUrl())
+                    .fit()
+                    .transform(new SizeTransform(mLayoutId))
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.placeholder_error)
+                    .into(webcamViewHolder.vImage, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            webcamViewHolder.vProgress.setVisibility(View.GONE);
+                        }
 
-                    @Override
-                    public void onError() {
-                        webcamViewHolder.vProgress.setVisibility(View.GONE);
-                    }
-                });
+                        @Override
+                        public void onError() {
+                            webcamViewHolder.vProgress.setVisibility(View.GONE);
+                        }
+                    });
+        }
+        else {
+            Picasso.with(webcamViewHolder.itemView.getContext())
+                    .load(webCam.getUrl())
+                    .transform(new SizeTransform(mLayoutId))
+                    .placeholder(R.drawable.placeholder)
+                    .error(R.drawable.placeholder_error)
+                    .into(webcamViewHolder.vImage, new Callback() {
+                        @Override
+                        public void onSuccess() {
+                            webcamViewHolder.vProgress.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onError() {
+                            webcamViewHolder.vProgress.setVisibility(View.GONE);
+                        }
+                    });
+        }
+
     }
 
     public class WebCamViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
