@@ -157,4 +157,8 @@
 <string name="pref_clear_cache_and_tmp_summary">"Clear all cache and temporary folders of this application"</string>
 <string name="nearby_webcams">"Nearby WebCams"</string>
 <string name="all">"All"</string>
+<string name="no_coordinates">"No coordinates"</string>
+<string name="no_coordinates_summary">"This WebCam does not contain information about the location (coordinates can be added directly in the edit dialog)."</string>
+<string name="google_play_services">"Google Play Services"</string>
+<string name="google_play_services_summary">"Please install or update your Google Play Services first."</string>
 </resources>

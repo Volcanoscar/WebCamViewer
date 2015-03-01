@@ -48,6 +48,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.melnykov.fab.FloatingActionButton;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
@@ -534,7 +536,31 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         intent.putExtra("interval", autoRefreshInterval);
         intent.putExtra("screenAlwaysOn", screenAlwaysOn);
 
-        startActivity(intent);
+        if (!map){
+            startActivity(intent);
+        }
+        else {
+            if (webCam.getLatitude() != 0 && webCam.getLongitude() != 0) {
+                int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
+                if(status == ConnectionResult.SUCCESS) {
+                    startActivity(intent);
+                }
+                else {
+                    new MaterialDialog.Builder(this)
+                            .title(R.string.google_play_services)
+                            .content(R.string.google_play_services_summary)
+                            .positiveText(android.R.string.ok)
+                            .show();
+                }
+            }
+            else {
+                new MaterialDialog.Builder(this)
+                        .title(R.string.no_coordinates)
+                        .content(R.string.no_coordinates_summary)
+                        .positiveText(android.R.string.ok)
+                        .show();
+            }
+        }
     }
 
     private void showOptionsDialog(final int position) {
@@ -681,6 +707,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     @Override
     public void webCamDeleted(final WebCam wc, final int position) {
 
+        fab.hide();
         notUndo = true;
 
         if (mAdapter != null && mAdapter.getItemCount() > 0) {
@@ -689,7 +716,6 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
         checkAdapterIsEmpty();
         reInitializeDrawerListAdapter();
-        fab.show();
 
         SnackbarManager.show(
                 Snackbar.with(getApplicationContext())
@@ -703,6 +729,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                                 checkAdapterIsEmpty();
                                 reInitializeDrawerListAdapter();
                                 notUndo = false;
+                                fab.show();
                             }
                         })
                         .eventListener(new EventListener() {
@@ -730,6 +757,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                             public void onDismissed(Snackbar snackbar) {
                                 if (notUndo) {
                                     new deleteWebCamBackgroundTask().execute(wc.getId());
+                                    fab.show();
                                 }
                             }
                         })
@@ -766,29 +794,134 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     }
 
     private void saveDone() {
-        Snackbar.with(getApplicationContext())
-                .text(R.string.dialog_positive_toast_message)
-                .actionLabel(R.string.dismiss)
-                .actionColor(getResources().getColor(R.color.yellow))
-                .show(this);
+        fab.hide();
+
+        SnackbarManager.show(
+                Snackbar.with(getApplicationContext())
+                        .text(R.string.dialog_positive_toast_message)
+                        .actionLabel(R.string.dismiss)
+                        .actionColor(getResources().getColor(R.color.yellow))
+                        .actionListener(new ActionClickListener() {
+                            @Override
+                            public void onActionClicked(Snackbar snackbar) {
+                                fab.show();
+                            }
+                        })
+                        .eventListener(new EventListener() {
+                            @Override
+                            public void onShow(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onShowByReplace(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onShown(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onDismiss(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onDismissByReplace(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onDismissed(Snackbar snackbar) {
+                                    fab.show();
+                            }
+                        })
+                , this);
     }
 
      private void refreshIsRunning() {
-        Snackbar.with(getApplicationContext())
-                .text(R.string.refresh_is_running)
-                .actionLabel(R.string.dismiss)
-                .actionColor(getResources().getColor(R.color.yellow))
-                .duration(Snackbar.SnackbarDuration.LENGTH_SHORT)
-                .show(this);
+         fab.hide();
+
+         SnackbarManager.show(
+                 Snackbar.with(getApplicationContext())
+                         .text(R.string.refresh_is_running)
+                         .actionLabel(R.string.dismiss)
+                         .actionColor(getResources().getColor(R.color.yellow))
+                         .duration(Snackbar.SnackbarDuration.LENGTH_SHORT)
+                         .actionListener(new ActionClickListener() {
+                             @Override
+                             public void onActionClicked(Snackbar snackbar) {
+                                 fab.show();
+                             }
+                         })
+                         .eventListener(new EventListener() {
+                             @Override
+                             public void onShow(Snackbar snackbar) {
+                             }
+
+                             @Override
+                             public void onShowByReplace(Snackbar snackbar) {
+                             }
+
+                             @Override
+                             public void onShown(Snackbar snackbar) {
+                             }
+
+                             @Override
+                             public void onDismiss(Snackbar snackbar) {
+                             }
+
+                             @Override
+                             public void onDismissByReplace(Snackbar snackbar) {
+                             }
+
+                             @Override
+                             public void onDismissed(Snackbar snackbar) {
+                                 fab.show();
+                             }
+                         })
+                 , this);
     }
 
     private void nothingToRefresh() {
-        Snackbar.with(getApplicationContext())
-                .text(R.string.nothing_to_refresh)
-                .actionLabel(R.string.dismiss)
-                .actionColor(getResources().getColor(R.color.yellow))
-                .duration(Snackbar.SnackbarDuration.LENGTH_SHORT)
-                .show(this);
+        fab.hide();
+
+        SnackbarManager.show(
+                Snackbar.with(getApplicationContext())
+                        .text(R.string.nothing_to_refresh)
+                        .actionLabel(R.string.dismiss)
+                        .actionColor(getResources().getColor(R.color.yellow))
+                        .duration(Snackbar.SnackbarDuration.LENGTH_SHORT)
+                        .actionListener(new ActionClickListener() {
+                            @Override
+                            public void onActionClicked(Snackbar snackbar) {
+                                fab.show();
+                            }
+                        })
+                        .eventListener(new EventListener() {
+                            @Override
+                            public void onShow(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onShowByReplace(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onShown(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onDismiss(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onDismissByReplace(Snackbar snackbar) {
+                            }
+
+                            @Override
+                            public void onDismissed(Snackbar snackbar) {
+                                fab.show();
+                            }
+                        })
+                , this);
     }
 
     // Pull To Refresh 2/2

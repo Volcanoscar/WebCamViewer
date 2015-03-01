@@ -141,6 +141,6 @@
 <string name="no_nearby_webcams_summary">"近くにウェブカムはありません。範囲を広げてみてください。"</string>
 <string name="pref_clear_cache_and_tmp">"キャッシュをクリア"</string>
 <string name="pref_clear_cache_and_tmp_summary">"このアプリケーションのキャッシュと一時フォルダをすべてクリアします"</string>
-<string name="nearby_webcams"></string>
-<string name="all"></string>
+<string name="nearby_webcams">"近くのウェブカム"</string>
+<string name="all">"すべて"</string>
 </resources>

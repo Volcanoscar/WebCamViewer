@@ -44,7 +44,8 @@ public class SaveDialog extends DialogFragment {
 
     private File parentFolder;
     private File[] parentContents;
-    private boolean canGoUp = true;
+    private boolean canGoUp = false;
+    private String topFolder;
 
     private String name;
     private String url;
@@ -53,6 +54,7 @@ public class SaveDialog extends DialogFragment {
 
     public SaveDialog() {
         parentFolder = Environment.getExternalStorageDirectory();
+        topFolder = String.valueOf(parentFolder);
         parentContents = listFiles();
     }
 
@@ -71,7 +73,8 @@ public class SaveDialog extends DialogFragment {
                     public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
                         if (canGoUp && which == 0) {
                             parentFolder = parentFolder.getParentFile();
-                            canGoUp = parentFolder.getParent() != null;
+                            canGoUp = !parentFolder.toString().equals(topFolder);
+
                         } else {
                             parentFolder = parentContents[canGoUp ? which - 1 : which];
                             canGoUp = true;
@@ -146,7 +149,8 @@ public class SaveDialog extends DialogFragment {
         File[] contents = parentFolder.listFiles();
         List<File> results = new ArrayList<>();
         for (File fi : contents) {
-            if (fi.isDirectory()) results.add(fi);
+            char fiFirstChar = fi.getName().charAt(0);
+            if (fi.isDirectory() && fiFirstChar != '.') results.add(fi);
         }
         Collections.sort(results, new FolderSorter());
         return results.toArray(new File[results.size()]);

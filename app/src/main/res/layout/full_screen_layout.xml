@@ -26,7 +26,7 @@
         android:id="@+id/touch_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"/>
+        android:background="@color/black"/>
 
         <include
             layout="@layout/loading_progress_bar"/>

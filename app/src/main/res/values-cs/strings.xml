@@ -157,4 +157,8 @@
 <string name="pref_clear_cache_and_tmp_summary">"Vyčistit mezipaměť a všechny dočasné soubory této aplikace"</string>
 <string name="nearby_webcams">"WebKamery z okolí"</string>
 <string name="all">"Vše"</string>
+<string name="no_coordinates">"Žádné souřadnice"</string>
+<string name="no_coordinates_summary">"Tato WebKamera neobsahuje informace o poloze (souřadnice můžete přidat přímo v editačním okně)."</string>
+<string name="google_play_services">"Služby Google Play"</string>
+<string name="google_play_services_summary">"Nejprve prosím nainstalujte nebo aktualizujte služby Google Play."</string>
 </resources>

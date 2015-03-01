@@ -21,7 +21,6 @@ package cz.yetanotherview.webcamviewer.app.fullscreen;
 import android.app.Activity;
 import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,11 +46,6 @@ public class FullScreenActivity extends Activity {
         boolean map = intent.getExtras().getBoolean("map");
         boolean fullScreen = intent.getExtras().getBoolean("fullScreen");
         boolean screenAlwaysOn = intent.getExtras().getBoolean("screenAlwaysOn");
-
-        // Orientation
-        if (!map) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-        }
 
         // Go FullScreen only on KitKat and up
         if (Build.VERSION.SDK_INT >= 19 && fullScreen) {

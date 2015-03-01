@@ -32,6 +32,9 @@ import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.PicassoTools;
@@ -53,6 +56,8 @@ public class FullScreenFragment extends Fragment {
     private String name;
     private String url;
     private float zoom;
+    private double latitude;
+    private double longitude;
     private boolean autoRefresh;
     private int autoRefreshInterval;
 
@@ -61,14 +66,14 @@ public class FullScreenFragment extends Fragment {
                              Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.full_screen_layout, container, false);
 
-        mButtonsLayout = (RelativeLayout) view.findViewById(R.id.buttons_layout);
-
         Intent intent = getActivity().getIntent();
         name = intent.getExtras().getString("name");
         url = intent.getExtras().getString("url");
         zoom = intent.getExtras().getFloat("zoom");
         autoRefresh = intent.getExtras().getBoolean("autoRefresh");
         autoRefreshInterval = intent.getExtras().getInt("interval");
+        latitude = intent.getExtras().getDouble("latitude");
+        longitude = intent.getExtras().getDouble("longitude");
 
         // Auto Refresh timer
         if (autoRefresh) {
@@ -76,13 +81,15 @@ public class FullScreenFragment extends Fragment {
         }
 
         initViews();
-        loadImage();
         setAnimation();
+        loadImage();
 
         return view;
     }
 
     private void initViews() {
+        mButtonsLayout = (RelativeLayout) view.findViewById(R.id.buttons_layout);
+
         image = (TouchImageView) view.findViewById(R.id.touch_image);
         image.setMaxZoom(zoom);
         image.setOnClickListener(new View.OnClickListener() {
@@ -97,7 +104,26 @@ public class FullScreenFragment extends Fragment {
         mapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ((FullScreenActivity) getActivity()).replaceFragments(true);
+                if (latitude != 0 && longitude != 0) {
+                    int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity().getApplicationContext());
+                    if(status == ConnectionResult.SUCCESS) {
+                        ((FullScreenActivity) getActivity()).replaceFragments(true);
+                    }
+                    else {
+                        new MaterialDialog.Builder(getActivity())
+                                .title(R.string.google_play_services)
+                                .content(R.string.google_play_services_summary)
+                                .positiveText(android.R.string.ok)
+                                .show();
+                    }
+                }
+                else {
+                    new MaterialDialog.Builder(getActivity())
+                            .title(R.string.no_coordinates)
+                            .content(R.string.no_coordinates_summary)
+                            .positiveText(android.R.string.ok)
+                            .show();
+                }
             }
         });
 
@@ -168,9 +194,9 @@ public class FullScreenFragment extends Fragment {
         //Picasso.with(image.getContext()).setIndicatorsEnabled(true);
         Picasso.with(image.getContext())
                 .load(url)
-                .fit()
+                //.fit()
                 .placeholder(R.drawable.placeholder)
-                .error(R.drawable.placeholder_error)
+                .error(R.drawable.placeholder_error_full)
                 .into(image, new Callback() {
                     @Override
                     public void onSuccess() {

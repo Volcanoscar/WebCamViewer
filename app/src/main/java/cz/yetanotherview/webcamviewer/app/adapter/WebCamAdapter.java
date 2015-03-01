@@ -19,6 +19,7 @@
 package cz.yetanotherview.webcamviewer.app.adapter;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,8 +61,14 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
 
     @Override
     public WebCamViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.webcam_layout, viewGroup, false);
-        return new WebCamViewHolder(itemView);
+
+        if (mLayoutId == 1) {
+            if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT_WATCH) {
+                return new WebCamViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.webcam_layout_list_pre_lollipop, viewGroup, false));
+            }
+            else return new WebCamViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.webcam_layout_list, viewGroup, false));
+        }
+        else return new WebCamViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.webcam_layout_grid, viewGroup, false));
     }
 
     @Override
@@ -73,7 +80,7 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
         //Picasso.with(webcamViewHolder.itemView.getContext()).setIndicatorsEnabled(true);
         Picasso.with(webcamViewHolder.itemView.getContext())
                 .load(webCam.getUrl())
-                .transform(new SizeAndRoundTransform(6, 0))
+                .transform(new SizeTransform(mLayoutId))
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.placeholder_error)
                 .into(webcamViewHolder.vImage, new Callback() {

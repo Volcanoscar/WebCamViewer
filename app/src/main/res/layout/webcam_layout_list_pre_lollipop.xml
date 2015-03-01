@@ -1,0 +1,53 @@
+<!--
+~ *******************************************************************************
+~ Copyright (c) 2013-2015 Tomas Valenta
+~
+~ Licensed under the Apache License, Version 2.0 (the "License");
+~ you may not use this file except in compliance with the License.
+~ You may obtain a copy of the License at
+~
+~ http://www.apache.org/licenses/LICENSE-2.0
+~
+~ Unless required by applicable law or agreed to in writing, software
+~ distributed under the License is distributed on an "AS IS" BASIS,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+~ See the License for the specific language governing permissions and
+~ limitations under the License.
+~ *****************************************************************************
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MainCardViewList">
+
+        <include
+            layout="@layout/loading_progress_bar"/>
+
+        <ImageView
+            style="@style/MainImageView"
+            android:id="@+id/imageView"
+            android:contentDescription="@string/image_description" />
+
+        <ImageButton
+            style="@style/EditImageButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/imageView"
+            android:id="@+id/action_edit" />
+
+        <TextView
+            style="@style/CardTitle"
+            android:layout_alignBottom="@id/imageView"
+            android:shadowColor="@color/black"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="4"
+            android:id="@+id/titleTextView"/>
+
+        <View
+            android:layout_alignBottom="@id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/pre_lollipop_drop_shadow" />
+
+</RelativeLayout>

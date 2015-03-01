@@ -30,15 +30,21 @@
         <item name="android:thumb">@drawable/green_scrubber_control_selector</item>
     </style>
 
-    <style name="MainCardView">
+    <style name="MainCardViewGrid">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_marginTop">@dimen/margin_top</item>
-        <item name="android:layout_marginBottom">@dimen/margin_bottom</item>
-        <item name="android:layout_marginLeft">@dimen/main_margin</item>
-        <item name="android:layout_marginStart">@dimen/main_margin</item>
-        <item name="android:layout_marginRight">@dimen/main_margin</item>
-        <item name="android:layout_marginEnd">@dimen/main_margin</item>
+        <item name="android:layout_marginTop">@dimen/main_margin</item>
+        <item name="android:layout_marginLeft">@dimen/main_middle_margin</item>
+        <item name="android:layout_marginStart">@dimen/main_middle_margin</item>
+        <item name="android:layout_marginRight">@dimen/main_middle_margin</item>
+        <item name="android:layout_marginEnd">@dimen/main_middle_margin</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="MainCardViewList">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginTop">@dimen/margin_top_bottom</item>
         <item name="android:orientation">vertical</item>
     </style>
 

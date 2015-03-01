@@ -22,31 +22,37 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.RectF;
+import android.graphics.Rect;
 import android.graphics.Shader;
 
-public class SizeAndRoundTransform implements com.squareup.picasso.Transformation {
+public class SizeTransform implements com.squareup.picasso.Transformation {
 
-    private final int radius;
-    private final int margin;
+    private final int layoutId;
 
-    public SizeAndRoundTransform(final int radius, final int margin) {
-        this.radius = radius;
-        this.margin = margin;
+    public SizeTransform(final int layoutId) {
+        this.layoutId = layoutId;
     }
 
     @Override
     public Bitmap transform(final Bitmap source) {
-        int targetWidth = source.getWidth();
-        //int targetHeight = (int) (targetWidth * 0.67);
-        int targetHeight = source.getHeight();
 
-        final Paint paint = new Paint();
-        paint.setAntiAlias(true);
+        int targetWidth;
+        int targetHeight;
+
+        if (layoutId == 1) {
+            targetWidth = source.getWidth();
+            targetHeight = (int) (targetWidth * 0.67);
+        }
+        else {
+            targetWidth = source.getWidth();
+            targetHeight = source.getHeight();
+        }
+
+        final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setShader(new BitmapShader(source, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
         Bitmap output = Bitmap.createBitmap(targetWidth, targetHeight, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
-        canvas.drawRoundRect(new RectF(margin, margin, targetWidth - margin, targetHeight - margin), radius, radius, paint);
+        canvas.drawRect(new Rect(0, 0, targetWidth, targetHeight), paint);
         if (source != output) {
             source.recycle();
         }
@@ -55,6 +61,6 @@ public class SizeAndRoundTransform implements com.squareup.picasso.Transformatio
 
     @Override
     public String key() {
-        return "rounded(radius=" + radius + ", margin=" + margin + ")";
+        return "";
     }
 }

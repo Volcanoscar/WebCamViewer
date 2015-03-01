@@ -22,9 +22,9 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.nispok.snackbar.Snackbar;
 
 import java.io.BufferedInputStream;
 import java.io.FileOutputStream;
@@ -96,7 +96,11 @@ public class SaveProgressDialog extends DialogFragment {
         getActivity().runOnUiThread(new Runnable() {
             public void run() {
                 mProgressDialog.dismiss();
-                Toast.makeText(getActivity(), R.string.dialog_positive_toast_message, Toast.LENGTH_SHORT).show();
+                Snackbar.with(getActivity().getApplicationContext())
+                        .text(R.string.dialog_positive_toast_message)
+                        .actionLabel(R.string.dismiss)
+                        .actionColor(getResources().getColor(R.color.yellow))
+                        .show(getActivity());
             }
         });
     }
