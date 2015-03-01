@@ -6,7 +6,6 @@
     <color name="primary_dark">#33691e</color>
     <color name="accent">@color/primary</color>
     <color name="hyperlink">#689f38</color>
-    <color name="ripple">@color/primary</color>
 
     <color name="white">#ffffffff</color>
     <color name="yellow">#ffeb3b</color>
@@ -14,8 +13,6 @@
     <color name="black">#000000</color>
     <color name="grey">#cecece</color>
     <color name="light_grey">#44909090</color>
-    <color name="dark_grey">#212121</color>
-    <color name="dark_green">#123712</color>
 
     <color name="fab_normal">#D12C00</color>
     <color name="fab_pressed">#BA2700</color>

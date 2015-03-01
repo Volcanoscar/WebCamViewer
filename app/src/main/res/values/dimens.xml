@@ -1,19 +1,14 @@
 <resources>
-    <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">12dp</dimen>
-    <dimen name="activity_vertical_margin">2dp</dimen>
 
     <dimen name="navdrawer_width">280dp</dimen>
     <dimen name="navdrawer_image_height">145dp</dimen>
 
     <!-- Card margin -->
     <dimen name="margin_top_bottom">12dp</dimen>
-    <dimen name="margin_first_last">12dp</dimen>
 
     <dimen name="text_size_medium">16sp</dimen>
     <dimen name="empty_textview_padding">20dp</dimen>
 
-    <dimen name="card_corner_radius">4dp</dimen>
     <dimen name="big_padding">10dp</dimen>
     <dimen name="middle_padding">6dp</dimen>
     <dimen name="small_padding">2dp</dimen>

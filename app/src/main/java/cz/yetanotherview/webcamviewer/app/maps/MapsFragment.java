@@ -103,7 +103,7 @@ public class MapsFragment extends Fragment {
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
-            app_installed = ai.enabled;
+            app_installed = ai != null && ai.enabled;
         }
 
         return app_installed ;
