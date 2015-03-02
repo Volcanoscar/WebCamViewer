@@ -19,19 +19,25 @@
 package cz.yetanotherview.webcamviewer.app.adapter;
 
 import android.content.Context;
+import android.graphics.Point;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
+import com.bumptech.glide.signature.StringSignature;
 
 import java.util.List;
 
@@ -42,16 +48,20 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
 
     private final int mLayoutId;
     private final int mOrientation;
+    private int minHeight;
+
+    private StringSignature mStringSignature;
 
     private final Context mContext;
     private List<WebCam> webCamItems;
     private ClickListener clickListener;
 
-    public WebCamAdapter(Context context, List<WebCam> webCamItems, int orientation, int layoutId) {
+    public WebCamAdapter(Context context, List<WebCam> webCamItems, int orientation, int layoutId, StringSignature stringSignature) {
         this.webCamItems = webCamItems;
         mContext = context;
         mLayoutId = layoutId;
         mOrientation = orientation;
+        mStringSignature = stringSignature;
     }
 
     public void swapData(List<WebCam> webCamItems) {
@@ -64,58 +74,72 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
 
         if (mLayoutId == 1) {
             if (android.os.Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT_WATCH) {
-                return new WebCamViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.webcam_layout_list_pre_lollipop, viewGroup, false));
+                return new WebCamViewHolder(LayoutInflater.from(mContext).inflate(R.layout.webcam_layout_list_pre_lollipop, viewGroup, false));
             }
-            else return new WebCamViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.webcam_layout_list, viewGroup, false));
+            else return new WebCamViewHolder(LayoutInflater.from(mContext).inflate(R.layout.webcam_layout_list, viewGroup, false));
         }
-        else return new WebCamViewHolder(LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.webcam_layout_grid, viewGroup, false));
+        else return new WebCamViewHolder(LayoutInflater.from(mContext).inflate(R.layout.webcam_layout_grid, viewGroup, false));
     }
 
     @Override
-    public void onBindViewHolder(final WebCamViewHolder webcamViewHolder, int position) {
+    public void onBindViewHolder(WebCamViewHolder webcamViewHolder, int position) {
         WebCam webCam = webCamItems.get(position);
         webcamViewHolder.vName.setText(webCam.getName());
         webcamViewHolder.vProgress.setVisibility(View.VISIBLE);
 
-        //Picasso.with(webcamViewHolder.itemView.getContext()).setIndicatorsEnabled(true);
-        if (mLayoutId == 1) {
-            Picasso.with(webcamViewHolder.itemView.getContext())
-                    .load(webCam.getUrl())
-                    .fit()
-                    .transform(new SizeTransform(mLayoutId))
-                    .placeholder(R.drawable.placeholder)
-                    .error(R.drawable.placeholder_error)
-                    .into(webcamViewHolder.vImage, new Callback() {
-                        @Override
-                        public void onSuccess() {
-                            webcamViewHolder.vProgress.setVisibility(View.GONE);
-                        }
+        if (webcamViewHolder.vImage.getWidth() == 0) {
 
+            WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+            Display display = wm.getDefaultDisplay();
+            Point size = new Point();
+            display.getSize(size);
+            int mWidth = size.x;
+
+            if (mLayoutId == 1) {
+                minHeight = (int) (mWidth * 0.67);
+            }
+            else if (mLayoutId == 2) {
+                minHeight = (int) ((mWidth * 0.67) / 2);
+            }
+            else if (mLayoutId == 3) {
+                minHeight = (int) ((mWidth * 0.67) / 3);
+            }
+        }
+        webcamViewHolder.vImage.setMinimumHeight(minHeight);
+
+        loadImages(webcamViewHolder, webCam);
+    }
+
+    private void loadImages(final WebCamViewHolder webcamViewHolder, WebCam webCam) {
+
+        if (mLayoutId == 1) {
+            Glide.with(mContext)
+                    .load(webCam.getUrl())
+                    .centerCrop()
+                    .crossFade()
+                    .signature(mStringSignature)
+                    .into(new GlideDrawableImageViewTarget(webcamViewHolder.vImage) {
                         @Override
-                        public void onError() {
+                        public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
+                            super.onResourceReady(drawable, anim);
                             webcamViewHolder.vProgress.setVisibility(View.GONE);
                         }
                     });
         }
         else {
-            Picasso.with(webcamViewHolder.itemView.getContext())
+            Glide.with(mContext)
                     .load(webCam.getUrl())
-                    .transform(new SizeTransform(mLayoutId))
-                    .placeholder(R.drawable.placeholder)
-                    .error(R.drawable.placeholder_error)
-                    .into(webcamViewHolder.vImage, new Callback() {
+                    .dontTransform()
+                    .crossFade()
+                    .signature(mStringSignature)
+                    .into(new GlideDrawableImageViewTarget(webcamViewHolder.vImage) {
                         @Override
-                        public void onSuccess() {
-                            webcamViewHolder.vProgress.setVisibility(View.GONE);
-                        }
-
-                        @Override
-                        public void onError() {
+                        public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
+                            super.onResourceReady(drawable, anim);
                             webcamViewHolder.vProgress.setVisibility(View.GONE);
                         }
                     });
         }
-
     }
 
     public class WebCamViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
@@ -210,5 +234,10 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
         int position = webCamItems.indexOf(item);
         webCamItems.remove(position);
         notifyItemRemoved(position);
+    }
+
+    public void refreshViewImages(StringSignature stringSignature) {
+        mStringSignature = stringSignature;
+        notifyDataSetChanged();
     }
 }

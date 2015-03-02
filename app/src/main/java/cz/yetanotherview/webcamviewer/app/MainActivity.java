@@ -48,6 +48,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.signature.StringSignature;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.melnykov.fab.FloatingActionButton;
@@ -55,13 +56,12 @@ import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
 import com.nispok.snackbar.listeners.ActionClickListener;
 import com.nispok.snackbar.listeners.EventListener;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.PicassoTools;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 import cz.yetanotherview.webcamviewer.app.actions.AboutDialog;
 import cz.yetanotherview.webcamviewer.app.actions.AddDialog;
@@ -183,6 +183,12 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Utils.clearImageCache(getApplicationContext());
+    }
+
     private void initToolbar() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if (selectedCategoryName.contains(allWebCamsString)) {
@@ -285,7 +291,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         }
         db.closeDB();
 
-        mAdapter = new WebCamAdapter(this, allWebCams, mOrientation, mLayoutId);
+        mAdapter = new WebCamAdapter(this, allWebCams, mOrientation, mLayoutId, new StringSignature(UUID.randomUUID().toString()));
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setClickListener(new WebCamAdapter.ClickListener() {
 
@@ -938,8 +944,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     }
 
     private void refresh(boolean fromAutoRefresh) {
-        PicassoTools.clearCache(Picasso.with(getApplicationContext()));
-        mAdapter.notifyDataSetChanged();
+        mAdapter.refreshViewImages(new StringSignature(UUID.randomUUID().toString()));
         if (!fromAutoRefresh) {
             if (mAdapter.getItemCount() != 0) {
                 refreshIsRunning();

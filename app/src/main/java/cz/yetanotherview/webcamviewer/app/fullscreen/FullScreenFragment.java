@@ -33,14 +33,18 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.animation.GlideAnimation;
+import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
+import com.bumptech.glide.signature.StringSignature;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.PicassoTools;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 import cz.yetanotherview.webcamviewer.app.R;
 import cz.yetanotherview.webcamviewer.app.actions.SaveDialog;
@@ -59,6 +63,7 @@ public class FullScreenFragment extends Fragment {
     private double latitude;
     private double longitude;
     private boolean autoRefresh;
+    private boolean fromAutoRefresh;
     private int autoRefreshInterval;
 
     @Override
@@ -79,6 +84,8 @@ public class FullScreenFragment extends Fragment {
         if (autoRefresh) {
             autoRefreshTimer(autoRefreshInterval);
         }
+
+        fromAutoRefresh = false;
 
         initViews();
         setAnimation();
@@ -143,6 +150,7 @@ public class FullScreenFragment extends Fragment {
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                fromAutoRefresh = false;
                 refresh();
             }
         });
@@ -191,27 +199,28 @@ public class FullScreenFragment extends Fragment {
     }
 
     private void loadImage() {
-        //Picasso.with(image.getContext()).setIndicatorsEnabled(true);
-        Picasso.with(image.getContext())
-                .load(url)
-                //.fit()
-                .placeholder(R.drawable.placeholder)
-                .error(R.drawable.placeholder_error_full)
-                .into(image, new Callback() {
-                    @Override
-                    public void onSuccess() {
-                        progressBar.setVisibility(View.GONE);
-                        mButtonsLayout.startAnimation(fadeOut);
-                        mButtonsLayout.setBackgroundResource(R.drawable.selector);
-                    }
 
+        Glide.with(image.getContext())
+                .load(url)
+                .crossFade()
+                .placeholder(R.drawable.placeholder)
+                .signature(new StringSignature(UUID.randomUUID().toString()))
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .into(new GlideDrawableImageViewTarget(image) {
                     @Override
-                    public void onError() {
+                    public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
+                        super.onResourceReady(drawable, anim);
                         progressBar.setVisibility(View.GONE);
-                        mButtonsLayout.startAnimation(fadeOut);
-                        mButtonsLayout.setBackgroundResource(R.drawable.selector);
+                        buttonsFadeOut();
                     }
                 });
+    }
+
+    private void buttonsFadeOut() {
+        if (!fromAutoRefresh) {
+            mButtonsLayout.startAnimation(fadeOut);
+            mButtonsLayout.setBackgroundResource(R.drawable.selector);
+        }
     }
 
     private void autoRefreshTimer(int interval) {
@@ -223,6 +232,8 @@ public class FullScreenFragment extends Fragment {
                 handler.post(new Runnable() {
                     public void run() {
                         try {
+                            buttonsFadeOut();
+                            fromAutoRefresh = true;
                             refresh();
                         } catch (Exception e) {
                             // Auto-generated catch block
@@ -235,7 +246,7 @@ public class FullScreenFragment extends Fragment {
     }
 
     private void refresh() {
-        PicassoTools.clearCache(Picasso.with(image.getContext()));
+        Glide.get(image.getContext()).clearMemory();
         mButtonsLayout.setBackgroundResource(0);
         progressBar.setVisibility(View.VISIBLE);
         loadImage();

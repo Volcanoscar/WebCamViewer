@@ -36,6 +36,7 @@
             <ImageView
                 style="@style/MainImageView"
                 android:id="@+id/imageView"
+                android:scaleType="centerCrop"
                 android:contentDescription="@string/image_description" />
 
             <ImageButton
