@@ -118,6 +118,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private boolean screenAlwaysOn;
     private boolean notUndo;
     private int mLayoutId;
+    private StringSignature stringSignature;
+    private boolean imagesOnOff;
 
     private MaterialDialog dialog;
 
@@ -165,6 +167,9 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
         // Get current orientation
         mOrientation = getResources().getConfiguration().orientation;
+
+        // New signature
+        stringSignature = new StringSignature(UUID.randomUUID().toString());
 
         // Other core init
         initToolbar();
@@ -291,7 +296,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         }
         db.closeDB();
 
-        mAdapter = new WebCamAdapter(this, allWebCams, mOrientation, mLayoutId, new StringSignature(UUID.randomUUID().toString()));
+        mAdapter = new WebCamAdapter(this, allWebCams, mOrientation, mLayoutId, stringSignature, imagesOnOff);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setClickListener(new WebCamAdapter.ClickListener() {
 
@@ -402,9 +407,19 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
         MenuItem dashboard = menu.findItem(R.id.action_dashboard);
         if (numberOfColumns == 1) {
-            dashboard.setIcon(R.drawable.ic_action_action_dashboard);
+            dashboard.setIcon(R.drawable.ic_action_dashboard);
         }
-        else dashboard.setIcon(R.drawable.ic_action_action_view_day);
+        else dashboard.setIcon(R.drawable.ic_action_view_day);
+
+        MenuItem imagesOnOffItem = menu.findItem(R.id.action_image_on_off);
+        if (imagesOnOff) {
+            imagesOnOffItem.setTitle(R.string.images_off);
+            imagesOnOffItem.setIcon(R.drawable.ic_action_image_off);
+        }
+        else {
+            imagesOnOffItem.setTitle(R.string.images_on);
+            imagesOnOffItem.setIcon(R.drawable.ic_action_image_on);
+        }
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -423,23 +438,38 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 refresh(false);
                 break;
 
-            //Sort view
-            case R.id.action_sort:
-                    showSortDialog();
-                break;
-
             //View
             case R.id.action_dashboard:
                 if (numberOfColumns == 1) {
                     numberOfColumns = 2;
-                    item.setIcon(R.drawable.ic_action_action_view_day);
+                    item.setIcon(R.drawable.ic_action_view_day);
                 }
                 else if (numberOfColumns == 2) {
                     numberOfColumns = 1;
-                    item.setIcon(R.drawable.ic_action_action_dashboard);
+                    item.setIcon(R.drawable.ic_action_dashboard);
                 }
                 initRecyclerView();
-                item.setChecked(true);
+                saveToPref();
+                break;
+
+            //Sort view
+            case R.id.action_sort:
+                showSortDialog();
+                break;
+
+            //Images on/off
+            case R.id.action_image_on_off:
+                if (imagesOnOff) {
+                    imagesOnOff = false;
+                    item.setTitle(R.string.images_on);
+                    item.setIcon(R.drawable.ic_action_image_on);
+                }
+                else {
+                    imagesOnOff = true;
+                    item.setTitle(R.string.images_off);
+                    item.setIcon(R.drawable.ic_action_image_off);
+                }
+                initRecyclerView();
                 saveToPref();
                 break;
 
@@ -1035,6 +1065,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         firstRun = preferences.getBoolean("pref_first_run", true);
         numberOfColumns = preferences.getInt("number_of_columns", 1);
+        imagesOnOff = preferences.getBoolean("pref_images_on_off", true);
         fullScreen = preferences.getBoolean("pref_full_screen", false);
         autoRefresh = preferences.getBoolean("pref_auto_refresh", false);
         autoRefreshInterval = preferences.getInt("pref_auto_refresh_interval", 30000);
@@ -1050,6 +1081,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("pref_first_run", firstRun);
         editor.putInt("number_of_columns", numberOfColumns);
+        editor.putBoolean("pref_images_on_off", imagesOnOff);
         editor.putInt("pref_selected_category", selectedCategory);
         editor.putString("pref_selected_category_name", selectedCategoryName);
         editor.apply();

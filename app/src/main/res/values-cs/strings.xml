@@ -14,7 +14,7 @@
         Japonština - <b><a href="mailto:naofum@gmail.com">Naofumi</a></b><br>
         Norština - <b><a href="http://0p.no/">Lars Falk-Petersen</a></b><br>
         <br>
-        <b>Mé velké poděkování patří <a href="http://upload.wikimedia.org/wikipedia/commons/b/b3/Shield-Trinity-Scutum-Fidei-English.svg">Bohu, Ježíši i Duchu Svatému!</a> A také <a href="https://plus.google.com/104896455725487013630/">Radku Matouchovi</a></b> za pomoc + užitečné tipy.
+        <b>Mé velké poděkování patří <a href="http://upload.wikimedia.org/wikipedia/commons/b/b3/Shield-Trinity-Scutum-Fidei-English.svg">Bohu, Ježíši i Duchu Svatému!</a> A také <a href="https://plus.google.com/111192437899852242451/">Tomáši Borovi</a>, <a href="https://plus.google.com/104896455725487013630/">Radku Matouchovi</a></b> za veškerou pomoc + užitečné tipy.
     ]]></string>
 <string name="action_menu_about">"O aplikaci"</string>
 <string name="action_settings">"Nastavení"</string>
@@ -161,4 +161,6 @@
 <string name="no_coordinates_summary">"Tato WebKamera neobsahuje informace o poloze (souřadnice můžete přidat přímo v editačním okně)."</string>
 <string name="google_play_services">"Služby Google Play"</string>
 <string name="google_play_services_summary">"Nejprve prosím nainstalujte nebo aktualizujte služby Google Play."</string>
+<string name="images_on">"S náhledy"</string>
+<string name="images_off">"Bez náhledů"</string>
 </resources>

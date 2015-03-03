@@ -1,0 +1,19 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageButton
+        style="@style/EditImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/imageView"
+        android:id="@+id/action_edit" />
+
+    <TextView
+        style="@style/CardTitle"
+        android:layout_alignBottom="@id/imageView"
+        android:shadowColor="@color/black"
+        android:shadowDx="1"
+        android:shadowDy="1"
+        android:shadowRadius="4"
+        android:id="@+id/titleTextView"/>
+
+</merge>

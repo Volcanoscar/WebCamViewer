@@ -34,12 +34,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.signature.StringSignature;
 
 import java.util.List;
+import java.util.Random;
 
 import cz.yetanotherview.webcamviewer.app.R;
 import cz.yetanotherview.webcamviewer.app.model.WebCam;
@@ -49,6 +51,7 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
     private final int mLayoutId;
     private final int mOrientation;
     private int minHeight;
+    private boolean mImageOn;
 
     private StringSignature mStringSignature;
 
@@ -56,12 +59,13 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
     private List<WebCam> webCamItems;
     private ClickListener clickListener;
 
-    public WebCamAdapter(Context context, List<WebCam> webCamItems, int orientation, int layoutId, StringSignature stringSignature) {
+    public WebCamAdapter(Context context, List<WebCam> webCamItems, int orientation, int layoutId, StringSignature stringSignature, boolean imageOn) {
         this.webCamItems = webCamItems;
         mContext = context;
         mLayoutId = layoutId;
         mOrientation = orientation;
         mStringSignature = stringSignature;
+        mImageOn = imageOn;
     }
 
     public void swapData(List<WebCam> webCamItems) {
@@ -107,16 +111,29 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
         }
         webcamViewHolder.vImage.setMinimumHeight(minHeight);
 
-        loadImages(webcamViewHolder, webCam);
+        if (mImageOn) {
+            loadImages(webcamViewHolder, webCam.getUrl());
+        }
+        else {
+            webcamViewHolder.vProgress.setVisibility(View.GONE);
+
+            Random r = new Random();
+            int[] res = {R.drawable.no_image_0, R.drawable.no_image_1, R.drawable.no_image_2,
+                    R.drawable.no_image_3, R.drawable.no_image_4};
+
+            int rndInt = r.nextInt(res .length);
+            webcamViewHolder.vImage.setImageDrawable(mContext.getResources().getDrawable(res[rndInt]));
+        }
     }
 
-    private void loadImages(final WebCamViewHolder webcamViewHolder, WebCam webCam) {
+    private void loadImages(final WebCamViewHolder webcamViewHolder, String source) {
 
         if (mLayoutId == 1) {
             Glide.with(mContext)
-                    .load(webCam.getUrl())
+                    .load(source)
                     .centerCrop()
                     .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .signature(mStringSignature)
                     .into(new GlideDrawableImageViewTarget(webcamViewHolder.vImage) {
                         @Override
@@ -128,7 +145,7 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
         }
         else {
             Glide.with(mContext)
-                    .load(webCam.getUrl())
+                    .load(source)
                     .dontTransform()
                     .crossFade()
                     .signature(mStringSignature)

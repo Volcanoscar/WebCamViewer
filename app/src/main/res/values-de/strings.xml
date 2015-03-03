@@ -14,7 +14,7 @@
     Japanisch - <b><a href="mailto:naofum@gmail.com">Naofumi</a></b><br>
     Norwegisch - <b><a href="http://0p.no/">Lars Falk-Petersen</a></b><br>
     <br>
-    <b>Mein großer Dank an <a href="http://upload.wikimedia.org/wikipedia/commons/b/b3/Shield-Trinity-Scutum-Fidei-English.svg">Gott, Jesus und den Heiligen Geist!</a> Und auch für <a href="https://plus.google.com/104896455725487013630/">Radek Matouch</a></b> um Hilfe + hilfreiche Tipps.
+    <b>Mein großer Dank an <a href="http://upload.wikimedia.org/wikipedia/commons/b/b3/Shield-Trinity-Scutum-Fidei-English.svg">Gott, Jesus und den Heiligen Geist!</a> Und auch für <a href="https://plus.google.com/111192437899852242451/">Tomas Borov</a>, <a href="https://plus.google.com/104896455725487013630/">Radek Matouch</a></b> um Hilfe + hilfreiche Tipps.
 ]]></string>
 <string name="action_menu_about">"Info"</string>
 <string name="action_settings">"Einstellungen"</string>
@@ -161,4 +161,6 @@
 <string name="no_coordinates_summary">"Diese WebCam nicht habe informationen über die position (koordinaten können direkt in der bearbeitungsdialog hinzugefügt werden)."</string>
 <string name="google_play_services">"Google Play Services"</string>
 <string name="google_play_services_summary">"Bitte installieren oder aktualisieren Sie Ihre Google Play Services."</string>
+<string name="images_on">"Bilder auf"</string>
+<string name="images_off">"Bilder ab"</string>
 </resources>
