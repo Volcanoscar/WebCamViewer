@@ -11,6 +11,7 @@
     <b><a href="https://github.com/afollestad/material-dialogs">Material Dialogs</a></b><i> by Aidan Follestad.</i><br>
     <b><a href="https://github.com/bumptech/glide">Glide</a></b><i> by Bump, Inc.</i><br><br>
     <b>Special thanks to these translators:</b><br>
+    German - <b><a href="http://blog.strubbl.de/">Sven Fischer</a></b><br>
     Japanese - <b><a href="mailto:naofum@gmail.com">Naofumi</a></b><br>
     Norwegian - <b><a href="http://0p.no/">Lars Falk-Petersen</a></b><br>
     <br>
@@ -163,4 +164,5 @@
 <string name="google_play_services_summary">"Please install or update your Google Play Services first."</string>
 <string name="images_on">"Images ON"</string>
 <string name="images_off">"Images OFF"</string>
+<string name="donate">"Donate"</string>
 </resources>

@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class Utils {
 
@@ -224,5 +225,12 @@ public class Utils {
                 child.delete();
             }
         }
+    }
+
+    /**
+     * Get locale code
+     */
+    public static String getLocaleCode(){
+        return Locale.getDefault().toString();
     }
 }

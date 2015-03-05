@@ -94,7 +94,7 @@ public class ImportDialog extends DialogFragment {
 
         imported = getString(R.string.imported);
 
-        if (fileNames != null) {
+        if (fileNames.size() != 0) {
             items = fileNames.toArray(new String[fileNames.size()]);
             importDialog = new MaterialDialog.Builder(mActivity)
                     .title(R.string.external_files)

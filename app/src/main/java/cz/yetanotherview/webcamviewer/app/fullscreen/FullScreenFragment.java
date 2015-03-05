@@ -63,8 +63,10 @@ public class FullScreenFragment extends Fragment {
     private double latitude;
     private double longitude;
     private boolean autoRefresh;
-    private boolean fromAutoRefresh;
+    private boolean firtsTime;
     private int autoRefreshInterval;
+    private boolean fullScreen;
+    private ImageButton backButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,13 +81,20 @@ public class FullScreenFragment extends Fragment {
         autoRefreshInterval = intent.getExtras().getInt("interval");
         latitude = intent.getExtras().getDouble("latitude");
         longitude = intent.getExtras().getDouble("longitude");
+        fullScreen = intent.getExtras().getBoolean("fullScreen");
+
+        firtsTime = true;
 
         // Auto Refresh timer
         if (autoRefresh) {
             autoRefreshTimer(autoRefreshInterval);
         }
 
-        fromAutoRefresh = false;
+        // Back button
+        if (fullScreen) {
+            backButton = (ImageButton) view.findViewById(R.id.back_button);
+            backButton.setVisibility(View.VISIBLE);
+        }
 
         initViews();
         setAnimation();
@@ -150,7 +159,7 @@ public class FullScreenFragment extends Fragment {
         refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fromAutoRefresh = false;
+                firtsTime = true;
                 refresh();
             }
         });
@@ -168,13 +177,14 @@ public class FullScreenFragment extends Fragment {
             }
         });
 
-        ImageButton backButton = (ImageButton) view.findViewById(R.id.back_button);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().finish();
-            }
-        });
+        if (fullScreen) {
+            backButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getActivity().finish();
+                }
+            });
+        }
 
         progressBar = (ProgressBar) view.findViewById(R.id.loadingProgressBar);
     }
@@ -211,16 +221,13 @@ public class FullScreenFragment extends Fragment {
                     public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
                         super.onResourceReady(drawable, anim);
                         progressBar.setVisibility(View.GONE);
-                        buttonsFadeOut();
+                        if (firtsTime) {
+                            mButtonsLayout.startAnimation(fadeOut);
+                            mButtonsLayout.setBackgroundResource(R.drawable.selector);
+                            firtsTime = false;
+                        }
                     }
                 });
-    }
-
-    private void buttonsFadeOut() {
-        if (!fromAutoRefresh) {
-            mButtonsLayout.startAnimation(fadeOut);
-            mButtonsLayout.setBackgroundResource(R.drawable.selector);
-        }
     }
 
     private void autoRefreshTimer(int interval) {
@@ -232,8 +239,6 @@ public class FullScreenFragment extends Fragment {
                 handler.post(new Runnable() {
                     public void run() {
                         try {
-                            buttonsFadeOut();
-                            fromAutoRefresh = true;
                             refresh();
                         } catch (Exception e) {
                             // Auto-generated catch block
@@ -252,4 +257,3 @@ public class FullScreenFragment extends Fragment {
         loadImage();
     }
 }
-

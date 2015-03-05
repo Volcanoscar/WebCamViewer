@@ -489,8 +489,22 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
             //Help
             case R.id.menu_help:
-                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://youtu.be/Xcp0j2vwbxI"));
-                startActivity(browserIntent);
+                Intent helpIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://youtu.be/Xcp0j2vwbxI"));
+                startActivity(helpIntent);
+                break;
+
+            //Donate
+            case R.id.menu_donate:
+                String mLoc;
+                String mDon = ".html#donatingTable";
+                String mLocale = Utils.getLocaleCode();
+                if (mLocale.equals("cs_CZ")) {
+                    mLoc = "cs";
+                }
+                else mLoc = "en";
+                String mDonUrl = "http://www.yetanotherview.cz/wcv/" + mLoc + mDon;
+                Intent donateIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mDonUrl));
+                startActivity(donateIntent);
                 break;
 
             default:

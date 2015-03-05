@@ -117,9 +117,15 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
         else {
             webcamViewHolder.vProgress.setVisibility(View.GONE);
 
+            if (mLayoutId == 1) {
+                webcamViewHolder.vImage.setMaxHeight(minHeight);
+            }
+
             Random r = new Random();
             int[] res = {R.drawable.no_image_0, R.drawable.no_image_1, R.drawable.no_image_2,
-                    R.drawable.no_image_3, R.drawable.no_image_4};
+                    R.drawable.no_image_3, R.drawable.no_image_4, R.drawable.no_image_5,
+                    R.drawable.no_image_6, R.drawable.no_image_7, R.drawable.no_image_8,
+                    R.drawable.no_image_9, R.drawable.no_image_10, R.drawable.no_image_11};
 
             int rndInt = r.nextInt(res .length);
             webcamViewHolder.vImage.setImageDrawable(mContext.getResources().getDrawable(res[rndInt]));

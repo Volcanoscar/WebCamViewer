@@ -43,7 +43,6 @@
         android:summary="@string/pref_auto_refresh_summary" />
 
         <CheckBoxPreference
-            android:widgetLayout="@layout/switch_compat"
             android:dependency="pref_auto_refresh"
             android:key="pref_auto_refresh_fullscreen"
             android:checked="false"

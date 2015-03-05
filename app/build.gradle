@@ -8,8 +8,8 @@ android {
         applicationId "cz.yetanotherview.webcamviewer.app"
         minSdkVersion 15
         targetSdkVersion 21
-        versionCode 46
-        versionName "2.1.0 rc3"
+        versionCode 47
+        versionName "2.1.0"
     }
     buildTypes {
         release {
@@ -30,6 +30,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.3.1'
     compile 'com.github.bumptech.glide:glide:3.5.2'
     compile 'com.melnykov:floatingactionbutton:1.2.0'
-    compile 'com.afollestad:material-dialogs:0.6.3.3'
+    compile 'com.afollestad:material-dialogs:0.6.3.4'
     compile 'com.nispok:snackbar:2.10.1'
 }
