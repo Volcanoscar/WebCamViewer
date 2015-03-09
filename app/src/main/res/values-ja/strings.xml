@@ -145,8 +145,6 @@
 <string name="all">"すべて"</string>
 <string name="no_coordinates">"経度と緯度はありません"</string>
 <string name="no_coordinates_summary">"このウェブカムは場所に関する情報がありません (経度と緯度は編集ダイアログで追加できます)"</string>
-<string name="google_play_services">"Google Playサービス"</string>
-<string name="google_play_services_summary">"初めにGoogle Playサービスをインストールするかアップデートしてください。"</string>
 <string name="images_on">"写真を回し"</string>
 <string name="images_off">"写真をフ"</string>
 <string name="donate">"寄付する"</string>

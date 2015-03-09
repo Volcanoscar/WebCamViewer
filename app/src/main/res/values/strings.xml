@@ -160,8 +160,6 @@
 <string name="all">"All"</string>
 <string name="no_coordinates">"No coordinates"</string>
 <string name="no_coordinates_summary">"This WebCam does not contain information about the location (coordinates can be added directly in the edit dialog)."</string>
-<string name="google_play_services">"Google Play Services"</string>
-<string name="google_play_services_summary">"Please install or update your Google Play Services first."</string>
 <string name="images_on">"Images ON"</string>
 <string name="images_off">"Images OFF"</string>
 <string name="donate">"Donate"</string>

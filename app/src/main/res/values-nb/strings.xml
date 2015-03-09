@@ -162,8 +162,6 @@
 <string name="all">"Alle"</string>
 <string name="no_coordinates">"Ingen koordinater"</string>
 <string name="no_coordinates_summary">"Dette webkameraet inneholder ikke informasjon om lokasjon (koordinater kan legges til i Rediger-dialogen)."</string>
-<string name="google_play_services">"Google Play Services"</string>
-<string name="google_play_services_summary">"Vennligst installér eller oppdatér Google Play Services først"</string>
 <string name="images_on">"Bilder slå på"</string>
 <string name="images_off">"Bilder slå av"</string>
 <string name="donate">"Donere"</string>

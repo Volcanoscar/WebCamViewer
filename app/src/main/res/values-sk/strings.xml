@@ -160,8 +160,6 @@
 <string name="all">"Všetko"</string>
 <string name="no_coordinates">"Žiadne súradnice"</string>
 <string name="no_coordinates_summary">"Táto WebKamera neobsahuje informácie o polohe (súradnice môžete pridať priamo v editačnom okne)."</string>
-<string name="google_play_services">"Služby Google Play"</string>
-<string name="google_play_services_summary">"Najprv prosím nainštalujte alebo aktualizujte služby Google Play."</string>
 <string name="images_on">"S náhľadmi"</string>
 <string name="images_off">"Bez náhľadov"</string>
 <string name="donate">"Podporiť"</string>
