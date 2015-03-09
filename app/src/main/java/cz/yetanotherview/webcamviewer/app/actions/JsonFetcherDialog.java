@@ -22,8 +22,10 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.backup.BackupManager;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -62,12 +64,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.location.LocationServices;
-
 import cz.yetanotherview.webcamviewer.app.R;
 import cz.yetanotherview.webcamviewer.app.Utils;
 import cz.yetanotherview.webcamviewer.app.adapter.CountryAdapter;
@@ -79,7 +75,7 @@ import cz.yetanotherview.webcamviewer.app.model.Category;
 import cz.yetanotherview.webcamviewer.app.model.Country;
 import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
-public class JsonFetcherDialog extends DialogFragment implements ConnectionCallbacks, OnConnectionFailedListener {
+public class JsonFetcherDialog extends DialogFragment {
 
     // Object for intrinsic lock
     public static final Object sDataLock = new Object();
@@ -107,7 +103,6 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
     private ManualSelectionAdapter manualSelectionAdapter;
     private ReloadInterface mListener;
 
-    protected GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
     private double mLatitude;
     private double mLongitude;
@@ -116,6 +111,8 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
     private int seekBarProgress;
     private int seekBarCorrection;
     private String units;
+
+    private BackupManager backupManager;
 
     public static interface ReloadInterface {
         public void invokeReload();
@@ -132,10 +129,6 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
     public void onDetach() {
         super.onDetach();
         mListener = null;
-
-        if (mGoogleApiClient.isConnected()) {
-            mGoogleApiClient.disconnect();
-        }
     }
 
     @Override
@@ -147,7 +140,6 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        buildGoogleApiClient();
 
         db = new DatabaseHelper(mActivity);
         allWebCams = db.getAllWebCams("id ASC");
@@ -163,41 +155,12 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
                 .progress(true, 0)
                 .build();
 
+        backupManager = new BackupManager(mActivity);
+
         WebCamsFromJsonFetcher fetcher = new WebCamsFromJsonFetcher();
         fetcher.execute();
 
         return initDialog;
-    }
-
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-
-    @Override
-    public void onConnected(Bundle connectionHint) {
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-            mLatitude = Utils.roundDouble(mLastLocation.getLatitude(), 6);
-            mLongitude = Utils.roundDouble(mLastLocation.getLongitude(), 6);
-            Log.i(TAG, String.valueOf(mLatitude) + " " + String.valueOf(mLongitude));
-        } else {
-            Log.i(TAG, "No location detected");
-        }
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult result) {
-        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
-    }
-
-    @Override
-    public void onConnectionSuspended(int cause) {
-        Log.i(TAG, "Connection suspended");
-        mGoogleApiClient.connect();
     }
 
     private class WebCamsFromJsonFetcher extends AsyncTask<Void, Void, String> {
@@ -245,54 +208,57 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
                             newWebCams = 0;
                             duplicityWebCams = 0;
 
-                            synchronized (sDataLock) {
                                 if (selection == 0) {
 
-                                    long lastFetchPopular = preferences.getLong("pref_last_fetch_popular", 0);
-                                    long categoryPopular = db.createCategory(new Category(getString(R.string.popular) + " " + Utils.getDateString()));
+                                    synchronized (sDataLock) {
+                                        long lastFetchPopular = preferences.getLong("pref_last_fetch_popular", 0);
+                                        long categoryPopular = db.createCategory(new Category(getString(R.string.popular) + " " + Utils.getDateString()));
 
-                                    for (WebCam webCam : importWebCams) {
-                                        long webCamDateAdded = webCam.getDateAdded().getTime();
-                                        long differenceBetweenLastFetch = lastFetchPopular - webCamDateAdded;
+                                        for (WebCam webCam : importWebCams) {
+                                            long webCamDateAdded = webCam.getDateAdded().getTime();
+                                            long differenceBetweenLastFetch = lastFetchPopular - webCamDateAdded;
 
-                                        if (webCam.isPopular() && differenceBetweenLastFetch < 0) {
-                                            if (allWebCams.size() != 0) {
-                                                boolean notFound = false;
-                                                for (WebCam allWebCam : allWebCams) {
-                                                    if (webCam.getUniId() == allWebCam.getUniId()) {
-                                                        db.createWebCamCategory(allWebCam.getId(), categoryPopular);
-                                                        noNewWebCams = false;
-                                                        notFound = false;
-                                                        duplicityWebCams++;
-                                                        break;
+                                            if (webCam.isPopular() && differenceBetweenLastFetch < 0) {
+                                                if (allWebCams.size() != 0) {
+                                                    boolean notFound = false;
+                                                    for (WebCam allWebCam : allWebCams) {
+                                                        if (webCam.getUniId() == allWebCam.getUniId()) {
+                                                            db.createWebCamCategory(allWebCam.getId(), categoryPopular);
+                                                            noNewWebCams = false;
+                                                            notFound = false;
+                                                            duplicityWebCams++;
+                                                            break;
+                                                        }
+                                                        else notFound = true;
                                                     }
-                                                    else notFound = true;
+                                                    if (notFound) {
+                                                        db.createWebCam(webCam, new long[]{categoryPopular});
+                                                        noNewWebCams = false;
+                                                        newWebCams++;
+                                                    }
                                                 }
-                                                if (notFound) {
+                                                else {
                                                     db.createWebCam(webCam, new long[]{categoryPopular});
                                                     noNewWebCams = false;
                                                     newWebCams++;
                                                 }
                                             }
-                                            else {
-                                                db.createWebCam(webCam, new long[]{categoryPopular});
-                                                noNewWebCams = false;
-                                                newWebCams++;
-                                            }
+                                            progressUpdate();
                                         }
-                                        progressUpdate();
+                                        if (noNewWebCams) {
+                                            db.deleteCategory(categoryPopular, false);
+                                        }
+                                        else {
+                                            editor.putLong("pref_last_fetch_popular", now);
+                                            editor.apply();
+                                        }
+                                        showResult();
                                     }
-                                    if (noNewWebCams) {
-                                        db.deleteCategory(categoryPopular, false);
-                                    }
-                                    else {
-                                        editor.putLong("pref_last_fetch_popular", now);
-                                        editor.apply();
-                                    }
-                                    showResult();
+                                    db.closeDB();
+                                    backupManager.dataChanged();
                                 }
                                 else if (selection == 1) {
-                                    mGoogleApiClient.connect();
+                                    getLastKnownLocation();
 
                                     noNewWebCams = false;
                                     handleNearSelection();
@@ -338,91 +304,95 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
                                 }
                                 else if (selection == 4) {
 
-                                    long lastFetchLatest = preferences.getLong("pref_last_fetch_latest", 0);
-                                    long categoryLatest = db.createCategory(new Category(getString(R.string.latest) + " " + Utils.getDateString()));
+                                    synchronized (sDataLock) {
+                                        long lastFetchLatest = preferences.getLong("pref_last_fetch_latest", 0);
+                                        long categoryLatest = db.createCategory(new Category(getString(R.string.latest) + " " + Utils.getDateString()));
 
-                                    for (WebCam webCam : importWebCams) {
-                                        long webCamDateAdded = webCam.getDateAdded().getTime();
-                                        long differenceBetweenLastFetch = lastFetchLatest - webCamDateAdded;
-                                        int differenceBetweenDates = (int) ((now - webCamDateAdded)/86400000);
+                                        for (WebCam webCam : importWebCams) {
+                                            long webCamDateAdded = webCam.getDateAdded().getTime();
+                                            long differenceBetweenLastFetch = lastFetchLatest - webCamDateAdded;
+                                            int differenceBetweenDates = (int) ((now - webCamDateAdded)/86400000);
 
-                                        if (differenceBetweenDates < latest && differenceBetweenLastFetch < 0) {
-                                            if (allWebCams.size() != 0) {
-                                                boolean notFound = false;
-                                                for (WebCam allWebCam : allWebCams) {
-                                                    if (webCam.getUniId() == allWebCam.getUniId()) {
-                                                        db.createWebCamCategory(allWebCam.getId(), categoryLatest);
-                                                        noNewWebCams = false;
-                                                        notFound = false;
-                                                        duplicityWebCams++;
-                                                        break;
+                                            if (differenceBetweenDates < latest && differenceBetweenLastFetch < 0) {
+                                                if (allWebCams.size() != 0) {
+                                                    boolean notFound = false;
+                                                    for (WebCam allWebCam : allWebCams) {
+                                                        if (webCam.getUniId() == allWebCam.getUniId()) {
+                                                            db.createWebCamCategory(allWebCam.getId(), categoryLatest);
+                                                            noNewWebCams = false;
+                                                            notFound = false;
+                                                            duplicityWebCams++;
+                                                            break;
+                                                        }
+                                                        else notFound = true;
                                                     }
-                                                    else notFound = true;
+                                                    if (notFound) {
+                                                        db.createWebCam(webCam, new long[]{categoryLatest});
+                                                        noNewWebCams = false;
+                                                        newWebCams++;
+                                                    }
                                                 }
-                                                if (notFound) {
+                                                else {
                                                     db.createWebCam(webCam, new long[]{categoryLatest});
                                                     noNewWebCams = false;
                                                     newWebCams++;
                                                 }
                                             }
-                                            else {
-                                                db.createWebCam(webCam, new long[]{categoryLatest});
-                                                noNewWebCams = false;
-                                                newWebCams++;
-                                            }
+                                            progressUpdate();
                                         }
-                                        progressUpdate();
+                                        if (noNewWebCams) {
+                                            db.deleteCategory(categoryLatest, false);
+                                        }
+                                        else {
+                                            editor.putLong("pref_last_fetch_latest", now);
+                                            editor.apply();
+                                        }
+                                        showResult();
                                     }
-                                    if (noNewWebCams) {
-                                        db.deleteCategory(categoryLatest, false);
-                                    }
-                                    else {
-                                        editor.putLong("pref_last_fetch_latest", now);
-                                        editor.apply();
-                                    }
-                                    showResult();
+                                    db.closeDB();
+                                    backupManager.dataChanged();
                                 }
                                 else if (selection == 5) {
                                     noNewWebCams = false;
 
-                                    long categoryAll = db.createCategory(new Category(getString(R.string.all) + " " + Utils.getDateString()));
-                                    for (WebCam webCam : importWebCams) {
-                                            if (allWebCams.size() != 0) {
-                                                boolean notFound = false;
-                                                for (WebCam allWebCam : allWebCams) {
-                                                    if (webCam.getUniId() == allWebCam.getUniId()) {
-                                                        db.createWebCamCategory(allWebCam.getId(), categoryAll);
-                                                        noNewWebCams = false;
-                                                        notFound = false;
-                                                        duplicityWebCams++;
-                                                        break;
+                                    synchronized (sDataLock) {
+                                        long categoryAll = db.createCategory(new Category(getString(R.string.all) + " " + Utils.getDateString()));
+                                        for (WebCam webCam : importWebCams) {
+                                                if (allWebCams.size() != 0) {
+                                                    boolean notFound = false;
+                                                    for (WebCam allWebCam : allWebCams) {
+                                                        if (webCam.getUniId() == allWebCam.getUniId()) {
+                                                            db.createWebCamCategory(allWebCam.getId(), categoryAll);
+                                                            noNewWebCams = false;
+                                                            notFound = false;
+                                                            duplicityWebCams++;
+                                                            break;
+                                                        }
+                                                        else notFound = true;
                                                     }
-                                                    else notFound = true;
+                                                    if (notFound) {
+                                                        db.createWebCam(webCam, new long[]{categoryAll});
+                                                        noNewWebCams = false;
+                                                        newWebCams++;
+                                                    }
                                                 }
-                                                if (notFound) {
+                                                else {
                                                     db.createWebCam(webCam, new long[]{categoryAll});
                                                     noNewWebCams = false;
                                                     newWebCams++;
                                                 }
-                                            }
-                                            else {
-                                                db.createWebCam(webCam, new long[]{categoryAll});
-                                                noNewWebCams = false;
-                                                newWebCams++;
-                                            }
 
-                                        progressUpdate();
-                                    }
-                                    if (noNewWebCams) {
-                                        db.deleteCategory(categoryAll, false);
-                                    }
+                                            progressUpdate();
+                                        }
+                                        if (noNewWebCams) {
+                                            db.deleteCategory(categoryAll, false);
+                                        }
 
-                                    showResult();
+                                        showResult();
+                                    }
+                                    db.closeDB();
+                                    backupManager.dataChanged();
                                 }
-                            }
-                            db.closeDB();
-                            BackupManager backupManager = new BackupManager(mActivity);
-                            backupManager.dataChanged();
 
                         } catch (Exception ex) {
                             Log.e(TAG, "Failed to parse JSON due to: " + ex);
@@ -539,45 +509,50 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
         @Override
         protected Long doInBackground(String... texts) {
 
-            String selected = mActivity.getString(R.string.nearby);
-            long categoryNear = db.createCategory(new Category(selected + " " + Utils.getDateString()));
-            float selectedDistance = seekBarProgress * 1000;
+            synchronized (sDataLock) {
+                String selected = mActivity.getString(R.string.nearby);
+                long categoryNear = db.createCategory(new Category(selected + " " + Utils.getDateString()));
+                float selectedDistance = seekBarProgress * 1000;
 
-            for (WebCam webCam : importWebCams) {
+                for (WebCam webCam : importWebCams) {
 
-                float[] distance = new float[1];
-                Location.distanceBetween(webCam.getLatitude(), webCam.getLongitude(), mLatitude, mLongitude, distance);
+                    float[] distance = new float[1];
+                    Location.distanceBetween(webCam.getLatitude(), webCam.getLongitude(), mLatitude, mLongitude, distance);
 
-                if (distance[0] < selectedDistance) {
-                    if (allWebCams.size() != 0) {
-                        boolean notFound = false;
-                        for (WebCam allWebCam : allWebCams) {
-                            if (webCam.getUniId() == allWebCam.getUniId()) {
-                                db.createWebCamCategory(allWebCam.getId(), categoryNear);
-                                notFound = false;
-                                duplicityWebCams++;
-                                break;
+                    if (distance[0] < selectedDistance) {
+                        if (allWebCams.size() != 0) {
+                            boolean notFound = false;
+                            for (WebCam allWebCam : allWebCams) {
+                                if (webCam.getUniId() == allWebCam.getUniId()) {
+                                    db.createWebCamCategory(allWebCam.getId(), categoryNear);
+                                    notFound = false;
+                                    duplicityWebCams++;
+                                    break;
+                                }
+                                else notFound = true;
                             }
-                            else notFound = true;
+                            if (notFound) {
+                                db.createWebCam(webCam, new long[]{categoryNear});
+                                newWebCams++;
+                            }
                         }
-                        if (notFound) {
+                        else {
                             db.createWebCam(webCam, new long[]{categoryNear});
                             newWebCams++;
                         }
                     }
-                    else {
-                        db.createWebCam(webCam, new long[]{categoryNear});
-                        newWebCams++;
-                    }
+                    progressUpdate();
                 }
-                progressUpdate();
-            }
 
-            if (newWebCams + duplicityWebCams == 0) {
-                db.deleteCategory(categoryNear, false);
-            }
+                if (newWebCams + duplicityWebCams == 0) {
+                    db.deleteCategory(categoryNear, false);
+                }
 
-            showResult();
+                showResult();
+            }
+            db.closeDB();
+            backupManager.dataChanged();
+
             return null;
         }
     }
@@ -637,40 +612,45 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
         @Override
         protected Long doInBackground(String... texts) {
 
-            String selected = mActivity.getString(R.string.selected);
-            long categorySelected = db.createCategory(new Category(selected + " " + Utils.getDateString()));
+            synchronized (sDataLock) {
+                String selected = mActivity.getString(R.string.selected);
+                long categorySelected = db.createCategory(new Category(selected + " " + Utils.getDateString()));
 
-            for (WebCam webCam : importWebCams) {
-                if (webCam.isSelected()) {
-                    if (allWebCams.size() != 0) {
-                        boolean notFound = false;
-                        for (WebCam allWebCam : allWebCams) {
-                            if (webCam.getUniId() == allWebCam.getUniId()) {
-                                db.createWebCamCategory(allWebCam.getId(), categorySelected);
-                                notFound = false;
-                                duplicityWebCams++;
-                                break;
+                for (WebCam webCam : importWebCams) {
+                    if (webCam.isSelected()) {
+                        if (allWebCams.size() != 0) {
+                            boolean notFound = false;
+                            for (WebCam allWebCam : allWebCams) {
+                                if (webCam.getUniId() == allWebCam.getUniId()) {
+                                    db.createWebCamCategory(allWebCam.getId(), categorySelected);
+                                    notFound = false;
+                                    duplicityWebCams++;
+                                    break;
+                                }
+                                else notFound = true;
                             }
-                            else notFound = true;
+                            if (notFound) {
+                                db.createWebCam(webCam, new long[]{categorySelected});
+                                newWebCams++;
+                            }
                         }
-                        if (notFound) {
+                        else {
                             db.createWebCam(webCam, new long[]{categorySelected});
                             newWebCams++;
                         }
                     }
-                    else {
-                        db.createWebCam(webCam, new long[]{categorySelected});
-                        newWebCams++;
-                    }
+                    progressUpdate();
                 }
-                progressUpdate();
-            }
 
-            if (newWebCams + duplicityWebCams == 0) {
-                db.deleteCategory(categorySelected, false);
-            }
+                if (newWebCams + duplicityWebCams == 0) {
+                    db.deleteCategory(categorySelected, false);
+                }
 
-            showResult();
+                showResult();
+            }
+            db.closeDB();
+            backupManager.dataChanged();
+
             return null;
         }
     }
@@ -710,36 +690,41 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
         @Override
         protected Long doInBackground(String... texts) {
 
-            String text = texts[0];
-            long categoryCountry = db.createCategory(new Category(text + " " + Utils.getDateString()));
+            synchronized (sDataLock) {
+                String text = texts[0];
+                long categoryCountry = db.createCategory(new Category(text + " " + Utils.getDateString()));
 
-            for (WebCam webCam : importWebCams) {
-                if (webCam.getCountry().equals(text)) {
-                    if (allWebCams.size() != 0) {
-                        boolean notFound = false;
-                        for (WebCam allWebCam : allWebCams) {
-                            if (webCam.getUniId() == allWebCam.getUniId()) {
-                                db.createWebCamCategory(allWebCam.getId(), categoryCountry);
-                                notFound = false;
-                                duplicityWebCams++;
-                                break;
+                for (WebCam webCam : importWebCams) {
+                    if (webCam.getCountry().equals(text)) {
+                        if (allWebCams.size() != 0) {
+                            boolean notFound = false;
+                            for (WebCam allWebCam : allWebCams) {
+                                if (webCam.getUniId() == allWebCam.getUniId()) {
+                                    db.createWebCamCategory(allWebCam.getId(), categoryCountry);
+                                    notFound = false;
+                                    duplicityWebCams++;
+                                    break;
+                                }
+                                else notFound = true;
                             }
-                            else notFound = true;
+                            if (notFound) {
+                                db.createWebCam(webCam, new long[]{categoryCountry});
+                                newWebCams++;
+                            }
                         }
-                        if (notFound) {
+                        else {
                             db.createWebCam(webCam, new long[]{categoryCountry});
                             newWebCams++;
                         }
                     }
-                    else {
-                        db.createWebCam(webCam, new long[]{categoryCountry});
-                        newWebCams++;
-                    }
+                    progressUpdate();
                 }
-                progressUpdate();
-            }
 
-            showResult();
+                showResult();
+            }
+            db.closeDB();
+            backupManager.dataChanged();
+
             return null;
         }
     }
@@ -766,6 +751,18 @@ public class JsonFetcherDialog extends DialogFragment implements ConnectionCallb
 
             }
         });
+    }
+
+    private void getLastKnownLocation () {
+        LocationManager locationManager = (LocationManager) mActivity.getSystemService(Context.LOCATION_SERVICE);
+        mLastLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        if (mLastLocation != null) {
+            mLatitude = Utils.roundDouble(mLastLocation.getLatitude(), 6);
+            mLongitude = Utils.roundDouble(mLastLocation.getLongitude(), 6);
+            Log.i(TAG, String.valueOf(mLatitude) + " " + String.valueOf(mLongitude));
+        } else {
+            Log.i(TAG, "No location detected");
+        }
     }
 
     private void reportDialog(int newWebCams, int duplicityWebCams) {

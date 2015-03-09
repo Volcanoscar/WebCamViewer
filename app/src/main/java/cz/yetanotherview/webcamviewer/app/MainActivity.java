@@ -49,8 +49,6 @@ import android.widget.ListView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.signature.StringSignature;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.melnykov.fab.FloatingActionButton;
 import com.nispok.snackbar.Snackbar;
 import com.nispok.snackbar.SnackbarManager;
@@ -592,17 +590,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         }
         else {
             if (webCam.getLatitude() != 0 && webCam.getLongitude() != 0) {
-                int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getApplicationContext());
-                if(status == ConnectionResult.SUCCESS) {
-                    startActivity(intent);
-                }
-                else {
-                    new MaterialDialog.Builder(this)
-                            .title(R.string.google_play_services)
-                            .content(R.string.google_play_services_summary)
-                            .positiveText(android.R.string.ok)
-                            .show();
-                }
+                startActivity(intent);
             }
             else {
                 new MaterialDialog.Builder(this)

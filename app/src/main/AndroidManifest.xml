@@ -44,13 +44,6 @@
         <meta-data
             android:name="com.google.android.backup.api_key"
             android:value="AEdPqrEAAAAIfQukj2SydW0zsmnSyY1aNfveHIIDtKbPEAe5fA" />
-        <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyAVdd4AImE1BsC5ENIUye7JdrEDVk50ak0"/>
-
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

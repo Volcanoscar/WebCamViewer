@@ -39,8 +39,6 @@ import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.signature.StringSignature;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -121,17 +119,7 @@ public class FullScreenFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 if (latitude != 0 && longitude != 0) {
-                    int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(getActivity().getApplicationContext());
-                    if(status == ConnectionResult.SUCCESS) {
-                        ((FullScreenActivity) getActivity()).replaceFragments(true);
-                    }
-                    else {
-                        new MaterialDialog.Builder(getActivity())
-                                .title(R.string.google_play_services)
-                                .content(R.string.google_play_services_summary)
-                                .positiveText(android.R.string.ok)
-                                .show();
-                    }
+                    ((FullScreenActivity) getActivity()).replaceFragments(true);
                 }
                 else {
                     new MaterialDialog.Builder(getActivity())
