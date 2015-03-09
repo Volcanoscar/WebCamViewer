@@ -11,7 +11,7 @@ This application has a community based database and also allows you to manually 
 - Adding your own WebCams (Naming, Editing, Removal)
 - Fully administration of the categories
 - Saving and sharing pictures from WebCams
-- Showing WebCams on map
+- Showing WebCams on the map
 - Sorting function
 - "Keep screen on" function
 - Refresh and Auto Refresh function (whole list or only full screen view)
