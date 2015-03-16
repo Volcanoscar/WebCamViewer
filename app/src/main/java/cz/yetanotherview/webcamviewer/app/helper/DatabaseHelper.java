@@ -386,6 +386,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 categories.add(t);
             } while (c.moveToNext());
         }
+
         c.close();
 
         return categories;
