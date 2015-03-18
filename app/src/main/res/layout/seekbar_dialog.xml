@@ -22,6 +22,15 @@
     android:gravity="center"
     android:orientation="vertical" >
 
+    <TextView
+        android:id="@+id/seekbar_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="5dp"
+        android:textSize="18sp"/>
+
     <SeekBar
         android:id="@+id/seekbar_seek"
         android:layout_width="match_parent"
@@ -29,12 +38,4 @@
         android:layout_margin="5dp"
         style="@style/SeekBar"/>
 
-    <TextView
-        android:id="@+id/seekbar_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="5dp"
-        android:textSize="18sp"/>
-
-</LinearLayout> 
+</LinearLayout>

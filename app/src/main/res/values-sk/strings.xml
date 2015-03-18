@@ -163,4 +163,6 @@
 <string name="images_on">"S náhľadmi"</string>
 <string name="images_off">"Bez náhľadov"</string>
 <string name="donate">"Podporiť"</string>
+<string name="drawer_open">"Otvoriť vysúvacie menu"</string>
+<string name="drawer_close">"Zavrieť vysúvacie menu"</string>
 </resources>

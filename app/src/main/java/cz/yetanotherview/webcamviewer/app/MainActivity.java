@@ -116,7 +116,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private boolean screenAlwaysOn;
     private boolean notUndo;
     private int mLayoutId;
-    private StringSignature stringSignature;
+    private String mStringSignature;
     private boolean imagesOnOff;
 
     private MaterialDialog dialog;
@@ -167,7 +167,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         mOrientation = getResources().getConfiguration().orientation;
 
         // New signature
-        stringSignature = new StringSignature(UUID.randomUUID().toString());
+        mStringSignature = UUID.randomUUID().toString();
 
         // Other core init
         initToolbar();
@@ -242,7 +242,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         }
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                mToolbar, R.drawable.ic_action_content_new, R.drawable.ic_action_sort_by_size_white) {
+                mToolbar, R.string.drawer_open, R.string.drawer_close) {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
@@ -294,7 +294,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         }
         db.closeDB();
 
-        mAdapter = new WebCamAdapter(this, allWebCams, mOrientation, mLayoutId, stringSignature, imagesOnOff);
+        mAdapter = new WebCamAdapter(this, allWebCams, mOrientation, mLayoutId, new StringSignature(mStringSignature), imagesOnOff);
         mRecyclerView.setAdapter(mAdapter);
         mAdapter.setClickListener(new WebCamAdapter.ClickListener() {
 
@@ -326,7 +326,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         // Pull To Refresh 1/2
         swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
         swipeLayout.setOnRefreshListener(this);
-        swipeLayout.setColorSchemeResources(R.color.swipe);
+        swipeLayout.setColorSchemeResources(R.color.primary, R.color.swipe, R.color.yellow);
     }
 
     private void checkAdapterIsEmpty () {
@@ -574,6 +574,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         webCam = (WebCam) mAdapter.getItem(position);
 
         Intent intent = new Intent(this, FullScreenActivity.class);
+        intent.putExtra("signature", mStringSignature);
         intent.putExtra("map", map);
         intent.putExtra("name", webCam.getName());
         intent.putExtra("url", webCam.getUrl());
@@ -966,17 +967,19 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     // Pull To Refresh 2/2
     @Override
     public void onRefresh() {
+        refresh(false);
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 swipeLayout.setRefreshing(false);
-                refresh(false);
             }
-        }, 600);
+        }, 2500);
     }
 
     private void refresh(boolean fromAutoRefresh) {
-        mAdapter.refreshViewImages(new StringSignature(UUID.randomUUID().toString()));
+        mStringSignature = UUID.randomUUID().toString();
+        mAdapter.refreshViewImages(new StringSignature(mStringSignature));
         if (!fromAutoRefresh) {
             if (mAdapter.getItemCount() != 0) {
                 refreshIsRunning();

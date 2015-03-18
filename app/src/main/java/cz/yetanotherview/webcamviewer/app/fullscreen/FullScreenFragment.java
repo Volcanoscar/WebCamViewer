@@ -34,7 +34,6 @@ import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
@@ -55,6 +54,8 @@ public class FullScreenFragment extends Fragment {
     private TouchImageView image;
     private ProgressBar progressBar;
     private Animation fadeOut;
+    private String signature;
+    private StringSignature stringSignature;
     private String name;
     private String url;
     private float zoom;
@@ -72,6 +73,7 @@ public class FullScreenFragment extends Fragment {
         view = inflater.inflate(R.layout.full_screen_layout, container, false);
 
         Intent intent = getActivity().getIntent();
+        signature = intent.getExtras().getString("signature");
         name = intent.getExtras().getString("name");
         url = intent.getExtras().getString("url");
         zoom = intent.getExtras().getFloat("zoom");
@@ -80,6 +82,8 @@ public class FullScreenFragment extends Fragment {
         latitude = intent.getExtras().getDouble("latitude");
         longitude = intent.getExtras().getDouble("longitude");
         fullScreen = intent.getExtras().getBoolean("fullScreen");
+
+        stringSignature = new StringSignature(signature);
 
         firtsTime = true;
 
@@ -202,8 +206,7 @@ public class FullScreenFragment extends Fragment {
                 .load(url)
                 .crossFade()
                 .placeholder(R.drawable.placeholder)
-                .signature(new StringSignature(UUID.randomUUID().toString()))
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .signature(stringSignature)
                 .into(new GlideDrawableImageViewTarget(image) {
                     @Override
                     public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
@@ -242,6 +245,7 @@ public class FullScreenFragment extends Fragment {
         Glide.get(image.getContext()).clearMemory();
         mButtonsLayout.setBackgroundResource(0);
         progressBar.setVisibility(View.VISIBLE);
+        stringSignature = new StringSignature(UUID.randomUUID().toString());
         loadImage();
     }
 }

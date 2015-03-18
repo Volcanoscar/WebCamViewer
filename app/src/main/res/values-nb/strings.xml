@@ -165,4 +165,6 @@
 <string name="images_on">"Bilder slå på"</string>
 <string name="images_off">"Bilder slå av"</string>
 <string name="donate">"Donere"</string>
+<string name="drawer_open">"Åpen navigasjon skuff"</string>
+<string name="drawer_close">"Lukk navigasjons skuff"</string>
 </resources>

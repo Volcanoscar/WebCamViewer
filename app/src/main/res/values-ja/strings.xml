@@ -148,4 +148,6 @@
 <string name="images_on">"写真を回し"</string>
 <string name="images_off">"写真をフ"</string>
 <string name="donate">"寄付する"</string>
+<string name="drawer_open">"オープンナビゲーションドロワー"</string>
+<string name="drawer_close">"閉じるナビゲーションドロワー"</string>
 </resources>

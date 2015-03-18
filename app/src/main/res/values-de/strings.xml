@@ -163,4 +163,6 @@
 <string name="images_on">"Bilder an"</string>
 <string name="images_off">"Bilder aus"</string>
 <string name="donate">"Spenden"</string>
+<string name="drawer_open">"Öffnen navigation schublade"</string>
+<string name="drawer_close">"Schließen navigation schublade"</string>
 </resources>

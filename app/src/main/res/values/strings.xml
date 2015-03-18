@@ -163,4 +163,6 @@
 <string name="images_on">"Images ON"</string>
 <string name="images_off">"Images OFF"</string>
 <string name="donate">"Donate"</string>
+<string name="drawer_open">"Open navigation drawer"</string>
+<string name="drawer_close">"Close navigation drawer"</string>
 </resources>
