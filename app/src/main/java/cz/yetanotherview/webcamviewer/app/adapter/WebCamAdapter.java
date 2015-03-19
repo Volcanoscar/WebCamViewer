@@ -154,6 +154,7 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
                     .load(source)
                     .dontTransform()
                     .crossFade()
+                    .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                     .signature(mStringSignature)
                     .into(new GlideDrawableImageViewTarget(webcamViewHolder.vImage) {
                         @Override

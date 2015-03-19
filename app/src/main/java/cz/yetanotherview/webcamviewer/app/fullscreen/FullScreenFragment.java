@@ -34,6 +34,7 @@ import android.widget.RelativeLayout;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
 import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
@@ -207,6 +208,7 @@ public class FullScreenFragment extends Fragment {
                 .crossFade()
                 .placeholder(R.drawable.placeholder)
                 .signature(stringSignature)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(new GlideDrawableImageViewTarget(image) {
                     @Override
                     public void onResourceReady(GlideDrawable drawable, GlideAnimation anim) {
