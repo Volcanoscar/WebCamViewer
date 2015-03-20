@@ -44,6 +44,7 @@ public class Utils {
     public static String folderWCVPathTmp = folderWCVPath + "Tmp/";
     public static String extension = ".wcv";
     public static String oldExtension = ".db";
+    public static String email = "cz840311@gmail.com";
 
     /**
      * Get current date

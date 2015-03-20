@@ -70,6 +70,7 @@ import cz.yetanotherview.webcamviewer.app.actions.JsonFetcherDialog;
 import cz.yetanotherview.webcamviewer.app.actions.SaveDialog;
 import cz.yetanotherview.webcamviewer.app.actions.SelectionDialog;
 import cz.yetanotherview.webcamviewer.app.actions.ShareDialog;
+import cz.yetanotherview.webcamviewer.app.actions.SuggestionDialog;
 import cz.yetanotherview.webcamviewer.app.actions.WelcomeDialog;
 import cz.yetanotherview.webcamviewer.app.adapter.CategoryAdapter;
 import cz.yetanotherview.webcamviewer.app.fullscreen.FullScreenActivity;
@@ -729,10 +730,18 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                         else if (which == 1){
                             showAddDialog();
                         }
+                        else if (which == 2){
+                            showSuggestionDialog();
+                        }
                     }
                 })
                 .positiveText(R.string.choose)
                 .show();
+    }
+
+    private void showSuggestionDialog() {
+        DialogFragment newFragment = new SuggestionDialog();
+        newFragment.show(getFragmentManager(), "SuggestionDialog");
     }
 
     private void showAddDialog() {
@@ -1065,7 +1074,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private void sendEmail(WebCam webCam, boolean fromCommunityList) {
 
         Intent emailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
-                "mailto", "cz840311@gmail.com", null));
+                "mailto", Utils.email, null));
 
         if (fromCommunityList) {
             emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Something is wrong");

@@ -21,6 +21,7 @@
     <string-array name="choose_values">
         <item>@string/pref_import_from_server</item>
         <item>@string/add_manually</item>
+        <item>@string/submit_suggestion</item>
     </string-array>
 
     <string-array name="selection_values">
