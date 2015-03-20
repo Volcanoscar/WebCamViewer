@@ -39,7 +39,6 @@
 <string name="how_to">"Hvordan"</string>
 <string name="dialog_positive_text">"Lagre"</string>
 <string name="dialog_positive_toast_message">"Lagret!"</string>
-<string name="empty_list_view">"Oops, linken er tom. Vil du opprette eller importere webkameraer? Bruk den røde knappen."</string>
 <string name="pref_database">"Database"</string>
 <string name="pref_import_from_ext">"Importer fra ekstern lagring"</string>
 <string name="pref_import_from_ext_summ">"Importer webkeamera-database fra ekstern lagring"</string>

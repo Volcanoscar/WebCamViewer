@@ -16,6 +16,8 @@
         <item name="android:activatedBackgroundIndicator">@drawable/drawer_list_bg</item>
         <item name="selectableItemBackground">@drawable/ripple</item>
         <item name="android:selectableItemBackground">@drawable/ripple</item>
+
+        <item name="android:autoCompleteTextViewStyle">@style/cursorColor</item>
     </style>
 
     <style name="AppCompatFullScreen" parent="AppTheme.Base">
@@ -79,6 +81,10 @@
 
     <style name="ToolbarTitle" parent="@style/TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="cursorColor" parent="Widget.AppCompat.Light.AutoCompleteTextView">
+        <item name="android:textCursorDrawable">@null</item>
     </style>
 
 </resources>

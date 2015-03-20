@@ -62,14 +62,13 @@
                         fab:fab_colorPressed="@color/fab_pressed"
                         fab:fab_colorRipple="@color/fab_ripple" />
 
-                <TextView
-                    android:id="@+id/empty"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:padding="@dimen/empty_textview_padding"
-                    android:textSize="@dimen/text_size_medium"
-                    android:text="@string/empty_list_view" />
+                     <ImageView
+                        android:id="@+id/empty"
+                        android:layout_gravity="center"
+                        android:src="@drawable/background_blank"
+                        android:layout_width="220dp"
+                        android:layout_height="220dp"
+                        android:contentDescription="@string/image_description" />
 
             </FrameLayout>
     </LinearLayout>

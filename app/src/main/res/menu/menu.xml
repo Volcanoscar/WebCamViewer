@@ -1,56 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:yourapp="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="cz.yetanotherview.webcamviewer.app.MainActivity">
+
+    <item
+        android:id="@+id/action_search"
+        android:icon="@drawable/ic_action_search"
+        android:title="@string/action_search"
+        android:orderInCategory="1"
+        app:showAsAction="collapseActionView|always|withText"
+        app:actionViewClass="android.widget.SearchView" />
 
     <item android:icon="@drawable/ic_action_refresh"
         android:id="@+id/action_refresh"
         android:title="@string/refresh"
-        android:orderInCategory="1"
-        yourapp:showAsAction="ifRoom" />
+        android:orderInCategory="2"
+        app:showAsAction="always" />
 
     <item android:id="@+id/action_dashboard"
         android:title="@string/view"
-        android:orderInCategory="2"
-        yourapp:showAsAction="ifRoom" >
+        android:orderInCategory="3"
+        app:showAsAction="ifRoom" >
     </item>
 
     <item android:icon="@drawable/ic_action_sort_by_size_white"
         android:id="@+id/action_sort"
         android:title="@string/action_sort"
-        android:orderInCategory="3"
-        yourapp:showAsAction="ifRoom" >
+        android:orderInCategory="4"
+        app:showAsAction="ifRoom" >
     </item>
 
     <item android:id="@+id/action_image_on_off"
         android:title=""
-        android:orderInCategory="4"
-        yourapp:showAsAction="ifRoom" >
+        android:orderInCategory="5"
+        app:showAsAction="ifRoom" >
     </item>
 
     <item android:icon="@drawable/ic_action_settings"
         android:id="@+id/action_settings"
         android:title="@string/action_settings"
-        android:orderInCategory="5"
-        yourapp:showAsAction="ifRoom" />
+        android:orderInCategory="6"
+        app:showAsAction="ifRoom" />
 
     <item android:icon="@drawable/ic_action_info"
         android:id="@+id/menu_about"
         android:title="@string/action_menu_about"
-        android:orderInCategory="6"
-        yourapp:showAsAction="ifRoom"/>
+        android:orderInCategory="7"
+        app:showAsAction="ifRoom"/>
 
     <item android:icon="@drawable/ic_action_help"
         android:id="@+id/menu_help"
         android:title="@string/action_menu_help"
-        android:orderInCategory="7"
-        yourapp:showAsAction="ifRoom"/>
+        android:orderInCategory="8"
+        app:showAsAction="ifRoom"/>
 
     <item android:icon="@drawable/ic_action_favorite"
         android:id="@+id/menu_donate"
         android:title="@string/donate"
-        android:orderInCategory="8"
-        yourapp:showAsAction="ifRoom"/>
+        android:orderInCategory="9"
+        app:showAsAction="ifRoom"/>
 
 </menu>

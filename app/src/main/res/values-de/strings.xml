@@ -37,7 +37,6 @@
 <string name="how_to">"Anleitungen"</string>
 <string name="dialog_positive_text">"Speichern"</string>
 <string name="dialog_positive_toast_message">"Gespeichert!"</string>
-<string name="empty_list_view">"Hoppla, die Liste ist leer. Möchten Sie WebCams erstellen oder importieren? Benutze den roten Knopf."</string>
 <string name="pref_database">"Datenbank"</string>
 <string name="pref_import_from_ext">"Import vom externen Speicher"</string>
 <string name="pref_import_from_ext_summ">"Import der WebCam Datenbank vom externen Speicher"</string>

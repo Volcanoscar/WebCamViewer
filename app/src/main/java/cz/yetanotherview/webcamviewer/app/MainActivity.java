@@ -19,6 +19,7 @@
 package cz.yetanotherview.webcamviewer.app;
 
 import android.app.DialogFragment;
+import android.app.SearchManager;
 import android.app.backup.BackupManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -31,6 +32,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -40,12 +42,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.SearchView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.signature.StringSignature;
@@ -120,6 +122,8 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
     private boolean imagesOnOff;
 
     private MaterialDialog dialog;
+    private MenuItem searchItem;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -400,8 +404,55 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.menu, menu);
+        getMenuInflater().inflate(R.menu.menu, menu);
+
+        searchItem = menu.findItem(R.id.action_search);
+
+        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
+        searchView = (SearchView) searchItem.getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                searchView.setIconified(false);
+                searchView.requestFocus();
+//                queryText = searchView.getQuery().toString();
+//                setView();
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                searchView.clearFocus();
+//                queryText = null;
+//                setView();
+                return true;
+            }
+        });
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                searchItem.collapseActionView();
+//                queryText = null;
+//                initView();
+//                setView();
+                return false;
+            }
+        });
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                searchView.clearFocus();
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+//                queryText = newText;
+//                setView();
+                return true;
+            }
+        });
 
         MenuItem dashboard = menu.findItem(R.id.action_dashboard);
         if (numberOfColumns == 1) {
@@ -430,6 +481,10 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
         }
 
         switch (item.getItemId()) {
+
+            //Search
+            case R.id.action_search:
+                return super.onOptionsItemSelected(item);
 
             //Refresh
             case R.id.action_refresh:
@@ -509,6 +564,13 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onSearchRequested() {
+        MenuItemCompat.expandActionView(searchItem);
+        searchView.requestFocus();
+        return true;
     }
 
     private void showSortDialog() {

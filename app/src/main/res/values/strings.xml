@@ -37,7 +37,6 @@
 <string name="how_to">"How to"</string>
 <string name="dialog_positive_text">"Save"</string>
 <string name="dialog_positive_toast_message">"Saved!"</string>
-<string name="empty_list_view">"Oops, the list is blank. Would you like to create or import some WebCams? Use the red button."</string>
 <string name="pref_database">"Database"</string>
 <string name="pref_import_from_ext">"Import from External Storage"</string>
 <string name="pref_import_from_ext_summ">"Import WebCam database from External Storage"</string>
@@ -120,7 +119,6 @@
 <string name="show_me_help">"SHOW ME HELP"</string>
 <string name="oops">"Oops!"</string>
 <string name="also_delete_all_categories">"Also delete all created categories?"</string>
-<string name="manual_selection">"By manual selection"</string>
 <string name="import_selected">"IMPORT SELECTED"</string>
 <string name="selected">"Selected"</string>
 <string name="pref_screen_always_on">"Keep Screen On"</string>
@@ -165,4 +163,15 @@
 <string name="donate">"Donate"</string>
 <string name="drawer_open">"Open navigation drawer"</string>
 <string name="drawer_close">"Close navigation drawer"</string>
+<string name="selecting_by_name">"Selecting by Name"</string>
+<string name="action_search">"Search"</string>
+<string name="selecting_from_map">"Selecting from Map"</string>
+<string name="simple_listview">"Simple list"</string>
+<string name="simple_listview_summary">"If realistic previews are disabled, then show only a simple list of names."</string>
+<string name="delete_webcams">"Delete selected"</string>
+<string name="delete_webcams_summary">"Delete selected WebCams from the current database"</string>
+<string name="submit_suggestion">"Submit a Suggestion"</string>
+<string name="submit_suggestion_hint">"My favorite place"</string>
+<string name="action_sort_location">"From the closest"</string>
+<string name="action_sort_location_desc">"From the far away"</string>
 </resources>

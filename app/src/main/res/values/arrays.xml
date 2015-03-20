@@ -26,7 +26,7 @@
     <string-array name="selection_values">
         <item>@string/popular_webcams</item>
         <item>@string/nearby_webcams</item>
-        <item>@string/manual_selection</item>
+        <item>@string/selecting_by_name</item>
         <item>@string/selecting_by_country</item>
         <item>@string/latest_webcams</item>
         <item>@string/all_webcams</item>
