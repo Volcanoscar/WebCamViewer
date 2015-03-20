@@ -119,7 +119,6 @@
 <string name="show_me_help">"ZOBRAZIŤ POMOCNÍKA"</string>
 <string name="oops">"Och!"</string>
 <string name="also_delete_all_categories">"Zmazať tiež všetky vytvorené kategórie?"</string>
-<string name="manual_selection">"Ručným výberom"</string>
 <string name="import_selected">"IMPORTOVAŤ VYBRANÉ"</string>
 <string name="selected">"Vybrané"</string>
 <string name="pref_screen_always_on">"Ponechať obrazovku zapnutú"</string>
@@ -164,4 +163,15 @@
 <string name="donate">"Podporiť"</string>
 <string name="drawer_open">"Otvoriť vysúvacie menu"</string>
 <string name="drawer_close">"Zavrieť vysúvacie menu"</string>
+<string name="selecting_by_name">"Výber podľa názvu"</string>
+<string name="action_search">"Hľadať"</string>
+<string name="selecting_from_map">"Výber z mapy"</string>
+<string name="simple_listview">"Jednoduchý zoznam"</string>
+<string name="simple_listview_summary">"Ak sú realistické náhľady vypnuté, zobraziť iba jednoduchý zoznam s názvami"</string>
+<string name="delete_webcams">"Zmazať vybrané"</string>
+<string name="delete_webcams_summary">"Zmazať vybrané WebKamery z aktuálnej databázy"</string>
+<string name="submit_suggestion">"Odoslať návrh"</string>
+<string name="submit_suggestion_hint">"Moje obľúbené miesto"</string>
+<string name="action_sort_location">"Od najbližšej"</string>
+<string name="action_sort_location_desc">"Od najvzdialenejšie"</string>
 </resources>

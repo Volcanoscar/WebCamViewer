@@ -167,11 +167,11 @@
 <string name="action_search">"Search"</string>
 <string name="selecting_from_map">"Selecting from Map"</string>
 <string name="simple_listview">"Simple list"</string>
-<string name="simple_listview_summary">"If realistic previews are disabled, then show only a simple list of names."</string>
+<string name="simple_listview_summary">"If realistic previews are disabled, then show only a simple list of names"</string>
 <string name="delete_webcams">"Delete selected"</string>
 <string name="delete_webcams_summary">"Delete selected WebCams from the current database"</string>
 <string name="submit_suggestion">"Submit a Suggestion"</string>
 <string name="submit_suggestion_hint">"My favorite place"</string>
-<string name="action_sort_location">"From the closest"</string>
-<string name="action_sort_location_desc">"From the far away"</string>
+<string name="action_sort_location">"From the nearest"</string>
+<string name="action_sort_location_desc">"From the farthest"</string>
 </resources>

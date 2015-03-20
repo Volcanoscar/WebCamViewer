@@ -416,16 +416,12 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
             public boolean onMenuItemActionExpand(MenuItem item) {
                 searchView.setIconified(false);
                 searchView.requestFocus();
-//                queryText = searchView.getQuery().toString();
-//                setView();
                 return true;
             }
 
             @Override
             public boolean onMenuItemActionCollapse(MenuItem item) {
                 searchView.clearFocus();
-//                queryText = null;
-//                setView();
                 return true;
             }
         });
@@ -433,9 +429,6 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
             @Override
             public boolean onClose() {
                 searchItem.collapseActionView();
-//                queryText = null;
-//                initView();
-//                setView();
                 return false;
             }
         });
@@ -448,8 +441,7 @@ public class MainActivity extends ActionBarActivity implements WebCamListener, J
 
             @Override
             public boolean onQueryTextChange(String newText) {
-//                queryText = newText;
-//                setView();
+                mAdapter.filter(newText);
                 return true;
             }
         });

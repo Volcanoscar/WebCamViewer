@@ -40,10 +40,12 @@ import com.bumptech.glide.request.animation.GlideAnimation;
 import com.bumptech.glide.request.target.GlideDrawableImageViewTarget;
 import com.bumptech.glide.signature.StringSignature;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import cz.yetanotherview.webcamviewer.app.R;
+import cz.yetanotherview.webcamviewer.app.Utils;
 import cz.yetanotherview.webcamviewer.app.model.WebCam;
 
 public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamViewHolder> {
@@ -57,6 +59,7 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
 
     private final Context mContext;
     private List<WebCam> webCamItems;
+    private ArrayList<WebCam> filteredList;
     private ClickListener clickListener;
 
     public WebCamAdapter(Context context, List<WebCam> webCamItems, int orientation, int layoutId, StringSignature stringSignature, boolean imageOn) {
@@ -66,10 +69,33 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
         mOrientation = orientation;
         mStringSignature = stringSignature;
         mImageOn = imageOn;
+        this.filteredList = new ArrayList<>();
+        this.filteredList.addAll(webCamItems);
     }
 
     public void swapData(List<WebCam> webCamItems) {
         this.webCamItems = webCamItems;
+        this.filteredList = new ArrayList<>();
+        this.filteredList.addAll(webCamItems);
+        notifyDataSetChanged();
+    }
+
+    public void filter(String charText) {
+        charText = Utils.getNameStrippedAccents(charText.toLowerCase().trim());
+        webCamItems.clear();
+        if (charText.length() == 0) {
+            webCamItems.addAll(filteredList);
+        }
+        else
+        {
+            for (WebCam webCam : filteredList)
+            {
+                if (Utils.getNameStrippedAccents(webCam.getName()).toLowerCase().contains(charText))
+                {
+                    webCamItems.add(webCam);
+                }
+            }
+        }
         notifyDataSetChanged();
     }
 

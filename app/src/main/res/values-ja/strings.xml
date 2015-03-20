@@ -77,7 +77,7 @@
 <string name="available_options">"利用可能なオプション"</string>
 <string name="external_files">"外部ファイル"</string>
 <string name="popular_webcams">"人気のウェブカム"</string>
-<string name="selecting_by_country">"国で選択中"</string>
+<string name="selecting_by_country">"国別の選択"</string>
 <string name="latest_webcams">"最新のウェブカム"</string>
 <string name="popular">"人気"</string>
 <string name="latest">"最新"</string>
@@ -104,7 +104,6 @@
 <string name="show_me_help">"ヘルプを表示"</string>
 <string name="oops">"エラー!"</string>
 <string name="also_delete_all_categories">"作成済のカテゴリーもすべて削除しますか?"</string>
-<string name="manual_selection">"手動で選択"</string>
 <string name="import_selected">"選択済をインポート"</string>
 <string name="selected">"選択済"</string>
 <string name="pref_screen_always_on">"画面をオンのままにする"</string>
@@ -149,4 +148,15 @@
 <string name="donate">"寄付する"</string>
 <string name="drawer_open">"オープンナビゲーションドロワー"</string>
 <string name="drawer_close">"閉じるナビゲーションドロワー"</string>
+<string name="selecting_by_name">"名前による選択"</string>
+<string name="action_search">"検索"</string>
+<string name="selecting_from_map">"地図から選択"</string>
+<string name="simple_listview">"シンプルリスト"</string>
+<string name="simple_listview_summary">"リアルなプレビューが無効になっている場合は、名前だけのシンプルなリストを表示します"</string>
+<string name="delete_webcams">"選択済を削除"</string>
+<string name="delete_webcams_summary">"現在のデータベースから選択されたウェブカムを削除します"</string>
+<string name="submit_suggestion">"提案を送信"</string>
+<string name="submit_suggestion_hint">"お気に入りの場所"</string>
+<string name="action_sort_location">"近くから"</string>
+<string name="action_sort_location_desc">"遠くから"</string>
 </resources>
