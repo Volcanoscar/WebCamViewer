@@ -174,4 +174,5 @@
 <string name="submit_suggestion_hint">"My favorite place"</string>
 <string name="action_sort_location">"From the nearest"</string>
 <string name="action_sort_location_desc">"From the farthest"</string>
+<string name="from_map">"From map"</string>
 </resources>

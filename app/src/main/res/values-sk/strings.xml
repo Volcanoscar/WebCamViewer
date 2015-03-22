@@ -174,4 +174,5 @@
 <string name="submit_suggestion_hint">"Moje obľúbené miesto"</string>
 <string name="action_sort_location">"Od najbližšej"</string>
 <string name="action_sort_location_desc">"Od najvzdialenejšie"</string>
+<string name="from_map">"Z mapy"</string>
 </resources>

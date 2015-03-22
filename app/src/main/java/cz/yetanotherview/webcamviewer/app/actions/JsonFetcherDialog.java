@@ -24,16 +24,17 @@ import android.app.DialogFragment;
 import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -42,6 +43,11 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.overlay.ItemizedIconOverlay;
+import com.mapbox.mapboxsdk.overlay.Marker;
+import com.mapbox.mapboxsdk.views.InfoWindow;
+import com.mapbox.mapboxsdk.views.MapView;
 
 import junit.framework.Assert;
 
@@ -105,6 +111,12 @@ public class JsonFetcherDialog extends DialogFragment {
     private int seekBarProgress;
     private int seekBarCorrection;
     private String units;
+
+    private MapView mMapView;
+    private List<Marker> markers;
+    private List<Marker> selMarkers;
+    private Drawable selectedMarker;
+    private Drawable markerNotSelected;
 
     private BackupManager backupManager;
 
@@ -180,7 +192,7 @@ public class JsonFetcherDialog extends DialogFragment {
 
                     // Swap dialogs
                     maxProgressValue = importWebCams.size();
-                    if ((selection == 0) || (selection == 4 || (selection == 5))) {
+                    if (selection == 0 || selection == 5 || selection == 6) {
                         swapProgressDialog();
                     }
 
@@ -253,7 +265,6 @@ public class JsonFetcherDialog extends DialogFragment {
                             handleManualSelection();
                         }
                         else if (selection == 3) {
-
                             List<String> tempList = new ArrayList<>();
                             List<String> listAllCountries = new ArrayList<>();
                             countryList = new ArrayList<>();
@@ -286,6 +297,66 @@ public class JsonFetcherDialog extends DialogFragment {
                             handleCountrySelection();
                         }
                         else if (selection == 4) {
+                            getLastKnownLocation();
+
+                            selectedMarker = ResourcesCompat.getDrawable(getResources(), R.drawable.marker, null);
+                            markerNotSelected = ResourcesCompat.getDrawable(getResources(), R.drawable.marker_not_selected, null);
+
+                            markers = new ArrayList<>();
+                            for (WebCam webCam : importWebCams) {
+                                LatLng latLng = new LatLng(webCam.getLatitude(), webCam.getLongitude());
+                                Marker marker = new Marker(mMapView, webCam.getName(), String.valueOf(webCam.getLatitude()) +
+                                        " - " + String.valueOf(webCam.getLongitude()), latLng);
+                                marker.setMarker(markerNotSelected);
+                                markers.add(marker);
+                            }
+
+                            noNewWebCams = false;
+                            handleMapSelection();
+                        }
+                        else if (selection == 5) {
+                            noNewWebCams = false;
+
+                            synchronized (sDataLock) {
+                                long categoryAll = db.createCategory(new Category(getString(R.string.all) + " " + Utils.getDateString()));
+                                for (WebCam webCam : importWebCams) {
+                                    if (allWebCams.size() != 0) {
+                                        boolean notFound = false;
+                                        for (WebCam allWebCam : allWebCams) {
+                                            if (webCam.getUniId() == allWebCam.getUniId()) {
+                                                db.createWebCamCategory(allWebCam.getId(), categoryAll);
+                                                noNewWebCams = false;
+                                                notFound = false;
+                                                duplicityWebCams++;
+                                                break;
+                                            }
+                                            else notFound = true;
+                                        }
+                                        if (notFound) {
+                                            db.createWebCam(webCam, new long[]{categoryAll});
+                                            noNewWebCams = false;
+                                            newWebCams++;
+                                        }
+                                    }
+                                    else {
+                                        db.createWebCam(webCam, new long[]{categoryAll});
+                                        noNewWebCams = false;
+                                        newWebCams++;
+                                    }
+
+                                    progressUpdate();
+                                }
+                                if (noNewWebCams) {
+                                    db.deleteCategory(categoryAll, false);
+                                }
+
+                                showResult();
+                            }
+                            db.closeDB();
+                            backupManager.dataChanged();
+
+                        }
+                        else if (selection == 6) {
 
                             synchronized (sDataLock) {
                                 long lastFetchLatest = preferences.getLong("pref_last_fetch_latest", 0);
@@ -335,47 +406,6 @@ public class JsonFetcherDialog extends DialogFragment {
                             db.closeDB();
                             backupManager.dataChanged();
                         }
-                        else if (selection == 5) {
-                            noNewWebCams = false;
-
-                            synchronized (sDataLock) {
-                                long categoryAll = db.createCategory(new Category(getString(R.string.all) + " " + Utils.getDateString()));
-                                for (WebCam webCam : importWebCams) {
-                                        if (allWebCams.size() != 0) {
-                                            boolean notFound = false;
-                                            for (WebCam allWebCam : allWebCams) {
-                                                if (webCam.getUniId() == allWebCam.getUniId()) {
-                                                    db.createWebCamCategory(allWebCam.getId(), categoryAll);
-                                                    noNewWebCams = false;
-                                                    notFound = false;
-                                                    duplicityWebCams++;
-                                                    break;
-                                                }
-                                                else notFound = true;
-                                            }
-                                            if (notFound) {
-                                                db.createWebCam(webCam, new long[]{categoryAll});
-                                                noNewWebCams = false;
-                                                newWebCams++;
-                                            }
-                                        }
-                                        else {
-                                            db.createWebCam(webCam, new long[]{categoryAll});
-                                            noNewWebCams = false;
-                                            newWebCams++;
-                                        }
-
-                                    progressUpdate();
-                                }
-                                if (noNewWebCams) {
-                                    db.deleteCategory(categoryAll, false);
-                                }
-
-                                showResult();
-                            }
-                            db.closeDB();
-                            backupManager.dataChanged();
-                        }
 
                 } catch (Exception ex) {
                     Log.e(TAG, "Failed to parse JSON due to: " + ex);
@@ -401,7 +431,7 @@ public class JsonFetcherDialog extends DialogFragment {
         mActivity.runOnUiThread(new Runnable() {
             public void run() {
 
-                if ((selection == 0) || (selection == 4) || (selection == 5)) {
+                if (selection == 0 || selection == 5 || selection == 6) {
                     initDialog.dismiss();
                 }
                 progressDialog = new MaterialDialog.Builder(mActivity)
@@ -540,7 +570,7 @@ public class JsonFetcherDialog extends DialogFragment {
             public void run() {
 
                 MaterialDialog dialog = new MaterialDialog.Builder(mActivity)
-                        .title(R.string.manual_selection)
+                        .title(R.string.selecting_by_name)
                         .customView(R.layout.manual_selection_dialog, false)
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
@@ -637,24 +667,19 @@ public class JsonFetcherDialog extends DialogFragment {
         mActivity.runOnUiThread(new Runnable() {
             public void run() {
 
-                final MaterialDialog dialog = new MaterialDialog.Builder(mActivity)
+                MaterialDialog dialog = new MaterialDialog.Builder(mActivity)
                         .title(R.string.countries)
-                        .adapter(new CountryAdapter(mActivity, countryList))
+                        .adapter(new CountryAdapter(mActivity, countryList),
+                                new MaterialDialog.ListCallback() {
+                                    @Override
+                                    public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                                        Country country = countryList.get(which);
+                                        new countrySelectionBackgroundTask().execute(country.getCountryName());
+                                        dialog.dismiss();
+                                        swapProgressDialog();
+                                    }
+                                })
                         .build();
-
-                ListView listView = dialog.getListView();
-                if (listView != null) {
-                    listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                            Country country = countryList.get(position);
-                            new countrySelectionBackgroundTask().execute(country.getCountryName());
-                            dialog.dismiss();
-                            swapProgressDialog();
-                        }
-                    });
-                }
 
                 initDialog.dismiss();
                 dialog.show();
@@ -695,6 +720,126 @@ public class JsonFetcherDialog extends DialogFragment {
                         }
                     }
                     progressUpdate();
+                }
+
+                showResult();
+            }
+            db.closeDB();
+            backupManager.dataChanged();
+
+            return null;
+        }
+    }
+
+    private void handleMapSelection() {
+
+        mActivity.runOnUiThread(new Runnable() {
+            public void run() {
+
+                MaterialDialog dialog = new MaterialDialog.Builder(mActivity)
+                        .title(R.string.selecting_from_map)
+                        .customView(R.layout.maps_layout, false)
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+
+                                new mapSelectionBackgroundTask().execute();
+                                swapProgressDialog();
+                            }
+
+                        })
+                        .positiveText(R.string.import_selected)
+                        .build();
+
+                mMapView = (MapView) dialog.getCustomView().findViewById(R.id.mapView);
+                LatLng latLng = new LatLng(mLatitude, mLongitude);
+                mMapView.setCenter(latLng);
+                mMapView.setZoom(8);
+
+                for (Marker marker : markers) {
+                    mMapView.addMarker(marker);
+                }
+
+                mMapView.setDiskCacheEnabled(false);
+
+                selMarkers = new ArrayList<>();
+                mMapView.addItemizedOverlay(new ItemizedIconOverlay(mActivity, markers, new ItemizedIconOverlay.OnItemGestureListener<Marker>() {
+
+                    @Override
+                    public boolean onItemSingleTapUp(int i, Marker marker) {
+                        InfoWindow tooltip = marker.getToolTip(mMapView);
+
+                        if (selMarkers.size() != 0) {
+                                if (selMarkers.contains(marker)) {
+                                    //marker.closeToolTip();
+                                    marker.setMarker(markerNotSelected);
+                                    selMarkers.remove(marker);
+                                }
+                                else {
+                                    selMarkers.add(marker);
+                                    marker.setMarker(selectedMarker);
+                                    marker.showBubble(tooltip, mMapView, true);
+                                }
+                        }
+                        else {
+                            selMarkers.add(marker);
+                            marker.setMarker(selectedMarker);
+                            marker.showBubble(tooltip, mMapView, true);
+                        }
+
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onItemLongPress(int i, Marker marker) {
+                        return true;
+                    }
+                }));
+
+                initDialog.dismiss();
+                dialog.show();
+            }
+        });
+    }
+
+    private class mapSelectionBackgroundTask extends AsyncTask<String, Integer, Long> {
+
+        @Override
+        protected Long doInBackground(String... texts) {
+
+            synchronized (sDataLock) {
+                String fromMap = mActivity.getString(R.string.from_map);
+                long categoryFromMap = db.createCategory(new Category(fromMap + " " + Utils.getDateString()));
+
+                for (Marker marker : markers) {
+                    if (selMarkers.contains(marker)) {
+                        WebCam webCam = importWebCams.get(markers.indexOf(marker));
+                        if (allWebCams.size() != 0) {
+                            boolean notFound = false;
+                            for (WebCam allWebCam : allWebCams) {
+                                if (webCam.getUniId() == allWebCam.getUniId()) {
+                                    db.createWebCamCategory(allWebCam.getId(), categoryFromMap);
+                                    notFound = false;
+                                    duplicityWebCams++;
+                                    break;
+                                }
+                                else notFound = true;
+                            }
+                            if (notFound) {
+                                db.createWebCam(webCam, new long[]{categoryFromMap});
+                                newWebCams++;
+                            }
+                        }
+                        else {
+                            db.createWebCam(webCam, new long[]{categoryFromMap});
+                            newWebCams++;
+                        }
+                    }
+                    progressUpdate();
+                }
+
+                if (newWebCams + duplicityWebCams == 0) {
+                    db.deleteCategory(categoryFromMap, false);
                 }
 
                 showResult();

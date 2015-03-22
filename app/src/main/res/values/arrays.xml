@@ -29,8 +29,9 @@
         <item>@string/nearby_webcams</item>
         <item>@string/selecting_by_name</item>
         <item>@string/selecting_by_country</item>
-        <item>@string/latest_webcams</item>
+        <item>@string/selecting_from_map</item>
         <item>@string/all_webcams</item>
+        <item>@string/latest_webcams</item>
     </string-array>
 
 </resources>

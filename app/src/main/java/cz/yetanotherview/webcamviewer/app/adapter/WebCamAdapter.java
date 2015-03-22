@@ -21,6 +21,7 @@ package cz.yetanotherview.webcamviewer.app.adapter;
 import android.content.Context;
 import android.graphics.Point;
 import android.os.Build;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -154,7 +155,7 @@ public class WebCamAdapter extends RecyclerView.Adapter<WebCamAdapter.WebCamView
                     R.drawable.no_image_9, R.drawable.no_image_10, R.drawable.no_image_11};
 
             int rndInt = r.nextInt(res .length);
-            webcamViewHolder.vImage.setImageDrawable(mContext.getResources().getDrawable(res[rndInt]));
+            webcamViewHolder.vImage.setImageDrawable(ResourcesCompat.getDrawable(mContext.getResources(), res[rndInt], null));
         }
     }
 

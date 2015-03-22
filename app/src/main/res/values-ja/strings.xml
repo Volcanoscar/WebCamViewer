@@ -159,4 +159,5 @@
 <string name="submit_suggestion_hint">"お気に入りの場所"</string>
 <string name="action_sort_location">"近くから"</string>
 <string name="action_sort_location_desc">"遠くから"</string>
+<string name="from_map">"地図から"</string>
 </resources>
